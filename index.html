@@ -38,14 +38,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .tbtn.cfg{color:var(--gold);border-color:#3a3000;}
 .tbtn.cfg:hover{background:#1a1400;border-color:var(--gold);}
 
-/* ── TICKER ── */
-.ticker-wrap{background:var(--bg2);border-bottom:1px solid #1a1a1a;height:26px;overflow:hidden;display:flex;flex-shrink:0;}
-.ticker-tag{background:var(--red);color:#fff;font-family:var(--font-mono);font-size:9px;font-weight:700;padding:0 10px;height:100%;display:flex;align-items:center;letter-spacing:.1em;flex-shrink:0;}
-.ticker-scroll{display:flex;animation:tick 50s linear infinite;white-space:nowrap;align-items:center;height:100%;}
-.ticker-scroll:hover{animation-play-state:paused;}
-.ti{font-family:var(--font-mono);font-size:10px;padding:0 18px;color:var(--text2);border-right:1px solid #1a1a1a;height:100%;display:flex;align-items:center;gap:6px;}
-.up{color:var(--green);}.down{color:var(--red);}
-@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
 
 /* ── LAYOUT ── */
 .view-area{flex:1;overflow:hidden;display:flex;flex-direction:column;}
@@ -256,12 +249,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
     <button class="tbtn" onclick="pauseFeed()"><i class="fas fa-pause" id="pi"></i> <span id="pl">Pausar</span></button>
     <button class="tbtn cfg" onclick="toggleSettings()"><i class="fas fa-sliders-h"></i> Config.</button>
   </div>
-</div>
-
-<!-- TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker-tag">MERCADOS</div>
-  <div style="overflow:hidden;flex:1"><div class="ticker-scroll" id="ticker"></div></div>
 </div>
 
 <!-- VIEW AREA -->
@@ -762,15 +749,6 @@ function setAutoInterval(ms){
 }
 function markAI(btn){document.querySelectorAll('.sp-body .szb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
-// ── Ticker estático (valores de referência) ──
-const TICKER_D=[
-  {l:'IBOV',v:'—',c:'',d:''},{l:'USDBRL',v:'—',c:'',d:''},
-  {l:'S&P500',v:'—',c:'',d:''},{l:'NASDAQ',v:'—',c:'',d:''},
-  {l:'WTI',v:'—',c:'',d:''},{l:'BRENT',v:'—',c:'',d:''},
-  {l:'OURO',v:'—',c:'',d:''},{l:'SELIC',v:'14,75%',c:'',d:''},
-  {l:'PETR4',v:'—',c:'',d:''},{l:'VALE3',v:'—',c:'',d:''},
-];
-
 function pOrd(p){return p==='urgent'?0:p==='high'?1:2;}
 
 function renderCol(col){
@@ -973,12 +951,6 @@ document.getElementById('ytUrl').addEventListener('keydown',e=>{if(e.key==='Ente
 
 // ── INIT ──
 // ── Init ──
-function initTicker(){
-  document.getElementById('ticker').innerHTML=
-    [...TICKER_D,...TICKER_D].map(t=>
-      `<div class="ti"><span>${t.l}</span><span style="color:#ddd;font-weight:600">${t.v}</span>${t.c?`<span class="${t.d}">${t.c}</span>`:''}</div>`
-    ).join('');
-}
 function initClock(){const u=()=>document.getElementById('clock').textContent=new Date().toTimeString().slice(0,8);u();setInterval(u,1000);}
 
 // renderCol usa SRC_CLS_MAP global do motor RSS
@@ -1012,7 +984,6 @@ function renderCol(col){
   document.getElementById('cnt'+col).textContent=its.length;
 }
 
-initTicker();
 initClock();
 initResizers();
 
