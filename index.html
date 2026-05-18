@@ -866,6 +866,35 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 function closeModalOut(e){if(e.target===document.getElementById('modal'))closeModal();}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();if(document.getElementById('sov').classList.contains('open'))toggleSettings();}});
 
+// ── MARKETS — dados das bolsas mundiais ──
+const EXCH=[
+  // Américas
+  {n:'B3 — Brasil',       cy:'BRL',idx:'IBOVESPA', cat:'am',tz:'America/Sao_Paulo',  tzl:'BRT (UTC-3)',  o:'10:00',c:'17:30',pre:'09:45'},
+  {n:'NYSE',              cy:'USD',idx:'DOW JONES', cat:'am',tz:'America/New_York',   tzl:'ET (UTC-5/-4)',o:'09:30',c:'16:00',pre:'04:00'},
+  {n:'NASDAQ',            cy:'USD',idx:'NASDAQ Comp',cat:'am',tz:'America/New_York',  tzl:'ET (UTC-5/-4)',o:'09:30',c:'16:00',pre:'04:00'},
+  {n:'TSX — Toronto',     cy:'CAD',idx:'S&P/TSX',  cat:'am',tz:'America/Toronto',    tzl:'ET (UTC-5/-4)',o:'09:30',c:'16:00'},
+  {n:'BMV — México',      cy:'MXN',idx:'IPC',       cat:'am',tz:'America/Mexico_City',tzl:'CST (UTC-6)',  o:'08:30',c:'15:00'},
+  {n:'MERVAL — Argentina',cy:'ARS',idx:'MERVAL',    cat:'am',tz:'America/Argentina/Buenos_Aires',tzl:'ART (UTC-3)',o:'11:00',c:'17:00'},
+  // Europa
+  {n:'LSE — Londres',     cy:'GBP',idx:'FTSE 100',  cat:'eu',tz:'Europe/London',      tzl:'GMT/BST',      o:'08:00',c:'16:30'},
+  {n:'Euronext Paris',    cy:'EUR',idx:'CAC 40',    cat:'eu',tz:'Europe/Paris',       tzl:'CET (UTC+1)',  o:'09:00',c:'17:30'},
+  {n:'XETRA — Frankfurt', cy:'EUR',idx:'DAX 40',    cat:'eu',tz:'Europe/Berlin',      tzl:'CET (UTC+1)',  o:'09:00',c:'17:30'},
+  {n:'Borsa Milano',      cy:'EUR',idx:'FTSE MIB',  cat:'eu',tz:'Europe/Rome',        tzl:'CET (UTC+1)',  o:'09:00',c:'17:30'},
+  {n:'BME — Madri',       cy:'EUR',idx:'IBEX 35',   cat:'eu',tz:'Europe/Madrid',      tzl:'CET (UTC+1)',  o:'09:00',c:'17:30'},
+  {n:'SIX — Zurique',     cy:'CHF',idx:'SMI',       cat:'eu',tz:'Europe/Zurich',      tzl:'CET (UTC+1)',  o:'09:00',c:'17:30'},
+  {n:'Euronext Amsterdam',cy:'EUR',idx:'AEX',       cat:'eu',tz:'Europe/Amsterdam',   tzl:'CET (UTC+1)',  o:'09:00',c:'17:30'},
+  {n:'MOEX — Moscou',     cy:'RUB',idx:'IMOEX',     cat:'eu',tz:'Europe/Moscow',      tzl:'MSK (UTC+3)',  o:'09:50',c:'18:50'},
+  // Ásia-Pacífico
+  {n:'TSE — Tóquio',      cy:'JPY',idx:'Nikkei 225',cat:'as',tz:'Asia/Tokyo',         tzl:'JST (UTC+9)',  o:'09:00',c:'15:30'},
+  {n:'SSE — Xangai',      cy:'CNY',idx:'SSE Comp.', cat:'as',tz:'Asia/Shanghai',      tzl:'CST (UTC+8)',  o:'09:30',c:'15:00'},
+  {n:'HKEX — Hong Kong',  cy:'HKD',idx:'Hang Seng', cat:'as',tz:'Asia/Hong_Kong',     tzl:'HKT (UTC+8)',  o:'09:30',c:'16:00'},
+  {n:'SGX — Singapura',   cy:'SGD',idx:'STI',       cat:'as',tz:'Asia/Singapore',     tzl:'SGT (UTC+8)',  o:'09:00',c:'17:00'},
+  {n:'KRX — Seul',        cy:'KRW',idx:'KOSPI',     cat:'as',tz:'Asia/Seoul',         tzl:'KST (UTC+9)',  o:'09:00',c:'15:30'},
+  {n:'ASX — Sydney',      cy:'AUD',idx:'ASX 200',   cat:'as',tz:'Australia/Sydney',   tzl:'AEST (UTC+10)',o:'10:00',c:'16:00'},
+  {n:'NSE — Mumbai',      cy:'INR',idx:'NIFTY 50',  cat:'as',tz:'Asia/Kolkata',       tzl:'IST (UTC+5:30)',o:'09:15',c:'15:30'},
+  {n:'TASE — Tel Aviv',   cy:'ILS',idx:'TA-125',    cat:'as',tz:'Asia/Jerusalem',     tzl:'IST (UTC+3)',  o:'09:59',c:'17:25'},
+];
+
 // ── MARKETS ──
 function getStatus(ex){
   try{
