@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MacroTerminal</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg:#000000;--bg2:#0d0d0d;--bg3:#141414;--bgh:#1a1a1a;
+  --red:#e63946;--gold:#f0b429;--blue:#00aaff;--green:#00cc55;--white:#ffffff;
+  --text:#e0e0e0;--text2:#999;--textm:#555;
+  --border:#222;--borderl:#2a2a2a;
+  --font-mono:'JetBrains Mono',monospace;--font-sans:'IBM Plex Sans',sans-serif;
+  --hl-color:#ffffff;--hl-size:12px;--meta-color:#888;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--bg2);border-bottom:1px solid #1a1a1a;padding:0 14px;height:44px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:300;}
+.t-left{display:flex;align-items:center;gap:10px;}
+.logo{font-family:var(--font-mono);font-size:14px;font-weight:700;color:#fff;letter-spacing:.06em;display:flex;align-items:center;gap:8px;}
+.logo-dot{width:8px;height:8px;background:var(--red);border-radius:50%;animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.live-pill{font-family:var(--font-mono);font-size:9px;font-weight:700;background:var(--red);color:#fff;padding:2px 8px;border-radius:2px;letter-spacing:.15em;}
+.clk{font-family:var(--font-mono);font-size:13px;color:var(--gold);letter-spacing:.05em;}
+.nav-tabs{display:flex;gap:1px;margin-left:8px;}
+.ntab{font-family:var(--font-mono);font-size:10px;padding:6px 14px;border-radius:3px 3px 0 0;border:1px solid transparent;border-bottom:none;cursor:pointer;color:var(--text2);background:transparent;transition:all .15s;letter-spacing:.04em;}
+.ntab:hover{color:var(--text);background:var(--bg3);}
+.ntab.active{color:var(--blue);background:var(--bg);border-color:var(--borderl);position:relative;}
+.ntab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--bg);}
+.t-right{display:flex;align-items:center;gap:5px;}
+.tbtn{background:var(--bg3);border:1px solid var(--borderl);color:var(--text2);font-family:var(--font-mono);font-size:10px;padding:5px 11px;border-radius:3px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;letter-spacing:.03em;}
+.tbtn:hover{background:var(--bgh);color:var(--text);border-color:#444;}
+.tbtn.on{background:var(--blue);color:#000;border-color:var(--blue);font-weight:600;}
+.tbtn.cfg{color:var(--gold);border-color:#3a3000;}
+.tbtn.cfg:hover{background:#1a1400;border-color:var(--gold);}
+
+/* ── TICKER ── */
+.ticker-wrap{background:var(--bg2);border-bottom:1px solid #1a1a1a;height:26px;overflow:hidden;display:flex;flex-shrink:0;}
+.ticker-tag{background:var(--red);color:#fff;font-family:var(--font-mono);font-size:9px;font-weight:700;padding:0 10px;height:100%;display:flex;align-items:center;letter-spacing:.1em;flex-shrink:0;}
+.ticker-scroll{display:flex;animation:tick 50s linear infinite;white-space:nowrap;align-items:center;height:100%;}
+.ticker-scroll:hover{animation-play-state:paused;}
+.ti{font-family:var(--font-mono);font-size:10px;padding:0 18px;color:var(--text2);border-right:1px solid #1a1a1a;height:100%;display:flex;align-items:center;gap:6px;}
+.up{color:var(--green);}.down{color:var(--red);}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── LAYOUT ── */
+.view-area{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.vpane{flex:1;overflow:hidden;display:none;}
+.vpane.active{display:flex;}
+
+/* ── COLUMNS ── */
+.cols-wrap{display:flex;flex:1;overflow:hidden;}
+.col{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;min-width:200px;}
+.col-head{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 12px;height:36px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.col-label{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.1em;display:flex;align-items:center;gap:8px;}
+.col-dot{width:6px;height:6px;border-radius:50%;}
+.col-cnt{font-family:var(--font-mono);font-size:9px;color:var(--textm);background:var(--bg3);padding:1px 6px;border-radius:2px;}
+.col-srch{background:var(--bg);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:10px;padding:3px 8px;border-radius:2px;outline:none;width:85px;}
+.col-srch:focus{border-color:var(--blue);}
+.col-filters{display:flex;gap:3px;padding:5px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.fb{font-family:var(--font-mono);font-size:8px;padding:3px 7px;border-radius:2px;border:1px solid var(--borderl);background:transparent;color:var(--textm);cursor:pointer;letter-spacing:.05em;transition:all .12s;}
+.fb:hover{color:var(--text2);}
+.fb.active{background:var(--bgh);color:var(--text2);}
+.fb.fu.active{background:rgba(230,57,70,.15);color:var(--red);border-color:var(--red);}
+.fb.fh.active{background:rgba(240,180,41,.1);color:var(--gold);border-color:var(--gold);}
+.nlist{flex:1;overflow-y:auto;overflow-x:hidden;}
+.nlist::-webkit-scrollbar{width:3px;}
+.nlist::-webkit-scrollbar-thumb{background:var(--borderl);}
+
+/* ── NEWS ITEMS ── */
+/* Estilo MacroFloor: urgente = fundo vermelho, destaque = fundo amarelo escuro */
+.ni{padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .08s;display:flex;flex-direction:column;gap:4px;position:relative;}
+.ni:hover{background:var(--bgh);}
+
+/* URGENTE: fundo vermelho como no MacroFloor */
+.ni.p-urgent{background:#1a0000;border-left:3px solid var(--red);}
+.ni.p-urgent:hover{background:#200000;}
+.ni.p-urgent .nh{color:#ff6b6b;}
+.ni.p-urgent .nm{color:#cc4444;}
+
+/* DESTAQUE: fundo amarelo escuro */
+.ni.p-high{background:#0f0a00;border-left:3px solid var(--gold);}
+.ni.p-high:hover{background:#140d00;}
+.ni.p-high .nh{color:#f0c040;}
+.ni.p-high .nm{color:#aa8800;}
+
+/* NORMAL */
+.ni.p-normal{border-left:3px solid transparent;}
+
+.ni.bk::after{content:'★';position:absolute;top:8px;right:9px;font-size:9px;color:var(--gold);}
+
+.nm-row{display:flex;align-items:center;gap:7px;}
+.nm{font-family:var(--font-mono);font-size:9px;color:var(--meta-color);flex-shrink:0;}
+.nsrc{font-family:var(--font-mono);font-size:8px;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.05em;flex-shrink:0;}
+.s-br{background:rgba(0,204,85,.12);color:#00cc55;}
+.s-us{background:rgba(0,170,255,.12);color:#00aaff;}
+.s-eu{background:rgba(240,180,41,.1);color:#f0b429;}
+.s-asia{background:rgba(230,57,70,.1);color:#e63946;}
+.nh{font-size:var(--hl-size);line-height:1.45;color:var(--hl-color);font-weight:400;}
+.ni-acts{display:flex;gap:5px;opacity:0;transition:opacity .12s;}
+.ni:hover .ni-acts{opacity:1;}
+.nab{background:var(--bg3);border:1px solid var(--borderl);color:var(--textm);font-size:8px;padding:2px 6px;border-radius:2px;cursor:pointer;font-family:var(--font-mono);transition:all .1s;}
+.nab:hover{color:var(--text);}
+.nab.ru:hover{color:var(--red);border-color:var(--red);background:rgba(230,57,70,.08);}
+.nab.rh:hover{color:var(--gold);border-color:var(--gold);}
+
+@keyframes flashN{0%{background:rgba(0,170,255,.15)}100%{background:transparent}}
+.ni.flash{animation:flashN 2.5s ease-out;}
+.ni.p-urgent.flash{animation:none;}
+@keyframes sk{0%,100%{opacity:.3}50%{opacity:.7}}
+@keyframes spin2{to{transform:rotate(360deg)}}
+.spin i{animation:spin2 .7s linear infinite;}
+.fst{font-family:var(--font-mono);font-size:8px;margin-left:auto;}
+.fst.ok{color:var(--green);}.fst.err{color:var(--red);}.fst.loading{color:var(--gold);}
+.rb{background:transparent;border:1px solid var(--borderl);color:var(--textm);font-size:9px;padding:2px 6px;border-radius:2px;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.rb:hover{color:var(--blue);border-color:var(--blue);}
+.mlink{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;color:var(--blue);text-decoration:none;padding:6px 12px;border:1px solid var(--blue);border-radius:3px;margin-bottom:14px;transition:all .15s;}
+.mlink:hover{background:rgba(0,170,255,.1);}
+.ni.p-urgent.flash{animation:none;}
+
+/* ── RESIZER ── */
+.resizer{width:3px;background:var(--border);cursor:col-resize;flex-shrink:0;transition:background .15s;}
+.resizer:hover,.resizer.drag{background:var(--blue);}
+
+/* ── YOUTUBE ── */
+.yt-panel{width:360px;min-width:260px;display:flex;flex-direction:column;border-left:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+.yt-head{padding:7px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.yt-title{font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--red);display:flex;align-items:center;gap:7px;}
+.yt-row{display:flex;gap:5px;padding:7px 10px;border-bottom:1px solid var(--border);}
+.yt-inp{flex:1;background:var(--bg);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:10px;padding:5px 8px;border-radius:2px;outline:none;}
+.yt-inp:focus{border-color:var(--red);}
+.yt-go{background:var(--red);border:none;color:#fff;font-family:var(--font-mono);font-size:10px;padding:5px 10px;border-radius:2px;cursor:pointer;font-weight:700;}
+.yt-presets{display:flex;flex-wrap:wrap;gap:4px;padding:7px 10px;border-bottom:1px solid var(--border);}
+.yt-p{font-family:var(--font-mono);font-size:9px;padding:3px 7px;border-radius:2px;border:1px solid var(--borderl);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .1s;}
+.yt-p:hover{color:var(--red);border-color:var(--red);}
+.yt-embed{flex:1;background:#000;}
+.yt-embed iframe{width:100%;height:100%;border:none;display:block;}
+.yt-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--textm);}
+.yt-ph i{font-size:40px;color:var(--red);opacity:.4;}
+.yt-ph p{font-size:11px;font-family:var(--font-mono);}
+
+/* ── STATUS BAR ── */
+.sbar{background:var(--bg2);border-top:1px solid var(--border);height:20px;display:flex;align-items:center;padding:0 12px;gap:16px;flex-shrink:0;}
+.si{font-family:var(--font-mono);font-size:9px;color:var(--textm);display:flex;align-items:center;gap:4px;}
+.sd{width:5px;height:5px;border-radius:50%;background:var(--green);}
+
+/* ── MARKETS ── */
+.mkt-pane{flex:1;overflow-y:auto;padding:16px 20px;background:var(--bg);}
+.mkt-pane::-webkit-scrollbar{width:3px;}
+.mkt-pane::-webkit-scrollbar-thumb{background:var(--borderl);}
+.mkt-sec-title{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.14em;color:var(--textm);margin:16px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;margin-bottom:4px;}
+.mkt-card{background:var(--bg2);border:1px solid var(--borderl);border-radius:4px;padding:14px;position:relative;overflow:hidden;}
+.mkt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.mkt-card.open::before{background:var(--green);}
+.mkt-card.closed::before{background:var(--textm);}
+.mkt-card.pre::before{background:var(--gold);}
+.mc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.mc-name{font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--text);}
+.mc-sub{font-size:10px;color:var(--textm);margin-top:2px;}
+.mc-badge{font-family:var(--font-mono);font-size:8px;font-weight:700;padding:2px 7px;border-radius:2px;letter-spacing:.08em;}
+.b-open{background:rgba(0,204,85,.12);color:var(--green);}
+.b-closed{background:rgba(80,80,80,.15);color:var(--textm);}
+.b-pre{background:rgba(240,180,41,.1);color:var(--gold);}
+.mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.mc-block{background:var(--bg3);border-radius:3px;padding:7px 9px;}
+.mc-bl{font-size:8px;font-family:var(--font-mono);color:var(--textm);letter-spacing:.05em;margin-bottom:3px;}
+.mc-bv{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text);}
+.mc-btz{font-size:8px;color:var(--textm);margin-top:1px;}
+.mc-hrs{margin-top:8px;font-size:9px;font-family:var(--font-mono);color:var(--textm);padding-top:8px;border-top:1px solid var(--border);}
+.mc-hrs span{color:var(--text2);}
+
+/* ── NEWS MODAL ── */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.moverlay.open{opacity:1;pointer-events:all;}
+.mbox{background:var(--bg2);border:1px solid var(--borderl);border-radius:5px;width:680px;max-width:92vw;max-height:82vh;display:flex;flex-direction:column;transform:translateY(14px);transition:transform .18s;}
+.moverlay.open .mbox{transform:translateY(0);}
+/* Modal: urgente ganha borda vermelha */
+.mbox.modal-urgent{border-color:var(--red);border-width:1px;}
+.mbox.modal-high{border-color:var(--gold);}
+.mhead{padding:16px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px;flex-shrink:0;}
+.mmeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.mpbar{height:2px;border-radius:1px;margin-bottom:10px;}
+.mpbar.urgent{background:var(--red);}
+.mpbar.high{background:var(--gold);}
+.mpbar.normal{background:var(--borderl);}
+.mhl{font-size:15px;font-weight:500;line-height:1.5;color:#fff;}
+.mx{background:var(--bg3);border:1px solid var(--borderl);color:var(--text2);width:26px;height:26px;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;transition:all .12s;}
+.mx:hover{color:#fff;border-color:#555;}
+.mbody{padding:16px 18px;overflow-y:auto;flex:1;}
+.mbody::-webkit-scrollbar{width:3px;}
+.mbody::-webkit-scrollbar-thumb{background:var(--borderl);}
+.morigin{background:var(--bg3);border-radius:4px;padding:12px 14px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mo-i{display:flex;flex-direction:column;gap:2px;}
+.mo-l{font-size:8px;font-family:var(--font-mono);color:var(--textm);letter-spacing:.08em;text-transform:uppercase;}
+.mo-v{font-size:12px;color:var(--text2);}
+.mtext{font-size:13px;line-height:1.8;color:var(--text2);}
+.mtext p{margin-bottom:12px;}
+.mfoot{padding:10px 18px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0;}
+.mact{background:var(--bg3);border:1px solid var(--borderl);color:var(--text2);font-family:var(--font-mono);font-size:9px;padding:5px 10px;border-radius:2px;cursor:pointer;transition:all .12s;}
+.mact:hover{color:var(--text);}
+.mact.mr:hover{color:var(--red);border-color:var(--red);}
+.mact.mg:hover{color:var(--gold);border-color:var(--gold);}
+
+/* ── SETTINGS ── */
+.sov{position:fixed;inset:0;z-index:500;pointer-events:none;}
+.sov.open{pointer-events:all;}
+.sov-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .2s;}
+.sov.open .sov-bg{opacity:1;}
+.spanel{position:absolute;top:48px;right:14px;width:330px;background:var(--bg2);border:1px solid var(--borderl);border-radius:5px;display:flex;flex-direction:column;transform:translateY(-10px) scale(.97);opacity:0;transition:all .2s;overflow:hidden;max-height:80vh;}
+.sov.open .spanel{transform:translateY(0) scale(1);opacity:1;}
+.sp-h{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sp-t{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--gold);}
+.sp-body{padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+.sp-body::-webkit-scrollbar{width:3px;}
+.sg{display:flex;flex-direction:column;gap:7px;}
+.slbl{font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--textm);}
+.swatches{display:flex;gap:5px;flex-wrap:wrap;}
+.sw{width:22px;height:22px;border-radius:3px;cursor:pointer;border:2px solid transparent;transition:all .12s;}
+.sw:hover{transform:scale(1.18);}
+.sw.on{border-color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.25);}
+.szbts{display:flex;gap:3px;}
+.szb{font-family:var(--font-mono);font-size:9px;padding:4px 9px;border-radius:2px;border:1px solid var(--borderl);background:transparent;color:var(--textm);cursor:pointer;transition:all .12s;}
+.szb:hover,.szb.on{background:var(--bgh);color:var(--text);}
+.thmbs{display:flex;gap:5px;}
+.thmb{flex:1;font-family:var(--font-mono);font-size:9px;padding:6px;border-radius:3px;border:1px solid var(--borderl);background:transparent;color:var(--textm);cursor:pointer;text-align:center;transition:all .12s;}
+.thmb:hover{border-color:#555;color:var(--text);}
+.thmb.on{border-color:var(--gold);color:var(--gold);}
+.srange{width:100%;accent-color:var(--blue);}
+.prev-box{background:var(--bg3);border-radius:3px;padding:9px 11px;border:1px solid var(--border);}
+.prev-meta{font-family:var(--font-mono);font-size:9px;color:var(--meta-color);margin-bottom:3px;}
+.prev-hl{color:var(--hl-color);font-size:var(--hl-size);line-height:1.45;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="t-left">
+    <div class="logo"><div class="logo-dot"></div>MACRO<span style="color:var(--blue)">TERMINAL</span></div>
+    <div class="live-pill">AO VIVO</div>
+    <div class="clk" id="clock">--:--:--</div>
+    <div class="nav-tabs">
+      <button class="ntab active" onclick="switchTab('news',this)"><i class="fas fa-rss" style="font-size:9px;margin-right:4px"></i>NOTÍCIAS</button>
+      <button class="ntab" onclick="switchTab('mkt',this)"><i class="fas fa-clock" style="font-size:9px;margin-right:4px"></i>BOLSAS DO MUNDO</button>
+    </div>
+  </div>
+  <div class="t-right">
+    <button class="tbtn" onclick="refreshAll()" title="Atualizar todos os feeds agora"><i class="fas fa-sync-alt" id="gri"></i> Atualizar</button>
+    <button class="tbtn" onclick="toggleYT()"><i class="fab fa-youtube"></i> YouTube</button>
+    <button class="tbtn" id="sortBtn" onclick="toggleSort()"><i class="fas fa-sort-amount-down"></i> Prioridade</button>
+    <button class="tbtn" onclick="pauseFeed()"><i class="fas fa-pause" id="pi"></i> <span id="pl">Pausar</span></button>
+    <button class="tbtn cfg" onclick="toggleSettings()"><i class="fas fa-sliders-h"></i> Config.</button>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-tag">MERCADOS</div>
+  <div style="overflow:hidden;flex:1"><div class="ticker-scroll" id="ticker"></div></div>
+</div>
+
+<!-- VIEW AREA -->
+<div class="view-area">
+
+  <!-- NEWS PANE -->
+  <div class="vpane active" id="pane-news">
+    <div class="cols-wrap">
+
+      <!-- COL 1 BRASIL -->
+      <div class="col" id="col1" style="flex:1">
+        <div class="col-head">
+          <div class="col-label"><div class="col-dot" style="background:var(--green)"></div><span style="color:var(--green)">BRASIL</span><span class="col-cnt" id="cnt1">0</span></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <button class="rb" id="rb1" onclick="fetchCol(1)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
+            <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(1,this.value)">
+          </div>
+        </div>
+        <div class="col-filters">
+          <button class="fb active" onclick="setF(1,'all',this)">TODOS</button>
+          <button class="fb fu" onclick="setF(1,'urgent',this)">URGENTE</button>
+          <button class="fb fh" onclick="setF(1,'high',this)">DESTAQUE</button>
+          <button class="fb" onclick="setF(1,'bookmarked',this)">SALVOS</button>
+          <span class="fst loading" id="fst1">aguardando...</span>
+        </div>
+        <div class="nlist" id="list1"></div>
+      </div>
+      <div class="resizer" id="r1"></div>
+
+      <!-- COL 2 INTERNACIONAL -->
+      <div class="col" id="col2" style="flex:1">
+        <div class="col-head">
+          <div class="col-label"><div class="col-dot" style="background:var(--blue)"></div><span style="color:var(--blue)">INTERNACIONAL</span><span class="col-cnt" id="cnt2">0</span></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <button class="rb" id="rb2" onclick="fetchCol(2)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
+            <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(2,this.value)">
+          </div>
+        </div>
+        <div class="col-filters">
+          <button class="fb active" onclick="setF(2,'all',this)">TODOS</button>
+          <button class="fb fu" onclick="setF(2,'urgent',this)">URGENTE</button>
+          <button class="fb fh" onclick="setF(2,'high',this)">DESTAQUE</button>
+          <button class="fb" onclick="setF(2,'bookmarked',this)">SALVOS</button>
+          <span class="fst loading" id="fst2">aguardando...</span>
+        </div>
+        <div class="nlist" id="list2"></div>
+      </div>
+      <div class="resizer" id="r2"></div>
+
+      <!-- COL 3 MACRO -->
+      <div class="col" id="col3" style="flex:1">
+        <div class="col-head">
+          <div class="col-label"><div class="col-dot" style="background:var(--gold)"></div><span style="color:var(--gold)">MACRO / BANCOS CENTRAIS</span><span class="col-cnt" id="cnt3">0</span></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <button class="rb" id="rb3" onclick="fetchCol(3)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
+            <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(3,this.value)">
+          </div>
+        </div>
+        <div class="col-filters">
+          <button class="fb active" onclick="setF(3,'all',this)">TODOS</button>
+          <button class="fb fu" onclick="setF(3,'urgent',this)">URGENTE</button>
+          <button class="fb fh" onclick="setF(3,'high',this)">DESTAQUE</button>
+          <button class="fb" onclick="setF(3,'bookmarked',this)">SALVOS</button>
+          <span class="fst loading" id="fst3">aguardando...</span>
+        </div>
+        <div class="nlist" id="list3"></div>
+      </div>
+
+      <!-- YOUTUBE -->
+      <div class="yt-panel" id="ytPanel" style="display:none">
+        <div class="yt-head">
+          <div class="yt-title"><i class="fab fa-youtube"></i>YOUTUBE AO VIVO</div>
+          <button class="tbtn" style="padding:3px 7px;font-size:9px" onclick="toggleYT()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="yt-row">
+          <input class="yt-inp" id="ytUrl" placeholder="URL ou ID do vídeo/live...">
+          <button class="yt-go" onclick="loadYT()">IR</button>
+        </div>
+        <div class="yt-presets">
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCaXxCc1c7SsI0kFfhFCJTOQ')">CNN Brasil</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCPJljpimytSaWlSiY6YZSqA')">Band News</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCz3VGZY1uQoJhQOkf0uRKNQ')">Bloomberg</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCN-o3Fhqe7dSFmlqG88QFSA')">CNBC</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCIALMKvObZNtJ6AmdCLP7Lg')">Reuters TV</button>
+        </div>
+        <div class="yt-embed" id="ytEmbed">
+          <div class="yt-ph"><i class="fab fa-youtube"></i><p>Cole uma URL ou escolha um canal</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKETS PANE -->
+  <div class="vpane" id="pane-mkt">
+    <div class="mkt-pane" id="mktList"></div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="sbar">
+  <div class="si"><div class="sd"></div>RSS TEMPO REAL</div>
+  <div class="si" id="nCount">carregando...</div>
+  <div class="si" id="nextRef" style="color:var(--gold)">—</div>
+  <div class="si" style="margin-left:auto" id="nUpdate">—</div>
+</div>
+
+<!-- ══ MODAL NOTÍCIA COMPLETA ══ -->
+<div class="moverlay" id="modal" onclick="closeModalOut(event)">
+  <div class="mbox" id="mbox">
+    <div class="mhead">
+      <div style="flex:1">
+        <div class="mmeta" id="mmeta"></div>
+        <div class="mpbar" id="mpbar"></div>
+        <div class="mhl" id="mhl"></div>
+      </div>
+      <button class="mx" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mbody">
+      <div class="morigin" id="morigin"></div>
+      <a id="mlink" class="mlink" href="#" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Ler notícia completa na fonte</a>
+      <div class="mtext" id="mtext"></div>
+    </div>
+    <div class="mfoot">
+      <button class="mact mr" id="mUrgent">🔴 Urgente</button>
+      <button class="mact mg" id="mHigh">🟡 Destaque</button>
+      <button class="mact" id="mBmk">☆ Salvar</button>
+      <button class="mact" onclick="closeModal()" style="margin-left:auto">Fechar <span style="opacity:.4;font-size:8px">ESC</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS ══ -->
+<div class="sov" id="sov">
+  <div class="sov-bg" onclick="toggleSettings()"></div>
+  <div class="spanel">
+    <div class="sp-h">
+      <div class="sp-t"><i class="fas fa-sliders-h" style="margin-right:6px"></i>CONFIGURAÇÕES</div>
+      <button class="mx" onclick="toggleSettings()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sp-body">
+      <div class="sg">
+        <div class="slbl">Pré-visualização</div>
+        <div class="prev-box">
+          <div class="prev-meta" id="prevMeta">09:32:14 · Bloomberg · US</div>
+          <div class="prev-hl" id="prevHl">Fed mantém juros e Powell rejeita corte antes do outono norte-americano</div>
+        </div>
+      </div>
+      <div class="sg">
+        <div class="slbl">Cor dos Títulos</div>
+        <div class="swatches" id="hlC">
+          <div class="sw on" style="background:#ffffff" data-c="#ffffff" onclick="setHl(this)"></div>
+          <div class="sw" style="background:#e0e0e0" data-c="#e0e0e0" onclick="setHl(this)"></div>
+          <div class="sw" style="background:#00aaff" data-c="#00aaff" onclick="setHl(this)"></div>
+          <div class="sw" style="background:#00cc55" data-c="#00cc55" onclick="setHl(this)"></div>
+          <div class="sw" style="background:#f0b429" data-c="#f0b429" onclick="setHl(this)"></div>
+          <div class="sw" style="background:#ff6b6b" data-c="#ff6b6b" onclick="setHl(this)"></div>
+          <div class="sw" style="background:#c8b8ff" data-c="#c8b8ff" onclick="setHl(this)"></div>
+          <div class="sw" style="background:#caffbf" data-c="#caffbf" onclick="setHl(this)"></div>
+          <div class="sw" style="background:#ffd6a5" data-c="#ffd6a5" onclick="setHl(this)"></div>
+        </div>
+      </div>
+      <div class="sg">
+        <div class="slbl">Cor dos Metadados (hora / fonte)</div>
+        <div class="swatches" id="metaC">
+          <div class="sw on" style="background:#888888" data-c="#888" onclick="setMeta(this)"></div>
+          <div class="sw" style="background:#00aaff" data-c="#00aaff" onclick="setMeta(this)"></div>
+          <div class="sw" style="background:#f0b429" data-c="#f0b429" onclick="setMeta(this)"></div>
+          <div class="sw" style="background:#00cc55" data-c="#00cc55" onclick="setMeta(this)"></div>
+          <div class="sw" style="background:#555555" data-c="#555" onclick="setMeta(this)"></div>
+          <div class="sw" style="background:#c8b8ff" data-c="#c8b8ff" onclick="setMeta(this)"></div>
+        </div>
+      </div>
+      <div class="sg">
+        <div class="slbl">Tamanho dos Títulos</div>
+        <div class="szbts">
+          <button class="szb" onclick="setSz('10px',this)">XS</button>
+          <button class="szb" onclick="setSz('11px',this)">S</button>
+          <button class="szb on" onclick="setSz('12px',this)">M</button>
+          <button class="szb" onclick="setSz('13px',this)">G</button>
+          <button class="szb" onclick="setSz('15px',this)">XG</button>
+          <button class="szb" onclick="setSz('17px',this)">XXG</button>
+        </div>
+      </div>
+      <div class="sg">
+        <div class="slbl">Tema de Fundo</div>
+        <div class="thmbs">
+          <button class="thmb on" onclick="setTheme('black',this)">◼ Black</button>
+          <button class="thmb" onclick="setTheme('dark',this)">◼ Dark</button>
+          <button class="thmb" onclick="setTheme('navy',this)">◼ Navy</button>
+          <button class="thmb" onclick="setTheme('forest',this)">◼ Forest</button>
+        </div>
+      </div>
+      <div class="sg">
+        <div class="slbl">Intervalo de Atualização</div>
+        <div class="szbts">
+          <button class="szb" onclick="setAutoInterval(60000);markAI(this)">1 min</button>
+          <button class="szb on" id="aiBtn90" onclick="setAutoInterval(90000);markAI(this)">90s</button>
+          <button class="szb" onclick="setAutoInterval(180000);markAI(this)">3 min</button>
+          <button class="szb" onclick="setAutoInterval(300000);markAI(this)">5 min</button>
+          <button class="szb" onclick="setAutoInterval(0);markAI(this)">Manual</button>
+        </div>
+      </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:9px;color:var(--textm);font-family:var(--font-mono)">Compacto</span>
+          <input type="range" class="srange" min="4" max="18" value="9" oninput="setDensity(this.value)" style="flex:1">
+          <span style="font-size:9px;color:var(--textm);font-family:var(--font-mono)">Espaçado</span>
+        </div>
+      </div>
+      <div class="sg">
+        <div class="slbl">Cor de Acento</div>
+        <div class="swatches" id="accC">
+          <div class="sw on" style="background:#00aaff" data-c="#00aaff" onclick="setAcc(this)"></div>
+          <div class="sw" style="background:#e63946" data-c="#e63946" onclick="setAcc(this)"></div>
+          <div class="sw" style="background:#00cc55" data-c="#00cc55" onclick="setAcc(this)"></div>
+          <div class="sw" style="background:#f0b429" data-c="#f0b429" onclick="setAcc(this)"></div>
+          <div class="sw" style="background:#c8b8ff" data-c="#c8b8ff" onclick="setAcc(this)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// MOTOR RSS — Multi-proxy com fallback (sem cache)
+// Proxies usados em cascata: allorigins → rss2json → corsproxy
+// ═══════════════════════════════════════════
+
+const SRCI={br:{n:'Brasil',f:'🇧🇷',r:'América do Sul'},us:{n:'EUA / Global',f:'🇺🇸',r:'América do Norte'},eu:{n:'Europa',f:'🇪🇺',r:'Europa'},asia:{n:'Ásia',f:'🌏',r:'Ásia-Pacífico'}};
+const SL={br:'BR',us:'US',eu:'EU',asia:'ASIA'};
+const COL_NAMES={1:'Brasil',2:'Internacional',3:'Macro / Economia'};
+const SRC_CLS_MAP={br:'s-br',us:'s-us',eu:'s-eu',asia:'s-asia'};
+
+// ── Feeds RSS por coluna ──
+const FEEDS = {
+  1: [
+    {url:'https://www.infomoney.com.br/mercados/feed/',        label:'InfoMoney Mercados', src:'br'},
+    {url:'https://www.infomoney.com.br/economia/feed/',        label:'InfoMoney Economia', src:'br'},
+    {url:'https://agenciabrasil.ebc.com.br/economia/feed/',   label:'Agência Brasil',     src:'br'},
+    {url:'https://g1.globo.com/rss/g1/economia/',             label:'G1 Economia',        src:'br'},
+    {url:'https://valor.globo.com/rss/financas/',             label:'Valor Econômico',    src:'br'},
+  ],
+  2: [
+    {url:'https://feeds.bbci.co.uk/news/business/rss.xml',    label:'BBC Business',       src:'eu'},
+    {url:'https://feeds.reuters.com/reuters/businessNews',     label:'Reuters Business',   src:'us'},
+    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', label:'NYT Business',src:'us'},
+    {url:'https://www.ft.com/?format=rss',                    label:'Financial Times',    src:'eu'},
+    {url:'https://feeds.bbci.co.uk/news/world/rss.xml',       label:'BBC World',          src:'eu'},
+  ],
+  3: [
+    {url:'https://www.infomoney.com.br/onde-investir/feed/',  label:'InfoMoney Invest.',  src:'br'},
+    {url:'https://br.investing.com/rss/news.rss',             label:'Investing.com BR',   src:'br'},
+    {url:'https://feeds.reuters.com/reuters/wealth',           label:'Reuters Wealth',     src:'us'},
+    {url:'https://feeds.bbci.co.uk/news/technology/rss.xml',  label:'BBC Tech',           src:'eu'},
+    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',  src:'us'},
+  ],
+};
+
+// ── Parser XML RSS manual (sem depender de JSON externo) ──
+function parseRSSXml(xmlText){
+  const parser=new DOMParser();
+  const doc=parser.parseFromString(xmlText,'application/xml');
+  const items=doc.querySelectorAll('item');
+  const results=[];
+  items.forEach(it=>{
+    const get=tag=>{
+      const el=it.querySelector(tag);
+      if(!el) return '';
+      return (el.textContent||el.getAttribute('url')||'').trim();
+    };
+    const title=get('title');
+    const link=get('link')||get('guid');
+    const desc=get('description')||get('content')||get('summary');
+    const pub=get('pubDate')||get('published')||get('updated')||'';
+    if(title) results.push({title,link,description:desc,pubDate:pub});
+  });
+  return results;
+}
+
+// ── Estratégia multi-proxy em cascata ──
+async function fetchWithProxy(feedUrl){
+  // 1) allorigins — sem cache, retorna XML bruto
+  try{
+    const ao=`https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}&t=${Date.now()}`;
+    const r=await fetch(ao,{signal:AbortSignal.timeout(8000)});
+    if(r.ok){
+      const txt=await r.text();
+      if(txt.includes('<item>')||txt.includes('<entry>')) return {mode:'xml',data:txt};
+    }
+  }catch(e){}
+
+  // 2) corsproxy.io — fallback
+  try{
+    const cp=`https://corsproxy.io/?${encodeURIComponent(feedUrl)}`;
+    const r=await fetch(cp,{signal:AbortSignal.timeout(8000)});
+    if(r.ok){
+      const txt=await r.text();
+      if(txt.includes('<item>')||txt.includes('<entry>')) return {mode:'xml',data:txt};
+    }
+  }catch(e){}
+
+  // 3) rss2json — último recurso (tem cache ~30min mas funciona bem)
+  const r2j=`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}&count=30`;
+  const r=await fetch(r2j,{signal:AbortSignal.timeout(10000)});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const d=await r.json();
+  if(d.status!=='ok') throw new Error(d.message||'feed error');
+  return {mode:'json',data:d.items||[]};
+}
+
+// Palavras que sobem prioridade automaticamente
+const KW_URGENT = ['selic','copom','fed','juros','inflação','inflation','interest rate',
+  'banco central','central bank','guerra','war','crash','crise','crisis','desaba',
+  'dispara','mínima histórica','máxima histórica','recessão','recession','default',
+  'urgente','breaking','alert','alerta','petróleo','oil surge','rate hike','rate cut'];
+const KW_HIGH   = ['ibovespa','bolsa','mercado','market','pib','gdp','câmbio','dólar',
+  'dollar','trump','lula','powell','haddad','resultado','earnings','lucro','ipca','cpi',
+  'commodities','ouro','gold','bitcoin','taxa','economy','economia','stocks','ações'];
+
+// Estado global
+let allItems   = {1:[],2:[],3:[]};
+let seenIds    = new Set();
+let bmk        = new Set();
+let ytOn=false, paused=false, activeM=null, mktTimer=null, autoTimer=null, countdownTimer=null;
+let state      = {1:{f:'all',s:''},2:{f:'all',s:''},3:{f:'all',s:''},sort:false};
+let autoMs     = 90000; // 90 seg — atualização quase em tempo real
+let countdown  = 0;
+
+// ── Classificação de prioridade ──
+function classify(title='', desc=''){
+  const t = (title+' '+desc).toLowerCase();
+  if(KW_URGENT.some(k=>t.includes(k))) return 'urgent';
+  if(KW_HIGH.some(k=>t.includes(k)))   return 'high';
+  return 'normal';
+}
+
+// ── Limpa HTML do description ──
+function stripHtml(h=''){
+  return h.replace(/<[^>]+>/g,' ').replace(/&[a-z]+;/gi,' ').replace(/\s+/g,' ').trim().slice(0,500);
+}
+
+// ── Formata data de pubDate ──
+function fmtTime(d){
+  try{
+    const dt=new Date(d);
+    if(isNaN(dt)) return new Date().toTimeString().slice(0,5);
+    return dt.toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  }catch{return new Date().toTimeString().slice(0,5);}
+}
+
+// ── ID estável por título+data ──
+function mkId(title='',pub=''){
+  let h=0;
+  for(const c of (title+pub).slice(0,60)) h=(Math.imul(31,h)+c.charCodeAt(0))|0;
+  return 'n'+Math.abs(h).toString(36);
+}
+
+// ── Busca um feed individual com multi-proxy ──
+async function fetchOneFeed(feed){
+  const result = await fetchWithProxy(feed.url);
+  let rawItems=[];
+  if(result.mode==='xml'){
+    rawItems=parseRSSXml(result.data).map(i=>({
+      title:i.title, description:i.description,
+      link:i.link, pubDate:i.pubDate, content:''
+    }));
+  } else {
+    rawItems=result.data;
+  }
+  return rawItems.map(item=>({
+    id:    mkId(item.title, item.pubDate),
+    h:     (item.title||'').trim(),
+    body:  stripHtml(item.description||item.content||''),
+    link:  item.link||'',
+    time:  fmtTime(item.pubDate),
+    pubMs: new Date(item.pubDate||0).getTime()||0,
+    _src:  feed.label,
+    src:   feed.src,
+    p:     classify(item.title, item.description),
+    _man:  false,
+  })).filter(i=>i.h);
+}
+
+// ── Skeleton de carregamento ──
+function showSkeleton(col){
+  if(allItems[col].length>0) return;
+  document.getElementById('list'+col).innerHTML=
+    Array(7).fill('<div style="padding:10px 12px;border-bottom:1px solid var(--border)">'+
+      '<div style="height:8px;width:40%;background:var(--bg3);border-radius:2px;margin-bottom:7px;animation:sk 1.2s infinite"></div>'+
+      '<div style="height:8px;width:82%;background:var(--bg3);border-radius:2px;margin-bottom:5px;animation:sk 1.2s infinite"></div>'+
+      '<div style="height:8px;width:60%;background:var(--bg3);border-radius:2px;animation:sk 1.2s infinite"></div></div>').join('');
+}
+
+// ── Busca todos os feeds de uma coluna ──
+async function fetchCol(col){
+  const btn = document.getElementById('rb'+col);
+  const st  = document.getElementById('fst'+col);
+  if(btn) btn.classList.add('spin');
+  if(st){st.className='fst loading';st.textContent='carregando...';}
+  showSkeleton(col);
+
+  const results = await Promise.allSettled(FEEDS[col].map(fetchOneFeed));
+  let merged=[], ok=0;
+  results.forEach(r=>{ if(r.status==='fulfilled'){merged=merged.concat(r.value);ok++;} });
+
+  if(btn) btn.classList.remove('spin');
+
+  if(!merged.length){
+    if(st){st.className='fst err';st.textContent='erro — sem dados';}
+    if(allItems[col].length===0)
+      document.getElementById('list'+col).innerHTML=
+        '<div style="padding:24px 12px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--textm)">'+
+        '<i class="fas fa-exclamation-triangle" style="font-size:22px;color:var(--red);display:block;margin-bottom:10px"></i>'+
+        'Não foi possível carregar o feed.<br><br>'+
+        'Verifique sua conexão com a internet.<br>'+
+        'O serviço rss2json.com pode estar temporariamente<br>indisponível. Tente novamente em instantes.</div>';
+    return;
+  }
+
+  // Deduplica, preserva prioridade manual
+  const manPrio={};
+  allItems[col].forEach(i=>{ if(i._man) manPrio[i.id]=i.p; });
+
+  const dedupMap={};
+  merged.forEach(i=>{
+    if(!dedupMap[i.id]) dedupMap[i.id]=i;
+  });
+  let items=Object.values(dedupMap);
+
+  // Marca novas
+  const newIds=new Set();
+  items.forEach(i=>{
+    if(!seenIds.has(i.id)) newIds.add(i.id);
+    seenIds.add(i.id);
+    if(manPrio[i.id]){ i.p=manPrio[i.id]; i._man=true; }
+  });
+
+  // Ordena por data
+  items.sort((a,b)=>b.pubMs-a.pubMs);
+  allItems[col]=items.slice(0,80);
+
+  renderCol(col);
+  upd();
+
+  const nc=newIds.size;
+  if(st){
+    st.className='fst ok';
+    st.textContent= nc>0 ? `✦ ${nc} novas · ${ok}/${FEEDS[col].length} feeds` : `${ok}/${FEEDS[col].length} feeds · ${items.length} itens`;
+    if(nc>0) setTimeout(()=>{ if(st) st.textContent=`${ok}/${FEEDS[col].length} feeds · ${items.length} itens`; },6000);
+  }
+
+  // Flash nas novas (só não-urgentes)
+  setTimeout(()=>{
+    newIds.forEach(id=>{
+      const it=allItems[col].find(i=>i.id===id);
+      const el=document.getElementById('ni-'+id);
+      if(el && it && it.p!=='urgent') el.classList.add('flash');
+    });
+  },120);
+}
+
+// ── Atualiza todas as colunas ──
+async function refreshAll(){
+  const icon=document.getElementById('gri');
+  if(icon) icon.style.animation='spin2 .7s linear infinite';
+  await Promise.all([fetchCol(1),fetchCol(2),fetchCol(3)]);
+  if(icon) icon.style.animation='';
+  document.getElementById('nUpdate').textContent='Atualizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  resetCountdown();
+}
+
+// ── Countdown para próxima atualização ──
+function resetCountdown(){
+  clearInterval(countdownTimer);
+  if(!autoMs){ document.getElementById('nextRef').textContent='Auto: off'; return; }
+  countdown=autoMs/1000;
+  const tick=()=>{
+    countdown--;
+    if(countdown<=0) countdown=autoMs/1000;
+    const m=Math.floor(countdown/60),s=countdown%60;
+    const el=document.getElementById('nextRef');
+    if(el) el.textContent=`Próx.: ${m>0?m+'m ':''}${String(s).padStart(2,'0')}s`;
+  };
+  tick();
+  countdownTimer=setInterval(tick,1000);
+}
+
+function startAutoTimer(){
+  clearInterval(autoTimer);
+  if(!autoMs||paused) return;
+  autoTimer=setInterval(refreshAll,autoMs);
+  resetCountdown();
+}
+
+function setAutoInterval(ms){
+  autoMs=parseInt(ms)||0;
+  startAutoTimer();
+}
+function markAI(btn){document.querySelectorAll('.sp-body .szb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+
+// ── Ticker estático (valores de referência) ──
+const TICKER_D=[
+  {l:'IBOV',v:'—',c:'',d:''},{l:'USDBRL',v:'—',c:'',d:''},
+  {l:'S&P500',v:'—',c:'',d:''},{l:'NASDAQ',v:'—',c:'',d:''},
+  {l:'WTI',v:'—',c:'',d:''},{l:'BRENT',v:'—',c:'',d:''},
+  {l:'OURO',v:'—',c:'',d:''},{l:'SELIC',v:'14,75%',c:'',d:''},
+  {l:'PETR4',v:'—',c:'',d:''},{l:'VALE3',v:'—',c:'',d:''},
+];
+
+function pOrd(p){return p==='urgent'?0:p==='high'?1:2;}
+
+function renderCol(col){
+  const el=document.getElementById(`list${col}`);
+  let its=[...allItems[col]];
+  const s=state[col];
+  if(s.f==='bookmarked')its=its.filter(i=>bmk.has(i.id));
+  else if(s.f!=='all')its=its.filter(i=>i.p===s.f);
+  if(s.s){const q=s.s.toLowerCase();its=its.filter(i=>i.h.toLowerCase().includes(q));}
+  if(state.sort)its.sort((a,b)=>pOrd(a.p)-pOrd(b.p));
+  const SRC_CLS={br:'s-br',us:'s-us',eu:'s-eu',asia:'s-asia'};
+  const P_LABEL={urgent:'🔴 URGENTE',high:'🟡 DESTAQUE',normal:'⚪ NORMAL'};
+  el.innerHTML=its.map(it=>{
+    const isB=bmk.has(it.id);
+    return `<div class="ni p-${it.p}${isB?' bk':''}" id="ni-${it.id}" onclick="openModal('${it.id}',${col})">
+      <div class="nm-row">
+        <span class="nm">${it.time}</span>
+        <span class="nsrc ${SRC_CLS[it.src]}">${SL[it.src]}</span>
+        <span style="font-size:9px;color:var(--textm)">${it._src}</span>
+      </div>
+      <div class="nh">${it.h}</div>
+      <div class="ni-acts">
+        <button class="nab ru" onclick="setPrio(${col},'${it.id}','urgent',event)">🔴 URGENTE</button>
+        <button class="nab rh" onclick="setPrio(${col},'${it.id}','high',event)">🟡 DESTAQUE</button>
+        <button class="nab" onclick="setPrio(${col},'${it.id}','normal',event)">⬜ NORMAL</button>
+        <button class="nab" onclick="toggleBmk('${it.id}',${col},event)">${isB?'★ SALVO':'☆ SALVAR'}</button>
+      </div>
+    </div>`;
+  }).join('')||`<div style="padding:18px;color:var(--textm);font-family:var(--font-mono);font-size:10px;text-align:center">Nenhum item</div>`;
+  document.getElementById(`cnt${col}`).textContent=its.length;
+}
+
+function upd(){
+  let t=0;[1,2,3].forEach(c=>t+=allItems[c].length);
+  document.getElementById('nCount').textContent=t+' notícias';
+}
+function setF(col,f,btn){state[col].f=f;btn.closest('.col-filters').querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderCol(col);}
+function filterCol(col,v){state[col].s=v;renderCol(col);}
+function setPrio(col,id,p,e){
+  e.stopPropagation();
+  const it=allItems[col].find(i=>i.id===id);
+  if(it){it.p=p;it._man=true;renderCol(col);
+    if(activeM&&activeM.id===id){document.getElementById('mpbar').className='mpbar '+p;document.getElementById('mbox').className='mbox modal-'+p;}
+  }
+}
+function toggleBmk(id,col,e){e.stopPropagation();bmk.has(id)?bmk.delete(id):bmk.add(id);renderCol(col);}
+function toggleSort(){state.sort=!state.sort;document.getElementById('sortBtn').classList.toggle('on',state.sort);[1,2,3].forEach(renderCol);}
+function pauseFeed(){
+  paused=!paused;
+  document.getElementById('pi').className=paused?'fas fa-play':'fas fa-pause';
+  document.getElementById('pl').textContent=paused?'Continuar':'Pausar';
+  if(paused){clearInterval(autoTimer);clearInterval(countdownTimer);const el=document.getElementById('nextRef');if(el)el.textContent='Feed pausado';}
+  else startAutoTimer();
+}
+
+// ── MODAL ──
+function openModal(id,col){
+  const it=allItems[col].find(i=>i.id===id);if(!it)return;
+  activeM=it;
+  const si=SRCI[it.src]||{n:'Global',f:'🌐',r:'Global'};
+  const P={urgent:'🔴 URGENTE',high:'🟡 DESTAQUE',normal:'⚪ NORMAL'};
+  const cls={br:'s-br',us:'s-us',eu:'s-eu',asia:'s-asia'}[it.src]||'s-us';
+  document.getElementById('mmeta').innerHTML=`
+    <span class="nsrc ${cls}">${SL[it.src]||'—'}</span>
+    <span style="font-size:10px;color:var(--text2);font-family:var(--font-mono)">${it._src}</span>
+    <span style="font-size:10px;color:var(--textm);font-family:var(--font-mono)">·</span>
+    <span style="font-size:10px;color:var(--textm);font-family:var(--font-mono)">${it.time}</span>
+    <span style="font-size:9px;font-family:var(--font-mono);padding:2px 6px;border-radius:2px;border:1px solid var(--borderl);color:var(--textm)">${P[it.p]}</span>`;
+  document.getElementById('mhl').textContent=it.h;
+  document.getElementById('mpbar').className='mpbar '+it.p;
+  document.getElementById('mbox').className='mbox modal-'+it.p;
+  document.getElementById('morigin').innerHTML=`
+    <div class="mo-i"><div class="mo-l">País / Região</div><div class="mo-v">${si.f} ${si.n} — ${si.r}</div></div>
+    <div class="mo-i"><div class="mo-l">Veículo / Agência</div><div class="mo-v">${it._src}</div></div>
+    <div class="mo-i"><div class="mo-l">Coluna</div><div class="mo-v">${COL_NAMES[col]}</div></div>
+    <div class="mo-i"><div class="mo-l">Publicado</div><div class="mo-v">${it.time}</div></div>`;
+  // Link para a fonte original
+  const linkEl=document.getElementById('mlink');
+  if(linkEl){if(it.link){linkEl.href=it.link;linkEl.style.display='inline-flex';}else{linkEl.style.display='none';}}
+  // Corpo da notícia
+  const body=it.body||'';
+  document.getElementById('mtext').innerHTML=body
+    ?body.split(/\n\n+/).map(p=>`<p>${p}</p>`).join('')
+    :`<p style="color:var(--textm);font-style:italic">Clique em "Ler notícia completa" para ver o conteúdo completo na fonte original.</p>`;
+  const bmkBtn=document.getElementById('mBmk');
+  bmkBtn.textContent=bmk.has(id)?'★ Salvo':'☆ Salvar';
+  document.getElementById('mUrgent').onclick=()=>setPrio(col,id,'urgent',{stopPropagation:()=>{}});
+  document.getElementById('mHigh').onclick=()=>setPrio(col,id,'high',{stopPropagation:()=>{}});
+  bmkBtn.onclick=()=>{toggleBmk(id,col,{stopPropagation:()=>{}});bmkBtn.textContent=bmk.has(id)?'★ Salvo':'☆ Salvar';};
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');activeM=null;}
+function closeModalOut(e){if(e.target===document.getElementById('modal'))closeModal();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();if(document.getElementById('sov').classList.contains('open'))toggleSettings();}});
+
+// ── MARKETS ──
+function getStatus(ex){
+  try{
+    const t=new Date(new Date().toLocaleString('en-US',{timeZone:ex.tz}));
+    const m=t.getHours()*60+t.getMinutes(),d=t.getDay();
+    if(d===0||d===6)return'closed';
+    const[oh,om]=ex.o.split(':').map(Number),[ch,cm]=ex.c.split(':').map(Number);
+    if(m>=oh*60+om&&m<ch*60+cm)return'open';
+    if(ex.pre){const[ph,pm]=ex.pre.split(':').map(Number);if(m>=ph*60+pm&&m<oh*60+om)return'pre';}
+    return'closed';
+  }catch{return'closed';}
+}
+function getLT(tz){try{return new Date().toLocaleTimeString('pt-BR',{timeZone:tz,hour:'2-digit',minute:'2-digit',second:'2-digit'});}catch{return'--:--';}}
+
+function renderMkt(){
+  const cats=[{k:'am',l:'Américas 🌎'},{k:'eu',l:'Europa 🌍'},{k:'as',l:'Ásia-Pacífico 🌏'}];
+  const sm={open:{cls:'open',l:'ABERTO',b:'b-open'},closed:{cls:'closed',l:'FECHADO',b:'b-closed'},pre:{cls:'pre',l:'PRÉ-ABERTURA',b:'b-pre'}};
+  let html='';
+  cats.forEach(cat=>{
+    html+=`<div class="mkt-sec-title">${cat.l}</div><div class="mkt-grid">`;
+    EXCH.filter(e=>e.cat===cat.k).forEach(ex=>{
+      const st=getStatus(ex);const s=sm[st]||sm.closed;
+      html+=`<div class="mkt-card ${s.cls}">
+        <div class="mc-top">
+          <div><div class="mc-name">${ex.n}</div><div class="mc-sub">${ex.cy} · <span style="color:var(--gold)">${ex.idx}</span></div></div>
+          <div class="mc-badge ${s.b}">${s.l}</div>
+        </div>
+        <div class="mc-grid">
+          <div class="mc-block"><div class="mc-bl">HORÁRIO LOCAL</div><div class="mc-bv mclk" data-tz="${ex.tz}">${getLT(ex.tz)}</div><div class="mc-btz">${ex.tzl}</div></div>
+          <div class="mc-block"><div class="mc-bl">BRASÍLIA</div><div class="mc-bv">${getLT('America/Sao_Paulo')}</div><div class="mc-btz">BRT (UTC-3)</div></div>
+        </div>
+        <div class="mc-hrs">Sessão: <span>${ex.o} – ${ex.c}</span>${ex.pre?` · Pré: <span>${ex.pre}</span>`:''}</div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('mktList').innerHTML=html;
+}
+
+function switchTab(tab,btn){
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.vpane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pane-'+tab).classList.add('active');
+  if(tab==='mkt'){renderMkt();if(!mktTimer)mktTimer=setInterval(()=>{document.querySelectorAll('.mclk').forEach(el=>el.textContent=getLT(el.dataset.tz));},1000);}
+  else{clearInterval(mktTimer);mktTimer=null;}
+}
+
+// ── SETTINGS ──
+function toggleSettings(){document.getElementById('sov').classList.toggle('open');}
+function setHl(el){document.querySelectorAll('#hlC .sw').forEach(s=>s.classList.remove('on'));el.classList.add('on');document.documentElement.style.setProperty('--hl-color',el.dataset.c);document.getElementById('prevHl').style.color=el.dataset.c;}
+function setMeta(el){document.querySelectorAll('#metaC .sw').forEach(s=>s.classList.remove('on'));el.classList.add('on');document.documentElement.style.setProperty('--meta-color',el.dataset.c);document.getElementById('prevMeta').style.color=el.dataset.c;}
+function setSz(sz,btn){document.querySelectorAll('.szb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.documentElement.style.setProperty('--hl-size',sz);document.getElementById('prevHl').style.fontSize=sz;}
+function setDensity(v){document.querySelectorAll('.ni').forEach(el=>{el.style.paddingTop=v+'px';el.style.paddingBottom=v+'px';});}
+function setAcc(el){document.querySelectorAll('#accC .sw').forEach(s=>s.classList.remove('on'));el.classList.add('on');document.documentElement.style.setProperty('--blue',el.dataset.c);}
+const TH={black:{a:'#000',b:'#0d0d0d',c:'#141414',d:'#1a1a1a',e:'#222',f:'#2a2a2a'},dark:{a:'#0a0c0f',b:'#111318',c:'#191d24',d:'#1e232c',e:'#232830',f:'#2e3540'},navy:{a:'#070d1a',b:'#0d1626',c:'#142033',d:'#192840',e:'#1e2d45',f:'#263a57'},forest:{a:'#040f04',b:'#081408',c:'#0d1a0d',d:'#102010',e:'#172817',f:'#1e341e'}};
+function setTheme(n,btn){document.querySelectorAll('.thmb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');const t=TH[n];if(!t)return;const r=document.documentElement.style;r.setProperty('--bg',t.a);r.setProperty('--bg2',t.b);r.setProperty('--bg3',t.c);r.setProperty('--bgh',t.d);r.setProperty('--border',t.e);r.setProperty('--borderl',t.f);}
+
+// ── RESIZERS ──
+function initResizers(){
+  [['r1','col1','col2'],['r2','col2','col3']].forEach(([rid,lid,rid2])=>{
+    const r=document.getElementById(rid),L=document.getElementById(lid),R=document.getElementById(rid2);
+    let drag=false,sx,sl,sr;
+    r.addEventListener('mousedown',e=>{drag=true;sx=e.clientX;sl=L.offsetWidth;sr=R.offsetWidth;r.classList.add('drag');document.body.style.cursor='col-resize';document.body.style.userSelect='none';});
+    document.addEventListener('mousemove',e=>{if(!drag)return;const dx=e.clientX-sx;L.style.flex='none';R.style.flex='none';L.style.width=Math.max(200,sl+dx)+'px';R.style.width=Math.max(200,sr-dx)+'px';});
+    document.addEventListener('mouseup',()=>{if(!drag)return;drag=false;r.classList.remove('drag');document.body.style.cursor='';document.body.style.userSelect='';});
+  });
+}
+
+// ── YOUTUBE ──
+function toggleYT(){ytOn=!ytOn;document.getElementById('ytPanel').style.display=ytOn?'flex':'none';}
+function exYTid(url){const rs=[/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/];for(const r of rs){const m=url.match(r);if(m)return m[1];}if(/^[a-zA-Z0-9_-]{11}$/.test(url.trim()))return url.trim();return null;}
+function loadYT(){const url=document.getElementById('ytUrl').value.trim();const id=exYTid(url);const e=document.getElementById('ytEmbed');if(id)e.innerHTML=`<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`;else if(url.includes('live_stream'))e.innerHTML=`<iframe src="${url}&autoplay=1" allowfullscreen allow="autoplay"></iframe>`;else e.innerHTML=`<div class="yt-ph"><i class="fab fa-youtube"></i><p>URL inválida</p></div>`;}
+function loadYTP(url){document.getElementById('ytUrl').value=url;document.getElementById('ytEmbed').innerHTML=`<iframe src="${url}&autoplay=1" allowfullscreen allow="autoplay"></iframe>`;}
+document.getElementById('ytUrl').addEventListener('keydown',e=>{if(e.key==='Enter')loadYT();});
+
+// ── INIT ──
+// ── Init ──
+function initTicker(){
+  document.getElementById('ticker').innerHTML=
+    [...TICKER_D,...TICKER_D].map(t=>
+      `<div class="ti"><span>${t.l}</span><span style="color:#ddd;font-weight:600">${t.v}</span>${t.c?`<span class="${t.d}">${t.c}</span>`:''}</div>`
+    ).join('');
+}
+function initClock(){const u=()=>document.getElementById('clock').textContent=new Date().toTimeString().slice(0,8);u();setInterval(u,1000);}
+
+// renderCol usa SRC_CLS_MAP global do motor RSS
+function renderCol(col){
+  const el=document.getElementById('list'+col);
+  let its=[...allItems[col]];
+  const s=state[col];
+  if(s.f==='bookmarked') its=its.filter(i=>bmk.has(i.id));
+  else if(s.f!=='all') its=its.filter(i=>i.p===s.f);
+  if(s.s){const q=s.s.toLowerCase();its=its.filter(i=>i.h.toLowerCase().includes(q));}
+  if(state.sort) its.sort((a,b)=>pOrd(a.p)-pOrd(b.p));
+  el.innerHTML=its.map(it=>{
+    const isB=bmk.has(it.id);
+    const cls=SRC_CLS_MAP[it.src]||'s-us';
+    const slbl=SL[it.src]||'—';
+    return `<div class="ni p-${it.p}${isB?' bk':''}" id="ni-${it.id}" onclick="openModal('${it.id}',${col})">
+      <div class="nm-row">
+        <span class="nm">${it.time}</span>
+        <span class="nsrc ${cls}">${slbl}</span>
+        <span style="font-size:9px;color:var(--textm)">${it._src}</span>
+      </div>
+      <div class="nh">${it.h}</div>
+      <div class="ni-acts">
+        <button class="nab ru" onclick="setPrio(${col},'${it.id}','urgent',event)">🔴 URGENTE</button>
+        <button class="nab rh" onclick="setPrio(${col},'${it.id}','high',event)">🟡 DESTAQUE</button>
+        <button class="nab" onclick="setPrio(${col},'${it.id}','normal',event)">⬜ NORMAL</button>
+        <button class="nab" onclick="toggleBmk('${it.id}',${col},event)">${isB?'★ SALVO':'☆ SALVAR'}</button>
+      </div>
+    </div>`;
+  }).join('')||`<div style="padding:18px;color:var(--textm);font-family:var(--font-mono);font-size:10px;text-align:center">Nenhum item</div>`;
+  document.getElementById('cnt'+col).textContent=its.length;
+}
+
+initTicker();
+initClock();
+initResizers();
+
+// Carrega os 3 feeds com delay escalonado para não sobrecarregar a API
+setTimeout(()=>fetchCol(1), 400);
+setTimeout(()=>fetchCol(2), 900);
+setTimeout(()=>fetchCol(3), 1400);
+
+// Auto-refresh a cada 5 minutos
+setTimeout(()=>startAutoTimer(), 2000);
+</script>
+</body>
+</html>
