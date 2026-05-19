@@ -47,14 +47,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 
 /* ── COLUMNS ── */
 .cols-wrap{display:flex;flex:1;overflow:hidden;}
-.col-group{display:flex;flex-direction:column;overflow:hidden;min-width:180px;position:relative;}
-.col{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;flex:1;min-height:80px;}
-.col-head{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 8px;height:34px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.col-label{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.1em;display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;}
-.col-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.col-cnt{font-family:var(--font-mono);font-size:9px;color:var(--textm);background:var(--bg3);padding:1px 5px;border-radius:2px;flex-shrink:0;}
-.col-label-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.col-srch{background:var(--bg);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:10px;padding:3px 6px;border-radius:2px;outline:none;width:70px;}
+.col{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;min-width:200px;}
+.col-head{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 12px;height:36px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.col-label{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.1em;display:flex;align-items:center;gap:8px;}
+.col-dot{width:6px;height:6px;border-radius:50%;}
+.col-cnt{font-family:var(--font-mono);font-size:9px;color:var(--textm);background:var(--bg3);padding:1px 6px;border-radius:2px;}
+.col-srch{background:var(--bg);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:10px;padding:3px 8px;border-radius:2px;outline:none;width:85px;}
 .col-srch:focus{border-color:var(--blue);}
 .col-filters{display:flex;gap:3px;padding:5px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;overflow:hidden;max-height:0;transition:max-height .22s ease, padding .22s ease;padding-top:0;padding-bottom:0;}
 .col-filters.open{max-height:40px;padding:5px 10px;}
@@ -70,49 +68,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .nlist{flex:1;overflow-y:auto;overflow-x:hidden;}
 .nlist::-webkit-scrollbar{width:3px;}
 .nlist::-webkit-scrollbar-thumb{background:var(--borderl);}
-
-/* ── H-RESIZER (entre grupos) ── */
-.resizer{width:3px;background:var(--border);cursor:col-resize;flex-shrink:0;transition:background .15s;z-index:10;}
-.resizer:hover,.resizer.drag{background:var(--blue);}
-
-/* ── V-RESIZER (dentro de grupo, entre painéis) ── */
-.v-resizer{height:3px;background:var(--border);cursor:row-resize;flex-shrink:0;transition:background .15s;z-index:10;}
-.v-resizer:hover,.v-resizer.vdrag{background:var(--blue);}
-
-/* ── BOTÕES DE LAYOUT NO CABEÇALHO DA COLUNA ── */
-.col-mgmt{display:flex;align-items:center;gap:2px;flex-shrink:0;}
-.lbtn{background:none;border:1px solid transparent;color:var(--textm);font-size:9px;width:18px;height:18px;border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;padding:0;}
-.lbtn:hover{background:var(--bg3);border-color:var(--borderl);color:var(--text2);}
-.lbtn.danger:hover{color:var(--red);border-color:var(--red);}
-
-/* ── BOTÃO ADICIONAR COLUNA ── */
-.add-col-btn{display:flex;align-items:center;justify-content:center;width:28px;background:transparent;border-left:1px solid var(--border);cursor:pointer;color:var(--textm);font-size:14px;transition:all .15s;flex-shrink:0;}
-.add-col-btn:hover{background:var(--bg3);color:var(--blue);}
-
-/* ── MODAL DE CONFIGURAÇÃO DE COLUNA ── */
-.col-cfg-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .18s;}
-.col-cfg-overlay.open{opacity:1;pointer-events:all;}
-.col-cfg-box{background:var(--bg2);border:1px solid var(--borderl);border-radius:5px;width:480px;max-width:94vw;max-height:80vh;display:flex;flex-direction:column;transform:translateY(12px);transition:transform .18s;}
-.col-cfg-overlay.open .col-cfg-box{transform:translateY(0);}
-.ccfg-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.ccfg-title{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--gold);}
-.ccfg-body{padding:14px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
-.ccfg-label{font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--textm);margin-bottom:4px;}
-.ccfg-input{background:var(--bg);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:11px;padding:6px 9px;border-radius:3px;outline:none;width:100%;}
-.ccfg-input:focus{border-color:var(--blue);}
-.ccfg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.ccfg-colors{display:flex;gap:5px;flex-wrap:wrap;}
-.ccfg-color{width:20px;height:20px;border-radius:3px;cursor:pointer;border:2px solid transparent;transition:all .12s;}
-.ccfg-color:hover{transform:scale(1.2);}
-.ccfg-color.on{border-color:#fff;}
-.ccfg-foot{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:6px;justify-content:flex-end;}
-.ccfg-btn{font-family:var(--font-mono);font-size:9px;padding:6px 14px;border-radius:3px;cursor:pointer;border:1px solid var(--borderl);background:var(--bg3);color:var(--text2);transition:all .12s;}
-.ccfg-btn:hover{color:var(--text);border-color:#555;}
-.ccfg-btn.primary{background:var(--blue);color:#000;border-color:var(--blue);font-weight:700;}
-.ccfg-btn.primary:hover{opacity:.85;}
-.ccfg-chip-row{display:flex;flex-wrap:wrap;gap:4px;}
-.ccfg-chip{font-family:var(--font-mono);font-size:8px;padding:3px 8px;border-radius:2px;border:1px solid var(--borderl);background:var(--bg3);color:var(--textm);cursor:pointer;transition:all .1s;}
-.ccfg-chip:hover,.ccfg-chip.on{background:rgba(0,170,255,.12);color:var(--blue);border-color:var(--blue);}
 
 /* ── NEWS ITEMS ── */
 /* Estilo MacroFloor: urgente = fundo vermelho, destaque = fundo amarelo escuro */
@@ -165,7 +120,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .mlink:hover{background:rgba(0,170,255,.1);}
 .ni.p-urgent.flash{animation:none;}
 
-/* resizer styles already defined above */
+/* ── RESIZER ── */
+.resizer{width:3px;background:var(--border);cursor:col-resize;flex-shrink:0;transition:background .15s;}
+.resizer:hover,.resizer.drag{background:var(--blue);}
 
 /* ── YOUTUBE ── */
 .yt-panel{width:360px;min-width:260px;display:flex;flex-direction:column;border-left:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
@@ -304,89 +261,97 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 
   <!-- NEWS PANE -->
   <div class="vpane active" id="pane-news">
-    <div class="cols-wrap" id="colsWrap">
-      <!-- colunas geradas dinamicamente pelo JS -->
+    <div class="cols-wrap">
+
+      <!-- COL 1 BRASIL -->
+      <div class="col" id="col1" style="flex:1">
+        <div class="col-head">
+          <div class="col-label"><div class="col-dot" style="background:var(--green)"></div><span style="color:var(--green)">BRASIL / ECONOMIA BR</span><span class="col-cnt" id="cnt1">0</span></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <button class="ftoggle" id="ft1" onclick="toggleFilters(1)" title="Mostrar/ocultar filtros"><span class="arr">▼</span> FILTROS</button>
+            <button class="rb" id="rb1" onclick="fetchCol(1)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
+            <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(1,this.value)">
+          </div>
+        </div>
+        <div class="col-filters" id="cf1">
+          <button class="fb active" onclick="setF(1,'all',this)">TODOS</button>
+          <button class="fb fu" onclick="setF(1,'urgent',this)">URGENTE</button>
+          <button class="fb fh" onclick="setF(1,'high',this)">DESTAQUE</button>
+          <button class="fb" onclick="setF(1,'bookmarked',this)">SALVOS</button>
+          <span class="fst loading" id="fst1">aguardando...</span>
+        </div>
+        <div class="nlist" id="list1"></div>
+      </div>
+      <div class="resizer" id="r1"></div>
+
+      <!-- COL 2 INTERNACIONAL -->
+      <div class="col" id="col2" style="flex:1">
+        <div class="col-head">
+          <div class="col-label"><div class="col-dot" style="background:var(--blue)"></div><span style="color:var(--blue)">INTERNACIONAL / POLÍTICA</span><span class="col-cnt" id="cnt2">0</span></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <button class="ftoggle" id="ft2" onclick="toggleFilters(2)" title="Mostrar/ocultar filtros"><span class="arr">▼</span> FILTROS</button>
+            <button class="rb" id="rb2" onclick="fetchCol(2)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
+            <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(2,this.value)">
+          </div>
+        </div>
+        <div class="col-filters" id="cf2">
+          <button class="fb active" onclick="setF(2,'all',this)">TODOS</button>
+          <button class="fb fu" onclick="setF(2,'urgent',this)">URGENTE</button>
+          <button class="fb fh" onclick="setF(2,'high',this)">DESTAQUE</button>
+          <button class="fb" onclick="setF(2,'bookmarked',this)">SALVOS</button>
+          <span class="fst loading" id="fst2">aguardando...</span>
+        </div>
+        <div class="nlist" id="list2"></div>
+      </div>
+      <div class="resizer" id="r2"></div>
+
+      <!-- COL 3 MACRO -->
+      <div class="col" id="col3" style="flex:1">
+        <div class="col-head">
+          <div class="col-label"><div class="col-dot" style="background:var(--gold)"></div><span style="color:var(--gold)">MERCADOS / TECNOLOGIA</span><span class="col-cnt" id="cnt3">0</span></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <button class="ftoggle" id="ft3" onclick="toggleFilters(3)" title="Mostrar/ocultar filtros"><span class="arr">▼</span> FILTROS</button>
+            <button class="rb" id="rb3" onclick="fetchCol(3)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
+            <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(3,this.value)">
+          </div>
+        </div>
+        <div class="col-filters" id="cf3">
+          <button class="fb active" onclick="setF(3,'all',this)">TODOS</button>
+          <button class="fb fu" onclick="setF(3,'urgent',this)">URGENTE</button>
+          <button class="fb fh" onclick="setF(3,'high',this)">DESTAQUE</button>
+          <button class="fb" onclick="setF(3,'bookmarked',this)">SALVOS</button>
+          <span class="fst loading" id="fst3">aguardando...</span>
+        </div>
+        <div class="nlist" id="list3"></div>
+      </div>
+
+      <!-- YOUTUBE -->
+      <div class="yt-panel" id="ytPanel" style="display:none">
+        <div class="yt-head">
+          <div class="yt-title"><i class="fab fa-youtube"></i>YOUTUBE AO VIVO</div>
+          <button class="tbtn" style="padding:3px 7px;font-size:9px" onclick="toggleYT()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="yt-row">
+          <input class="yt-inp" id="ytUrl" placeholder="URL ou ID do vídeo/live...">
+          <button class="yt-go" onclick="loadYT()">IR</button>
+        </div>
+        <div class="yt-presets">
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCaXxCc1c7SsI0kFfhFCJTOQ')">CNN Brasil</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCPJljpimytSaWlSiY6YZSqA')">Band News</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCz3VGZY1uQoJhQOkf0uRKNQ')">Bloomberg</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCN-o3Fhqe7dSFmlqG88QFSA')">CNBC</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCIALMKvObZNtJ6AmdCLP7Lg')">Reuters TV</button>
+        </div>
+        <div class="yt-embed" id="ytEmbed">
+          <div class="yt-ph"><i class="fab fa-youtube"></i><p>Cole uma URL ou escolha um canal</p></div>
+        </div>
+      </div>
     </div>
-    <button class="add-col-btn" id="addColBtn" title="Adicionar coluna">＋</button>
   </div>
 
   <!-- MARKETS PANE -->
   <div class="vpane" id="pane-mkt">
     <div class="mkt-pane" id="mktList"></div>
-  </div>
-</div>
-
-<!-- YOUTUBE PANEL (fora das colunas) -->
-<div class="yt-panel" id="ytPanel" style="display:none;position:fixed;right:0;top:44px;bottom:20px;z-index:200;border-left:1px solid var(--border);">
-  <div class="yt-head">
-    <div class="yt-title"><i class="fab fa-youtube"></i>YOUTUBE AO VIVO</div>
-    <button class="tbtn" style="padding:3px 7px;font-size:9px" onclick="toggleYT()"><i class="fas fa-times"></i></button>
-  </div>
-  <div class="yt-row">
-    <input class="yt-inp" id="ytUrl" placeholder="URL ou ID do vídeo/live...">
-    <button class="yt-go" onclick="loadYT()">IR</button>
-  </div>
-  <div class="yt-presets">
-    <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCaXxCc1c7SsI0kFfhFCJTOQ')">CNN Brasil</button>
-    <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCPJljpimytSaWlSiY6YZSqA')">Band News</button>
-    <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCz3VGZY1uQoJhQOkf0uRKNQ')">Bloomberg</button>
-    <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCN-o3Fhqe7dSFmlqG88QFSA')">CNBC</button>
-    <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCIALMKvObZNtJ6AmdCLP7Lg')">Reuters TV</button>
-  </div>
-  <div class="yt-embed" id="ytEmbed">
-    <div class="yt-ph"><i class="fab fa-youtube"></i><p>Cole uma URL ou escolha um canal</p></div>
-  </div>
-</div>
-
-<!-- MODAL CONFIG DE COLUNA -->
-<div class="col-cfg-overlay" id="colCfgOverlay" onclick="closeCfgOut(event)">
-  <div class="col-cfg-box">
-    <div class="ccfg-head">
-      <div class="ccfg-title"><i class="fas fa-columns" style="margin-right:6px"></i>CONFIGURAR PAINEL</div>
-      <button class="mx" onclick="closeColCfg()"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="ccfg-body">
-      <input type="hidden" id="cfgPanelId">
-      <div>
-        <div class="ccfg-label">Nome do painel</div>
-        <input class="ccfg-input" id="cfgName" placeholder="Ex: Energia / Commodities">
-      </div>
-      <div>
-        <div class="ccfg-label">Cor do cabeçalho</div>
-        <div class="ccfg-colors" id="cfgColorPicker">
-          <div class="ccfg-color on" data-c="#00cc55" style="background:#00cc55" onclick="pickColor(this)"></div>
-          <div class="ccfg-color" data-c="#00aaff" style="background:#00aaff" onclick="pickColor(this)"></div>
-          <div class="ccfg-color" data-c="#f0b429" style="background:#f0b429" onclick="pickColor(this)"></div>
-          <div class="ccfg-color" data-c="#e63946" style="background:#e63946" onclick="pickColor(this)"></div>
-          <div class="ccfg-color" data-c="#c8b8ff" style="background:#c8b8ff" onclick="pickColor(this)"></div>
-          <div class="ccfg-color" data-c="#ff9f43" style="background:#ff9f43" onclick="pickColor(this)"></div>
-          <div class="ccfg-color" data-c="#00d2d3" style="background:#00d2d3" onclick="pickColor(this)"></div>
-          <div class="ccfg-color" data-c="#ffffff" style="background:#ffffff" onclick="pickColor(this)"></div>
-        </div>
-      </div>
-      <div>
-        <div class="ccfg-label">Queries de busca (NewsAPI) — uma por linha</div>
-        <textarea class="ccfg-input" id="cfgQueries" rows="4" placeholder="bitcoin&#10;crypto market&#10;ethereum defi" style="resize:vertical;line-height:1.6"></textarea>
-      </div>
-      <div>
-        <div class="ccfg-label">Idioma padrão</div>
-        <div class="ccfg-chip-row" id="cfgLangPicker">
-          <div class="ccfg-chip on" data-l="pt" onclick="pickLang(this)">PT</div>
-          <div class="ccfg-chip" data-l="en" onclick="pickLang(this)">EN</div>
-          <div class="ccfg-chip" data-l="es" onclick="pickLang(this)">ES</div>
-          <div class="ccfg-chip" data-l="fr" onclick="pickLang(this)">FR</div>
-          <div class="ccfg-chip" data-l="de" onclick="pickLang(this)">DE</div>
-        </div>
-      </div>
-      <div>
-        <div class="ccfg-label">Feeds RSS extras — uma URL por linha</div>
-        <textarea class="ccfg-input" id="cfgFeeds" rows="3" placeholder="https://feeds.bbci.co.uk/news/technology/rss.xml" style="resize:vertical;line-height:1.6"></textarea>
-      </div>
-    </div>
-    <div class="ccfg-foot">
-      <button class="ccfg-btn" onclick="closeColCfg()">Cancelar</button>
-      <button class="ccfg-btn primary" onclick="savePanelCfg()">Salvar e recarregar</button>
-    </div>
   </div>
 </div>
 
@@ -682,15 +647,12 @@ const KW_HIGH = ['ibovespa','bolsa','mercado','market','pib','gdp','câmbio','d�
   'commodities','ouro','gold','bitcoin','taxa','economy','economia','stocks','ações',
   'artificial intelligence','inteligência artificial','tech','tecnologia','sanções','sanctions'];
 
-const COL_NAMES={1:'Brasil / Economia BR',2:'Internacional / Política',3:'Mercados / Tecnologia'};
-const SRC_CLS_MAP={br:'s-br',us:'s-us',eu:'s-eu',asia:'s-asia'};
-
-// State now keyed by panel id; layout engine sets these up
-let allItems   = {};
+// Estado global
+let allItems   = {1:[],2:[],3:[]};
 let seenIds    = new Set();
 let bmk        = new Set();
 let ytOn=false, paused=false, activeM=null, mktTimer=null, autoTimer=null, countdownTimer=null;
-let state      = {sort:false};
+let state      = {1:{f:'all',s:''},2:{f:'all',s:''},3:{f:'all',s:''},sort:false};
 let autoMs     = 90000;
 let countdown  = 0;
 
@@ -704,7 +666,15 @@ function stripHtml(h=''){return h.replace(/<[^>]+>/g,' ').replace(/&[a-z#0-9]+;/
 function fmtTime(d){try{const dt=new Date(d);if(isNaN(dt))return new Date().toTimeString().slice(0,5);return dt.toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return new Date().toTimeString().slice(0,5);}}
 function mkId(title='',pub=''){let h=0;for(const c of(title+pub).slice(0,60))h=(Math.imul(31,h)+c.charCodeAt(0))|0;return 'n'+Math.abs(h).toString(36);}
 
-// (showSkeleton replaced by showSkeletonP)
+// ── Skeleton de carregamento ──
+function showSkeleton(col){
+  if(allItems[col].length>0) return;
+  document.getElementById('list'+col).innerHTML=
+    Array(7).fill('<div style="padding:10px 12px;border-bottom:1px solid var(--border)">'+
+      '<div style="height:8px;width:40%;background:var(--bg3);border-radius:2px;margin-bottom:7px;animation:sk 1.2s infinite"></div>'+
+      '<div style="height:8px;width:82%;background:var(--bg3);border-radius:2px;margin-bottom:5px;animation:sk 1.2s infinite"></div>'+
+      '<div style="height:8px;width:60%;background:var(--bg3);border-radius:2px;animation:sk 1.2s infinite"></div></div>').join('');
+}
 
 // ── Badge de origem ──
 function apiBadge(api){
@@ -712,9 +682,83 @@ function apiBadge(api){
   return '<span style="font-family:var(--font-mono);font-size:7px;padding:1px 4px;border-radius:2px;background:rgba(255,255,255,.07);color:#666;margin-left:3px">RSS</span>';
 }
 
-// (fetchCol replaced by fetchPanel above)
+// ── Busca todos os feeds de uma coluna (NewsAPI + RSS em paralelo) ──
+async function fetchCol(col){
+  const btn=document.getElementById('rb'+col);
+  const st=document.getElementById('fst'+col);
+  if(btn) btn.classList.add('spin');
+  if(st){st.className='fst loading';st.textContent='carregando...';}
+  showSkeleton(col);
 
-// ── Atualiza todas as colunas — (nova versão acima em refreshAll) ──
+  // Dispara NewsAPI e RSS em paralelo
+  const apiResults  = await Promise.allSettled(NEWSAPI_QUERIES[col].map(fetchNewsAPI));
+  const rssResults  = await Promise.allSettled(FEEDS[col].map(fetchOneFeed));
+
+  let merged=[];
+  let apiOk=0, rssOk=0;
+  apiResults.forEach(r=>{ if(r.status==='fulfilled'){merged=merged.concat(r.value);apiOk++;} });
+  rssResults.forEach(r=>{ if(r.status==='fulfilled'){merged=merged.concat(r.value);rssOk++;} });
+
+  if(btn) btn.classList.remove('spin');
+
+  if(!merged.length){
+    if(st){st.className='fst err';st.textContent='erro — sem dados';}
+    if(allItems[col].length===0)
+      document.getElementById('list'+col).innerHTML=
+        '<div style="padding:24px 12px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--textm)">'+
+        '<i class="fas fa-exclamation-triangle" style="font-size:22px;color:var(--red);display:block;margin-bottom:10px"></i>'+
+        'Não foi possível carregar notícias.<br><br>Verifique sua conexão e tente novamente.</div>';
+    return;
+  }
+
+  // Deduplica e preserva prioridade manual
+  const manPrio={};
+  allItems[col].forEach(i=>{ if(i._man) manPrio[i.id]=i.p; });
+  const dedupMap={};
+  merged.forEach(i=>{ if(!dedupMap[i.id]) dedupMap[i.id]=i; });
+  let items=Object.values(dedupMap);
+
+  // Marca novas
+  const newIds=new Set();
+  items.forEach(i=>{
+    if(!seenIds.has(i.id)) newIds.add(i.id);
+    seenIds.add(i.id);
+    if(manPrio[i.id]){i.p=manPrio[i.id];i._man=true;}
+  });
+
+  items.sort((a,b)=>b.pubMs-a.pubMs);
+  allItems[col]=items.slice(0,120);
+
+  renderCol(col);
+  upd();
+
+  const nc=newIds.size;
+  const total=NEWSAPI_QUERIES[col].length+FEEDS[col].length;
+  const totalOk=apiOk+rssOk;
+  if(st){
+    st.className='fst ok';
+    st.textContent= nc>0 ? `✦ ${nc} novas · API:${apiOk} RSS:${rssOk}` : `API:${apiOk}/${NEWSAPI_QUERIES[col].length} RSS:${rssOk}/${FEEDS[col].length} · ${items.length} itens`;
+    if(nc>0) setTimeout(()=>{ if(st) st.textContent=`API:${apiOk} RSS:${rssOk} · ${items.length} itens`; },6000);
+  }
+
+  setTimeout(()=>{
+    newIds.forEach(id=>{
+      const it=allItems[col].find(i=>i.id===id);
+      const el=document.getElementById('ni-'+id);
+      if(el&&it&&it.p!=='urgent') el.classList.add('flash');
+    });
+  },120);
+}
+
+// ── Atualiza todas as colunas ──
+async function refreshAll(){
+  const icon=document.getElementById('gri');
+  if(icon) icon.style.animation='spin2 .7s linear infinite';
+  await Promise.all([fetchCol(1),fetchCol(2),fetchCol(3)]);
+  if(icon) icon.style.animation='';
+  document.getElementById('nUpdate').textContent='Atualizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  resetCountdown();
+}
 
 // ── Countdown para próxima atualização ──
 function resetCountdown(){
@@ -745,20 +789,62 @@ function setAutoInterval(ms){
 }
 function markAI(btn){document.querySelectorAll('.sp-body .szb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
-// (legacy per-column fetch/render replaced by panel-based functions above)
-
 function pOrd(p){return p==='urgent'?0:p==='high'?1:2;}
 
-// kept for compatibility
-function renderCol(col){ const pid='p'+col; if(panelCfg[pid]) renderPanel(pid); }
-function upd(){ updateCount(); }
+function renderCol(col){
+  const el=document.getElementById(`list${col}`);
+  let its=[...allItems[col]];
+  const s=state[col];
+  if(s.f==='bookmarked')its=its.filter(i=>bmk.has(i.id));
+  else if(s.f!=='all')its=its.filter(i=>i.p===s.f);
+  if(s.s){const q=s.s.toLowerCase();its=its.filter(i=>i.h.toLowerCase().includes(q));}
+  if(state.sort)its.sort((a,b)=>pOrd(a.p)-pOrd(b.p));
+  const SRC_CLS={br:'s-br',us:'s-us',eu:'s-eu',asia:'s-asia'};
+  el.innerHTML=its.map(it=>{
+    const isB=bmk.has(it.id);
+    const srcCls=SRC_CLS[it.src]||'s-us';
+    const badge=apiBadge(it._api);
+    return `<div class="ni p-${it.p}${isB?' bk':''}" id="ni-${it.id}" onclick="openModal('${it.id}',${col})">
+      <div class="nm-row">
+        <span class="nm">${it.time}</span>
+        <span class="nsrc ${srcCls}">${SL[it.src]||'—'}</span>
+        <span style="font-size:9px;color:var(--textm);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">${it._src}</span>
+        ${badge}
+      </div>
+      <div class="nh">${it.h}</div>
+      <div class="ni-acts">
+        <button class="nab ru" onclick="setPrio(${col},'${it.id}','urgent',event)">🔴 URGENTE</button>
+        <button class="nab rh" onclick="setPrio(${col},'${it.id}','high',event)">🟡 DESTAQUE</button>
+        <button class="nab" onclick="setPrio(${col},'${it.id}','normal',event)">⬜ NORMAL</button>
+        <button class="nab" onclick="toggleBmk('${it.id}',${col},event)">${isB?'★ SALVO':'☆ SALVAR'}</button>
+      </div>
+    </div>`;
+  }).join('')||`<div style="padding:18px;color:var(--textm);font-family:var(--font-mono);font-size:10px;text-align:center">Nenhum item</div>`;
+  document.getElementById(`cnt${col}`).textContent=its.length;
+}
 
-function setF(col,f,btn){setFP('p'+col,f,btn);}
-function toggleFilters(col){toggleFiltersP('p'+col);}
-function filterCol(col,v){filterPanel('p'+col,v);}
-function setPrio(col,id,p,e){setPrioP('p'+col,id,p,e);}
-function toggleBmk(id,col,e){toggleBmkP(id,'p'+col,e);}
-function toggleSort(){state.sort=!state.sort;document.getElementById('sortBtn').classList.toggle('on',state.sort);Object.keys(panelCfg).forEach(renderPanel);}
+function upd(){
+  let t=0;[1,2,3].forEach(c=>t+=allItems[c].length);
+  document.getElementById('nCount').textContent=t+' notícias';
+}
+function setF(col,f,btn){state[col].f=f;btn.closest('.col-filters').querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderCol(col);}
+
+function toggleFilters(col){
+  const cf=document.getElementById('cf'+col);
+  const ft=document.getElementById('ft'+col);
+  const open=cf.classList.toggle('open');
+  ft.classList.toggle('open',open);
+}
+function filterCol(col,v){state[col].s=v;renderCol(col);}
+function setPrio(col,id,p,e){
+  e.stopPropagation();
+  const it=allItems[col].find(i=>i.id===id);
+  if(it){it.p=p;it._man=true;renderCol(col);
+    if(activeM&&activeM.id===id){document.getElementById('mpbar').className='mpbar '+p;document.getElementById('mbox').className='mbox modal-'+p;}
+  }
+}
+function toggleBmk(id,col,e){e.stopPropagation();bmk.has(id)?bmk.delete(id):bmk.add(id);renderCol(col);}
+function toggleSort(){state.sort=!state.sort;document.getElementById('sortBtn').classList.toggle('on',state.sort);[1,2,3].forEach(renderCol);}
 function pauseFeed(){
   paused=!paused;
   document.getElementById('pi').className=paused?'fas fa-play':'fas fa-pause';
@@ -767,9 +853,52 @@ function pauseFeed(){
   else startAutoTimer();
 }
 
+// ── MODAL ──
+function openModal(id,col){
+  const it=allItems[col].find(i=>i.id===id);if(!it)return;
+  activeM=it;
+  const si=SRCI[it.src]||{n:'Global',f:'🌐',r:'Global'};
+  const P={urgent:'🔴 URGENTE',high:'🟡 DESTAQUE',normal:'⚪ NORMAL'};
+  const cls={br:'s-br',us:'s-us',eu:'s-eu',asia:'s-asia'}[it.src]||'s-us';
+  document.getElementById('mmeta').innerHTML=`
+    <span class="nsrc ${cls}">${SL[it.src]||'—'}</span>
+    <span style="font-size:10px;color:var(--text2);font-family:var(--font-mono)">${it._src}</span>
+    <span style="font-size:10px;color:var(--textm);font-family:var(--font-mono)">·</span>
+    <span style="font-size:10px;color:var(--textm);font-family:var(--font-mono)">${it.time}</span>
+    <span style="font-size:9px;font-family:var(--font-mono);padding:2px 6px;border-radius:2px;border:1px solid var(--borderl);color:var(--textm)">${P[it.p]}</span>
+    ${it._api==='newsapi'?'<span style="font-size:7px;font-family:var(--font-mono);padding:1px 5px;border-radius:2px;background:rgba(0,170,255,.15);color:#00aaff">NewsAPI</span>':'<span style="font-size:7px;font-family:var(--font-mono);padding:1px 5px;border-radius:2px;background:rgba(255,255,255,.07);color:#666">RSS</span>'}`;
+  document.getElementById('mhl').textContent=it.h;
+  document.getElementById('mpbar').className='mpbar '+it.p;
+  document.getElementById('mbox').className='mbox modal-'+it.p;
+  document.getElementById('morigin').innerHTML=`
+    <div class="mo-i"><div class="mo-l">País / Região</div><div class="mo-v">${si.f} ${si.n} — ${si.r}</div></div>
+    <div class="mo-i"><div class="mo-l">Veículo / Agência</div><div class="mo-v">${it._src}</div></div>
+    <div class="mo-i"><div class="mo-l">Coluna</div><div class="mo-v">${COL_NAMES[col]}</div></div>
+    <div class="mo-i"><div class="mo-l">Publicado</div><div class="mo-v">${it.time}</div></div>`;
+  // Link para a fonte original
+  const linkEl=document.getElementById('mlink');
+  if(linkEl){if(it.link){linkEl.href=it.link;linkEl.style.display='inline-flex';}else{linkEl.style.display='none';}}
+  // Imagem da notícia (NewsAPI fornece urlToImage)
+  const imgEl=document.getElementById('mimg');
+  if(imgEl){
+    if(it.img){imgEl.src=it.img;imgEl.style.display='block';}
+    else{imgEl.style.display='none';}
+  }
+  // Corpo da notícia
+  const body=it.body||'';
+  document.getElementById('mtext').innerHTML=body
+    ?body.split(/\n\n+/).map(p=>`<p>${p}</p>`).join('')
+    :`<p style="color:var(--textm);font-style:italic">Clique em "Ler notícia completa" para ver o conteúdo completo na fonte original.</p>`;
+  const bmkBtn=document.getElementById('mBmk');
+  bmkBtn.textContent=bmk.has(id)?'★ Salvo':'☆ Salvar';
+  document.getElementById('mUrgent').onclick=()=>setPrio(col,id,'urgent',{stopPropagation:()=>{}});
+  document.getElementById('mHigh').onclick=()=>setPrio(col,id,'high',{stopPropagation:()=>{}});
+  bmkBtn.onclick=()=>{toggleBmk(id,col,{stopPropagation:()=>{}});bmkBtn.textContent=bmk.has(id)?'★ Salvo':'☆ Salvar';};
+  document.getElementById('modal').classList.add('open');
+}
 function closeModal(){document.getElementById('modal').classList.remove('open');activeM=null;}
 function closeModalOut(e){if(e.target===document.getElementById('modal'))closeModal();}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();if(document.getElementById('sov').classList.contains('open'))toggleSettings();if(document.getElementById('colCfgOverlay').classList.contains('open'))closeColCfg();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();if(document.getElementById('sov').classList.contains('open'))toggleSettings();}});
 
 // ── MARKETS — dados das bolsas mundiais ──
 const EXCH=[
@@ -858,535 +987,16 @@ function setAcc(el){document.querySelectorAll('#accC .sw').forEach(s=>s.classLis
 const TH={black:{a:'#000',b:'#0d0d0d',c:'#141414',d:'#1a1a1a',e:'#222',f:'#2a2a2a'},dark:{a:'#0a0c0f',b:'#111318',c:'#191d24',d:'#1e232c',e:'#232830',f:'#2e3540'},navy:{a:'#070d1a',b:'#0d1626',c:'#142033',d:'#192840',e:'#1e2d45',f:'#263a57'},forest:{a:'#040f04',b:'#081408',c:'#0d1a0d',d:'#102010',e:'#172817',f:'#1e341e'}};
 function setTheme(n,btn){document.querySelectorAll('.thmb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');const t=TH[n];if(!t)return;const r=document.documentElement.style;r.setProperty('--bg',t.a);r.setProperty('--bg2',t.b);r.setProperty('--bg3',t.c);r.setProperty('--bgh',t.d);r.setProperty('--border',t.e);r.setProperty('--borderl',t.f);}
 
-// ── DYNAMIC LAYOUT ENGINE ──────────────────────────────────────────────────
-
-// Panel config schema: {id, name, color, queries:[{q,language,src,label}], feeds:[{url,label,src}]}
-// Group schema: {id, panels:[panelId,...]} — a "group" is a vertical stack of panels in one column
-
-let layoutGroups = []; // [{id, panels:[panelId,...]}]
-let panelCfg = {};     // {panelId: {id, name, color, queries, feeds}}
-let _panelIdCounter = 0;
-
-const DOT_COLORS = ['#00cc55','#00aaff','#f0b429','#e63946','#c8b8ff','#ff9f43','#00d2d3','#ffffff'];
-
-function newPanelId(){ return 'p' + (++_panelIdCounter); }
-function newGroupId(){ return 'g' + Date.now() + Math.random().toString(36).slice(2,5); }
-
-// Default panel presets
-const DEFAULT_PANELS = [
-  {
-    name:'Brasil / Economia BR', color:'#00cc55',
-    queries:[
-      {q:'economia brasil',language:'pt',src:'br',label:'NewsAPI · Brasil'},
-      {q:'mercado financeiro brasil',language:'pt',src:'br',label:'NewsAPI · Finanças BR'},
-      {q:'política brasil',language:'pt',src:'br',label:'NewsAPI · Política BR'},
-      {q:'brazil economy',language:'en',src:'us',label:'NewsAPI · Brazil EN'},
-      {q:'banco central brasil selic',language:'pt',src:'br',label:'NewsAPI · BCB'},
-    ],
-    feeds:[
-      {url:'https://www.infomoney.com.br/economia/feed/',label:'InfoMoney Economia',src:'br'},
-      {url:'https://agenciabrasil.ebc.com.br/economia/feed/',label:'Agência Brasil',src:'br'},
-      {url:'https://g1.globo.com/rss/g1/economia/',label:'G1 Economia',src:'br'},
-      {url:'https://valor.globo.com/rss/financas/',label:'Valor Econômico',src:'br'},
-      {url:'https://www.infomoney.com.br/mercados/feed/',label:'InfoMoney Mercados',src:'br'},
-    ],
-  },
-  {
-    name:'Internacional / Política', color:'#00aaff',
-    queries:[
-      {q:'world politics',language:'en',src:'us',label:'NewsAPI · World'},
-      {q:'international news',language:'en',src:'eu',label:'NewsAPI · Intl'},
-      {q:'us politics trump',language:'en',src:'us',label:'NewsAPI · US Politics'},
-      {q:'europa política',language:'pt',src:'eu',label:'NewsAPI · Europa PT'},
-      {q:'guerra conflito',language:'pt',src:'br',label:'NewsAPI · Conflitos'},
-    ],
-    feeds:[
-      {url:'https://feeds.bbci.co.uk/news/world/rss.xml',label:'BBC World',src:'eu'},
-      {url:'https://feeds.reuters.com/reuters/worldNews',label:'Reuters World',src:'us'},
-      {url:'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',label:'NYT World',src:'us'},
-      {url:'https://www.ft.com/?format=rss',label:'Financial Times',src:'eu'},
-    ],
-  },
-  {
-    name:'Mercados / Tecnologia', color:'#f0b429',
-    queries:[
-      {q:'stock market finance',language:'en',src:'us',label:'NewsAPI · Markets'},
-      {q:'technology artificial intelligence',language:'en',src:'us',label:'NewsAPI · Tech AI'},
-      {q:'bitcoin crypto',language:'en',src:'us',label:'NewsAPI · Crypto'},
-      {q:'mercados ações commodities',language:'pt',src:'br',label:'NewsAPI · Mercados PT'},
-    ],
-    feeds:[
-      {url:'https://feeds.bbci.co.uk/news/technology/rss.xml',label:'BBC Tech',src:'eu'},
-      {url:'https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml',label:'NYT Tech',src:'us'},
-      {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',src:'us'},
-    ],
-  },
-];
-
-function initLayout(){
-  // Build initial 3 groups, 1 panel each
-  layoutGroups = [];
-  panelCfg = {};
-  _panelIdCounter = 0;
-  DEFAULT_PANELS.forEach(def => {
-    const pid = newPanelId();
-    panelCfg[pid] = {id:pid, ...def};
-    allItems[pid] = [];
-    state[pid] = {f:'all',s:''};
-    const gid = newGroupId();
-    layoutGroups.push({id:gid, panels:[pid]});
-  });
-  renderLayout();
-}
-
-function renderLayout(){
-  const wrap = document.getElementById('colsWrap');
-  wrap.innerHTML = '';
-
-  layoutGroups.forEach((grp, gi) => {
-    // Group container
-    const grpEl = document.createElement('div');
-    grpEl.className = 'col-group';
-    grpEl.id = 'grp-' + grp.id;
-    grpEl.style.flex = '1';
-
-    grp.panels.forEach((pid, pi) => {
-      const cfg = panelCfg[pid];
-      // Panel
-      const panelEl = buildPanelEl(pid, cfg, grp, gi, pi);
-      grpEl.appendChild(panelEl);
-
-      // V-resizer between panels in same group
-      if(pi < grp.panels.length - 1){
-        const vr = document.createElement('div');
-        vr.className = 'v-resizer';
-        vr.dataset.grp = grp.id;
-        vr.dataset.above = pid;
-        vr.dataset.below = grp.panels[pi+1];
-        grpEl.appendChild(vr);
-      }
-    });
-
-    wrap.appendChild(grpEl);
-
-    // H-resizer between groups
-    if(gi < layoutGroups.length - 1){
-      const hr = document.createElement('div');
-      hr.className = 'resizer';
-      hr.dataset.left = grp.id;
-      hr.dataset.right = layoutGroups[gi+1].id;
-      wrap.appendChild(hr);
-    }
-  });
-
-  initAllResizers();
-}
-
-function buildPanelEl(pid, cfg, grp, gi, pi){
-  const col = document.createElement('div');
-  col.className = 'col';
-  col.id = 'col-' + pid;
-
-  col.innerHTML = `
-    <div class="col-head">
-      <div class="col-label">
-        <div class="col-dot" style="background:${cfg.color}"></div>
-        <span class="col-label-text" style="color:${cfg.color}">${cfg.name}</span>
-        <span class="col-cnt" id="cnt-${pid}">0</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:3px">
-        <button class="ftoggle" id="ft-${pid}" onclick="toggleFiltersP('${pid}')" title="Filtros"><span class="arr">▼</span> FILTROS</button>
-        <button class="rb" id="rb-${pid}" onclick="fetchPanel('${pid}')" title="Atualizar"><i class="fas fa-sync-alt"></i></button>
-        <input class="col-srch" placeholder="filtrar..." onkeyup="filterPanel('${pid}',this.value)">
-        <div class="col-mgmt">
-          <button class="lbtn" title="Configurar painel" onclick="openColCfg('${pid}')">⚙</button>
-          <button class="lbtn" title="Dividir horizontalmente (abaixo)" onclick="splitPanelBelow('${grp.id}','${pid}')">⊟</button>
-          <button class="lbtn" title="Dividir verticalmente (nova coluna à direita)" onclick="splitColRight('${grp.id}','${pid}')">⊞</button>
-          <button class="lbtn danger" title="Remover painel" onclick="removePanel('${grp.id}','${pid}')">✕</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-filters" id="cf-${pid}">
-      <button class="fb active" onclick="setFP('${pid}','all',this)">TODOS</button>
-      <button class="fb fu" onclick="setFP('${pid}','urgent',this)">URGENTE</button>
-      <button class="fb fh" onclick="setFP('${pid}','high',this)">DESTAQUE</button>
-      <button class="fb" onclick="setFP('${pid}','bookmarked',this)">SALVOS</button>
-      <span class="fst loading" id="fst-${pid}">aguardando...</span>
-    </div>
-    <div class="nlist" id="list-${pid}"></div>
-  `;
-  return col;
-}
-
-// ── ADD / REMOVE / SPLIT ──────────────────────────────────────────────────
-
-function addColumn(){
-  const pid = newPanelId();
-  const colorIdx = _panelIdCounter % DOT_COLORS.length;
-  panelCfg[pid] = {
-    id:pid,
-    name:'Nova Coluna',
-    color: DOT_COLORS[colorIdx],
-    queries:[{q:'breaking news',language:'en',src:'us',label:'NewsAPI'}],
-    feeds:[],
-  };
-  allItems[pid] = [];
-  state[pid] = {f:'all',s:''};
-  const gid = newGroupId();
-  layoutGroups.push({id:gid, panels:[pid]});
-  renderLayout();
-  // Auto-open config for the new panel
-  setTimeout(() => openColCfg(pid), 80);
-}
-
-function removePanel(gid, pid){
-  const grp = layoutGroups.find(g=>g.id===gid);
-  if(!grp) return;
-  if(layoutGroups.length === 1 && grp.panels.length === 1){
-    alert('Não é possível remover o único painel restante.');
-    return;
-  }
-  grp.panels = grp.panels.filter(p=>p!==pid);
-  if(grp.panels.length === 0){
-    layoutGroups = layoutGroups.filter(g=>g.id!==gid);
-  }
-  delete panelCfg[pid];
-  delete allItems[pid];
-  delete state[pid];
-  renderLayout();
-  updateCount();
-}
-
-function splitPanelBelow(gid, pid){
-  // Add a new panel to the same group below the given panel
-  const grp = layoutGroups.find(g=>g.id===gid);
-  if(!grp) return;
-  const newPid = newPanelId();
-  const srcCfg = panelCfg[pid];
-  const colorIdx = _panelIdCounter % DOT_COLORS.length;
-  panelCfg[newPid] = {
-    id:newPid,
-    name:'Novo Painel',
-    color: DOT_COLORS[colorIdx],
-    queries:[{q:'latest news',language:'en',src:'us',label:'NewsAPI'}],
-    feeds:[],
-  };
-  allItems[newPid] = [];
-  state[newPid] = {f:'all',s:''};
-  const idx = grp.panels.indexOf(pid);
-  grp.panels.splice(idx+1, 0, newPid);
-  renderLayout();
-  setTimeout(() => openColCfg(newPid), 80);
-}
-
-function splitColRight(gid, pid){
-  // Move this panel into a new group to the right of current group
-  const grp = layoutGroups.find(g=>g.id===gid);
-  if(!grp) return;
-  const newPid = newPanelId();
-  const colorIdx = _panelIdCounter % DOT_COLORS.length;
-  panelCfg[newPid] = {
-    id:newPid,
-    name:'Nova Coluna',
-    color: DOT_COLORS[colorIdx],
-    queries:[{q:'latest news',language:'en',src:'us',label:'NewsAPI'}],
-    feeds:[],
-  };
-  allItems[newPid] = [];
-  state[newPid] = {f:'all',s:''};
-  const grpIdx = layoutGroups.indexOf(grp);
-  const newGid = newGroupId();
-  layoutGroups.splice(grpIdx+1, 0, {id:newGid, panels:[newPid]});
-  renderLayout();
-  setTimeout(() => openColCfg(newPid), 80);
-}
-
-document.getElementById('addColBtn').onclick = addColumn;
-
-// ── PANEL CONFIG MODAL ────────────────────────────────────────────────────
-
-let _cfgPanelId = null;
-let _cfgColor = '#00cc55';
-let _cfgLang = 'pt';
-
-function openColCfg(pid){
-  _cfgPanelId = pid;
-  const cfg = panelCfg[pid];
-  _cfgColor = cfg.color;
-  _cfgLang = cfg.queries[0]?.language || 'pt';
-  document.getElementById('cfgPanelId').value = pid;
-  document.getElementById('cfgName').value = cfg.name;
-  // Color picker
-  document.querySelectorAll('.ccfg-color').forEach(el=>{
-    el.classList.toggle('on', el.dataset.c === _cfgColor);
-  });
-  // Queries textarea
-  const qs = cfg.queries.map(q=>q.q).join('\n');
-  document.getElementById('cfgQueries').value = qs;
-  // Lang
-  document.querySelectorAll('#cfgLangPicker .ccfg-chip').forEach(el=>{
-    el.classList.toggle('on', el.dataset.l === _cfgLang);
-  });
-  // Feeds
-  document.getElementById('cfgFeeds').value = cfg.feeds.map(f=>f.url).join('\n');
-  document.getElementById('colCfgOverlay').classList.add('open');
-  setTimeout(()=>document.getElementById('cfgName').focus(),120);
-}
-
-function closeColCfg(){ document.getElementById('colCfgOverlay').classList.remove('open'); _cfgPanelId=null; }
-function closeCfgOut(e){ if(e.target===document.getElementById('colCfgOverlay')) closeColCfg(); }
-
-function pickColor(el){
-  _cfgColor = el.dataset.c;
-  document.querySelectorAll('.ccfg-color').forEach(e=>e.classList.remove('on'));
-  el.classList.add('on');
-}
-function pickLang(el){
-  _cfgLang = el.dataset.l;
-  document.querySelectorAll('#cfgLangPicker .ccfg-chip').forEach(e=>e.classList.remove('on'));
-  el.classList.add('on');
-}
-
-function savePanelCfg(){
-  if(!_cfgPanelId) return;
-  const name = document.getElementById('cfgName').value.trim() || 'Painel';
-  const qs = document.getElementById('cfgQueries').value.trim().split('\n').filter(Boolean);
-  const feedUrls = document.getElementById('cfgFeeds').value.trim().split('\n').filter(Boolean);
-
-  const queries = qs.map(q=>({q:q.trim(), language:_cfgLang, src:_cfgLang==='pt'?'br':'us', label:'NewsAPI'}));
-  if(!queries.length) queries.push({q:'latest news',language:'en',src:'us',label:'NewsAPI'});
-  const feeds = feedUrls.map(url=>({url:url.trim(),label:url.split('/').slice(-3,-1).join('/'),src:'eu'}));
-
-  panelCfg[_cfgPanelId] = {id:_cfgPanelId, name, color:_cfgColor, queries, feeds};
-  allItems[_cfgPanelId] = [];
-  closeColCfg();
-  renderLayout();
-  setTimeout(()=>fetchPanel(_cfgPanelId), 80);
-}
-
-// ── RESIZERS ─────────────────────────────────────────────────────────────
-
-function initAllResizers(){
-  // H-resizers (column width)
-  document.querySelectorAll('.resizer[data-left]').forEach(r=>{
-    let drag=false,sx,lw,rw;
-    const getL=()=>document.getElementById('grp-'+r.dataset.left);
-    const getR=()=>document.getElementById('grp-'+r.dataset.right);
-    r.addEventListener('mousedown',e=>{
-      drag=true;sx=e.clientX;lw=getL().offsetWidth;rw=getR().offsetWidth;
-      r.classList.add('drag');document.body.style.cursor='col-resize';document.body.style.userSelect='none';
-    });
-    document.addEventListener('mousemove',e=>{
-      if(!drag)return;
-      const dx=e.clientX-sx;
-      const L=getL(),R=getR();
-      L.style.flex='none';R.style.flex='none';
-      L.style.width=Math.max(140,lw+dx)+'px';
-      R.style.width=Math.max(140,rw-dx)+'px';
-    });
+// ── RESIZERS ──
+function initResizers(){
+  [['r1','col1','col2'],['r2','col2','col3']].forEach(([rid,lid,rid2])=>{
+    const r=document.getElementById(rid),L=document.getElementById(lid),R=document.getElementById(rid2);
+    let drag=false,sx,sl,sr;
+    r.addEventListener('mousedown',e=>{drag=true;sx=e.clientX;sl=L.offsetWidth;sr=R.offsetWidth;r.classList.add('drag');document.body.style.cursor='col-resize';document.body.style.userSelect='none';});
+    document.addEventListener('mousemove',e=>{if(!drag)return;const dx=e.clientX-sx;L.style.flex='none';R.style.flex='none';L.style.width=Math.max(200,sl+dx)+'px';R.style.width=Math.max(200,sr-dx)+'px';});
     document.addEventListener('mouseup',()=>{if(!drag)return;drag=false;r.classList.remove('drag');document.body.style.cursor='';document.body.style.userSelect='';});
   });
-
-  // V-resizers (panel height within group)
-  document.querySelectorAll('.v-resizer').forEach(r=>{
-    let drag=false,sy,aw,bw;
-    const getA=()=>document.getElementById('col-'+r.dataset.above);
-    const getB=()=>document.getElementById('col-'+r.dataset.below);
-    r.addEventListener('mousedown',e=>{
-      drag=true;sy=e.clientY;aw=getA().offsetHeight;bw=getB().offsetHeight;
-      r.classList.add('vdrag');document.body.style.cursor='row-resize';document.body.style.userSelect='none';
-    });
-    document.addEventListener('mousemove',e=>{
-      if(!drag)return;
-      const dy=e.clientY-sy;
-      const A=getA(),B=getB();
-      A.style.flex='none';B.style.flex='none';
-      A.style.height=Math.max(60,aw+dy)+'px';
-      B.style.height=Math.max(60,bw-dy)+'px';
-    });
-    document.addEventListener('mouseup',()=>{if(!drag)return;drag=false;r.classList.remove('vdrag');document.body.style.cursor='';document.body.style.userSelect='';});
-  });
 }
-
-// ── PANEL DATA FUNCTIONS ──────────────────────────────────────────────────
-
-function toggleFiltersP(pid){
-  const cf=document.getElementById('cf-'+pid);
-  const ft=document.getElementById('ft-'+pid);
-  const open=cf.classList.toggle('open');
-  ft.classList.toggle('open',open);
-}
-function filterPanel(pid,v){state[pid].s=v;renderPanel(pid);}
-function setFP(pid,f,btn){state[pid].f=f;btn.closest('.col-filters').querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderPanel(pid);}
-
-async function fetchPanel(pid){
-  if(!panelCfg[pid]) return;
-  const cfg=panelCfg[pid];
-  const btn=document.getElementById('rb-'+pid);
-  const st=document.getElementById('fst-'+pid);
-  if(btn) btn.classList.add('spin');
-  if(st){st.className='fst loading';st.textContent='carregando...';}
-  showSkeletonP(pid);
-
-  const apiResults = await Promise.allSettled(cfg.queries.map(fetchNewsAPI));
-  const rssResults = await Promise.allSettled(cfg.feeds.map(fetchOneFeed));
-
-  let merged=[];
-  let apiOk=0,rssOk=0;
-  apiResults.forEach(r=>{if(r.status==='fulfilled'){merged=merged.concat(r.value);apiOk++;}});
-  rssResults.forEach(r=>{if(r.status==='fulfilled'){merged=merged.concat(r.value);rssOk++;}});
-  if(btn) btn.classList.remove('spin');
-
-  if(!merged.length){
-    if(st){st.className='fst err';st.textContent='erro — sem dados';}
-    if(!allItems[pid]||!allItems[pid].length){
-      const el=document.getElementById('list-'+pid);
-      if(el) el.innerHTML='<div style="padding:18px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--textm)"><i class="fas fa-exclamation-triangle" style="font-size:20px;color:var(--red);display:block;margin-bottom:8px"></i>Sem dados. Verifique configurações.</div>';
-    }
-    return;
-  }
-
-  const manPrio={};
-  (allItems[pid]||[]).forEach(i=>{if(i._man)manPrio[i.id]=i.p;});
-  const dedupMap={};
-  merged.forEach(i=>{if(!dedupMap[i.id])dedupMap[i.id]=i;});
-  let items=Object.values(dedupMap);
-
-  const newIds=new Set();
-  items.forEach(i=>{
-    if(!seenIds.has(i.id))newIds.add(i.id);
-    seenIds.add(i.id);
-    if(manPrio[i.id]){i.p=manPrio[i.id];i._man=true;}
-  });
-
-  items.sort((a,b)=>b.pubMs-a.pubMs);
-  allItems[pid]=items.slice(0,120);
-  renderPanel(pid);
-  updateCount();
-
-  if(st){
-    const nc=newIds.size;
-    st.className='fst ok';
-    st.textContent=nc>0?`✦ ${nc} novas · API:${apiOk} RSS:${rssOk}`:`API:${apiOk} RSS:${rssOk} · ${items.length}`;
-    if(nc>0)setTimeout(()=>{if(st)st.textContent=`API:${apiOk} RSS:${rssOk} · ${items.length}`;},6000);
-  }
-  setTimeout(()=>{
-    newIds.forEach(id=>{
-      const it=(allItems[pid]||[]).find(i=>i.id===id);
-      const el=document.getElementById('ni-'+id);
-      if(el&&it&&it.p!=='urgent')el.classList.add('flash');
-    });
-  },120);
-}
-
-function showSkeletonP(pid){
-  if(allItems[pid]&&allItems[pid].length>0) return;
-  const el=document.getElementById('list-'+pid);
-  if(el) el.innerHTML=Array(5).fill('<div style="padding:10px 12px;border-bottom:1px solid var(--border)">'+
-    '<div style="height:8px;width:40%;background:var(--bg3);border-radius:2px;margin-bottom:7px;animation:sk 1.2s infinite"></div>'+
-    '<div style="height:8px;width:82%;background:var(--bg3);border-radius:2px;margin-bottom:5px;animation:sk 1.2s infinite"></div>'+
-    '<div style="height:8px;width:60%;background:var(--bg3);border-radius:2px;animation:sk 1.2s infinite"></div></div>').join('');
-}
-
-function renderPanel(pid){
-  const el=document.getElementById('list-'+pid);
-  if(!el) return;
-  let its=[...(allItems[pid]||[])];
-  const s=state[pid]||{f:'all',s:''};
-  if(s.f==='bookmarked')its=its.filter(i=>bmk.has(i.id));
-  else if(s.f!=='all')its=its.filter(i=>i.p===s.f);
-  if(s.s){const q=s.s.toLowerCase();its=its.filter(i=>i.h.toLowerCase().includes(q));}
-  if(state.sort)its.sort((a,b)=>pOrd(a.p)-pOrd(b.p));
-  const SRC_CLS={br:'s-br',us:'s-us',eu:'s-eu',asia:'s-asia'};
-  el.innerHTML=its.map(it=>{
-    const isB=bmk.has(it.id);
-    const srcCls=SRC_CLS[it.src]||'s-us';
-    const badge=apiBadge(it._api);
-    return `<div class="ni p-${it.p}${isB?' bk':''}" id="ni-${it.id}" onclick="openModalP('${it.id}','${pid}')">
-      <div class="nm-row">
-        <span class="nm">${it.time}</span>
-        <span class="nsrc ${srcCls}">${SL[it.src]||'—'}</span>
-        <span style="font-size:9px;color:var(--textm);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100px">${it._src}</span>
-        ${badge}
-      </div>
-      <div class="nh">${it.h}</div>
-      <div class="ni-acts">
-        <button class="nab ru" onclick="setPrioP('${pid}','${it.id}','urgent',event)">🔴</button>
-        <button class="nab rh" onclick="setPrioP('${pid}','${it.id}','high',event)">🟡</button>
-        <button class="nab" onclick="setPrioP('${pid}','${it.id}','normal',event)">⬜</button>
-        <button class="nab" onclick="toggleBmkP('${it.id}','${pid}',event)">${isB?'★':'☆'}</button>
-      </div>
-    </div>`;
-  }).join('')||`<div style="padding:18px;color:var(--textm);font-family:var(--font-mono);font-size:10px;text-align:center">Nenhum item</div>`;
-  const cntEl=document.getElementById('cnt-'+pid);
-  if(cntEl) cntEl.textContent=its.length;
-}
-
-function setPrioP(pid,id,p,e){
-  e.stopPropagation();
-  const it=(allItems[pid]||[]).find(i=>i.id===id);
-  if(it){it.p=p;it._man=true;renderPanel(pid);}
-}
-function toggleBmkP(id,pid,e){e.stopPropagation();bmk.has(id)?bmk.delete(id):bmk.add(id);renderPanel(pid);}
-
-function updateCount(){
-  let t=0;
-  Object.values(allItems).forEach(arr=>{if(Array.isArray(arr))t+=arr.length;});
-  document.getElementById('nCount').textContent=t+' notícias';
-}
-
-// ── REFRESHALL updated ────────────────────────────────────────────────────
-async function refreshAll(){
-  const icon=document.getElementById('gri');
-  if(icon) icon.style.animation='spin2 .7s linear infinite';
-  const allPanels=[];
-  layoutGroups.forEach(g=>g.panels.forEach(pid=>allPanels.push(pid)));
-  await Promise.all(allPanels.map(pid=>fetchPanel(pid)));
-  if(icon) icon.style.animation='';
-  document.getElementById('nUpdate').textContent='Atualizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  resetCountdown();
-}
-
-// ── MODAL updated to use panel id ────────────────────────────────────────
-function openModalP(id,pid){
-  const it=(allItems[pid]||[]).find(i=>i.id===id);if(!it)return;
-  activeM=it;
-  const si=SRCI[it.src]||{n:'Global',f:'🌐',r:'Global'};
-  const P={urgent:'🔴 URGENTE',high:'🟡 DESTAQUE',normal:'⚪ NORMAL'};
-  const cls={br:'s-br',us:'s-us',eu:'s-eu',asia:'s-asia'}[it.src]||'s-us';
-  const panelName=(panelCfg[pid]||{}).name||pid;
-  document.getElementById('mmeta').innerHTML=`
-    <span class="nsrc ${cls}">${SL[it.src]||'—'}</span>
-    <span style="font-size:10px;color:var(--text2);font-family:var(--font-mono)">${it._src}</span>
-    <span style="font-size:10px;color:var(--textm);font-family:var(--font-mono)">·</span>
-    <span style="font-size:10px;color:var(--textm);font-family:var(--font-mono)">${it.time}</span>
-    <span style="font-size:9px;font-family:var(--font-mono);padding:2px 6px;border-radius:2px;border:1px solid var(--borderl);color:var(--textm)">${P[it.p]}</span>`;
-  document.getElementById('mhl').textContent=it.h;
-  document.getElementById('mpbar').className='mpbar '+it.p;
-  document.getElementById('mbox').className='mbox modal-'+it.p;
-  document.getElementById('morigin').innerHTML=`
-    <div class="mo-i"><div class="mo-l">País / Região</div><div class="mo-v">${si.f} ${si.n}</div></div>
-    <div class="mo-i"><div class="mo-l">Veículo</div><div class="mo-v">${it._src}</div></div>
-    <div class="mo-i"><div class="mo-l">Painel</div><div class="mo-v">${panelName}</div></div>
-    <div class="mo-i"><div class="mo-l">Publicado</div><div class="mo-v">${it.time}</div></div>`;
-  const linkEl=document.getElementById('mlink');
-  if(linkEl){if(it.link){linkEl.href=it.link;linkEl.style.display='inline-flex';}else{linkEl.style.display='none';}}
-  const imgEl=document.getElementById('mimg');
-  if(imgEl){if(it.img){imgEl.src=it.img;imgEl.style.display='block';}else{imgEl.style.display='none';}}
-  const body=it.body||'';
-  document.getElementById('mtext').innerHTML=body
-    ?body.split(/\n\n+/).map(p=>`<p>${p}</p>`).join('')
-    :`<p style="color:var(--textm);font-style:italic">Clique em "Ler notícia completa" para ver o conteúdo na fonte original.</p>`;
-  const bmkBtn=document.getElementById('mBmk');
-  bmkBtn.textContent=bmk.has(id)?'★ Salvo':'☆ Salvar';
-  document.getElementById('mUrgent').onclick=()=>setPrioP(pid,id,'urgent',{stopPropagation:()=>{}});
-  document.getElementById('mHigh').onclick=()=>setPrioP(pid,id,'high',{stopPropagation:()=>{}});
-  bmkBtn.onclick=()=>{toggleBmkP(id,pid,{stopPropagation:()=>{}});bmkBtn.textContent=bmk.has(id)?'★ Salvo':'☆ Salvar';};
-  document.getElementById('modal').classList.add('open');
-}
-
-// keep old openModal for backwards compat (not strictly needed now)
-function openModal(id,col){ openModalP(id,'p'+col); }
 
 // ── YOUTUBE ──
 function toggleYT(){ytOn=!ytOn;document.getElementById('ytPanel').style.display=ytOn?'flex':'none';}
@@ -1399,14 +1009,12 @@ document.getElementById('ytUrl').addEventListener('keydown',e=>{if(e.key==='Ente
 function initClock(){const u=()=>document.getElementById('clock').textContent=new Date().toTimeString().slice(0,8);u();setInterval(u,1000);}
 
 initClock();
-initLayout();
+initResizers();
 
-// Carrega todos os painéis com delay escalonado
-setTimeout(()=>{
-  const allPanels=[];
-  layoutGroups.forEach(g=>g.panels.forEach(pid=>allPanels.push(pid)));
-  allPanels.forEach((pid,i)=>setTimeout(()=>fetchPanel(pid),300+i*400));
-},100);
+// Carrega as 3 colunas com delay escalonado (NewsAPI + RSS em paralelo)
+setTimeout(()=>fetchCol(1), 300);
+setTimeout(()=>fetchCol(2), 700);
+setTimeout(()=>fetchCol(3), 1100);
 
 // Auto-refresh
 setTimeout(()=>startAutoTimer(), 2000);
