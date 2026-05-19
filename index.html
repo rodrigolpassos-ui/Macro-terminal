@@ -54,7 +54,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .col-cnt{font-family:var(--font-mono);font-size:9px;color:var(--textm);background:var(--bg3);padding:1px 6px;border-radius:2px;}
 .col-srch{background:var(--bg);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:10px;padding:3px 8px;border-radius:2px;outline:none;width:85px;}
 .col-srch:focus{border-color:var(--blue);}
-.col-filters{display:flex;gap:3px;padding:5px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.col-filters{display:flex;gap:3px;padding:5px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;overflow:hidden;max-height:0;transition:max-height .22s ease, padding .22s ease;padding-top:0;padding-bottom:0;}
+.col-filters.open{max-height:40px;padding:5px 10px;}
+.ftoggle{background:none;border:none;cursor:pointer;color:var(--textm);font-size:9px;padding:2px 4px;display:flex;align-items:center;gap:3px;font-family:var(--font-mono);letter-spacing:.05em;transition:color .15s;}
+.ftoggle:hover{color:var(--text2);}
+.ftoggle .arr{transition:transform .22s ease;display:inline-block;}
+.ftoggle.open .arr{transform:rotate(180deg);}
 .fb{font-family:var(--font-mono);font-size:8px;padding:3px 7px;border-radius:2px;border:1px solid var(--borderl);background:transparent;color:var(--textm);cursor:pointer;letter-spacing:.05em;transition:all .12s;}
 .fb:hover{color:var(--text2);}
 .fb.active{background:var(--bgh);color:var(--text2);}
@@ -263,11 +268,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
         <div class="col-head">
           <div class="col-label"><div class="col-dot" style="background:var(--green)"></div><span style="color:var(--green)">BRASIL / ECONOMIA BR</span><span class="col-cnt" id="cnt1">0</span></div>
           <div style="display:flex;align-items:center;gap:5px">
+            <button class="ftoggle" id="ft1" onclick="toggleFilters(1)" title="Mostrar/ocultar filtros"><span class="arr">▼</span> FILTROS</button>
             <button class="rb" id="rb1" onclick="fetchCol(1)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
             <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(1,this.value)">
           </div>
         </div>
-        <div class="col-filters">
+        <div class="col-filters" id="cf1">
           <button class="fb active" onclick="setF(1,'all',this)">TODOS</button>
           <button class="fb fu" onclick="setF(1,'urgent',this)">URGENTE</button>
           <button class="fb fh" onclick="setF(1,'high',this)">DESTAQUE</button>
@@ -283,11 +289,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
         <div class="col-head">
           <div class="col-label"><div class="col-dot" style="background:var(--blue)"></div><span style="color:var(--blue)">INTERNACIONAL / POLÍTICA</span><span class="col-cnt" id="cnt2">0</span></div>
           <div style="display:flex;align-items:center;gap:5px">
+            <button class="ftoggle" id="ft2" onclick="toggleFilters(2)" title="Mostrar/ocultar filtros"><span class="arr">▼</span> FILTROS</button>
             <button class="rb" id="rb2" onclick="fetchCol(2)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
             <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(2,this.value)">
           </div>
         </div>
-        <div class="col-filters">
+        <div class="col-filters" id="cf2">
           <button class="fb active" onclick="setF(2,'all',this)">TODOS</button>
           <button class="fb fu" onclick="setF(2,'urgent',this)">URGENTE</button>
           <button class="fb fh" onclick="setF(2,'high',this)">DESTAQUE</button>
@@ -303,11 +310,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
         <div class="col-head">
           <div class="col-label"><div class="col-dot" style="background:var(--gold)"></div><span style="color:var(--gold)">MERCADOS / TECNOLOGIA</span><span class="col-cnt" id="cnt3">0</span></div>
           <div style="display:flex;align-items:center;gap:5px">
+            <button class="ftoggle" id="ft3" onclick="toggleFilters(3)" title="Mostrar/ocultar filtros"><span class="arr">▼</span> FILTROS</button>
             <button class="rb" id="rb3" onclick="fetchCol(3)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
             <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(3,this.value)">
           </div>
         </div>
-        <div class="col-filters">
+        <div class="col-filters" id="cf3">
           <button class="fb active" onclick="setF(3,'all',this)">TODOS</button>
           <button class="fb fu" onclick="setF(3,'urgent',this)">URGENTE</button>
           <button class="fb fh" onclick="setF(3,'high',this)">DESTAQUE</button>
@@ -820,6 +828,13 @@ function upd(){
   document.getElementById('nCount').textContent=t+' notícias';
 }
 function setF(col,f,btn){state[col].f=f;btn.closest('.col-filters').querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderCol(col);}
+
+function toggleFilters(col){
+  const cf=document.getElementById('cf'+col);
+  const ft=document.getElementById('ft'+col);
+  const open=cf.classList.toggle('open');
+  ft.classList.toggle('open',open);
+}
 function filterCol(col,v){state[col].s=v;renderCol(col);}
 function setPrio(col,id,p,e){
   e.stopPropagation();
