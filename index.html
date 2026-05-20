@@ -47,12 +47,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 
 /* ── COLUMNS ── */
 .cols-wrap{display:flex;flex:1;overflow:hidden;}
-.col{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;min-width:200px;}
-.col-head{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 12px;height:36px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.col-label{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.1em;display:flex;align-items:center;gap:8px;}
-.col-dot{width:6px;height:6px;border-radius:50%;}
-.col-cnt{font-family:var(--font-mono);font-size:9px;color:var(--textm);background:var(--bg3);padding:1px 6px;border-radius:2px;}
-.col-srch{background:var(--bg);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:10px;padding:3px 8px;border-radius:2px;outline:none;width:85px;}
+/* Cada grupo é uma coluna vertical que contém 2 painéis empilhados */
+.col-group{display:flex;flex-direction:column;flex:1;overflow:hidden;min-width:180px;}
+.col{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;flex:1;min-height:60px;}
+.col-head{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 9px;height:34px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.col-label{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.08em;display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;}
+.col-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.col-cnt{font-family:var(--font-mono);font-size:8px;color:var(--textm);background:var(--bg3);padding:1px 5px;border-radius:2px;flex-shrink:0;}
+.col-label .lname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.col-srch{background:var(--bg);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:9px;padding:2px 5px;border-radius:2px;outline:none;width:68px;}
 .col-srch:focus{border-color:var(--blue);}
 .col-filters{display:flex;gap:3px;padding:5px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;overflow:hidden;max-height:0;transition:max-height .22s ease, padding .22s ease;padding-top:0;padding-bottom:0;}
 .col-filters.open{max-height:40px;padding:5px 10px;}
@@ -68,6 +71,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .nlist{flex:1;overflow-y:auto;overflow-x:hidden;}
 .nlist::-webkit-scrollbar{width:3px;}
 .nlist::-webkit-scrollbar-thumb{background:var(--borderl);}
+
+/* ── V-RESIZER (arrastar divisor entre painéis empilhados) ── */
+.v-resizer{height:3px;background:var(--border);cursor:row-resize;flex-shrink:0;transition:background .15s;z-index:5;}
+.v-resizer:hover,.v-resizer.vdrag{background:var(--blue);}
 
 /* ── NEWS ITEMS ── */
 /* Estilo MacroFloor: urgente = fundo vermelho, destaque = fundo amarelo escuro */
@@ -263,66 +270,165 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
   <div class="vpane active" id="pane-news">
     <div class="cols-wrap">
 
-      <!-- COL 1 BRASIL -->
-      <div class="col" id="col1" style="flex:1">
-        <div class="col-head">
-          <div class="col-label"><div class="col-dot" style="background:var(--green)"></div><span style="color:var(--green)">BRASIL / ECONOMIA BR</span><span class="col-cnt" id="cnt1">0</span></div>
-          <div style="display:flex;align-items:center;gap:5px">
-            <button class="ftoggle" id="ft1" onclick="toggleFilters(1)" title="Mostrar/ocultar filtros"><span class="arr">▼</span> FILTROS</button>
-            <button class="rb" id="rb1" onclick="fetchCol(1)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
-            <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(1,this.value)">
+      <!-- ═══ GRUPO 1 ═══ col1 (topo) + col4 (baixo) -->
+      <div class="col-group" id="grp1">
+
+        <div class="col" id="col1">
+          <div class="col-head">
+            <div class="col-label">
+              <div class="col-dot" style="background:var(--green)"></div>
+              <span class="lname" style="color:var(--green)">BRASIL / ECONOMIA</span>
+              <span class="col-cnt" id="cnt1">0</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <button class="ftoggle" id="ft1" onclick="toggleFilters(1)"><span class="arr">▼</span> FILTROS</button>
+              <button class="rb" id="rb1" onclick="fetchCol(1)"><i class="fas fa-sync-alt"></i></button>
+              <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(1,this.value)">
+            </div>
           </div>
+          <div class="col-filters" id="cf1">
+            <button class="fb active" onclick="setF(1,'all',this)">TODOS</button>
+            <button class="fb fu" onclick="setF(1,'urgent',this)">URGENTE</button>
+            <button class="fb fh" onclick="setF(1,'high',this)">DESTAQUE</button>
+            <button class="fb" onclick="setF(1,'bookmarked',this)">SALVOS</button>
+            <span class="fst loading" id="fst1">aguardando...</span>
+          </div>
+          <div class="nlist" id="list1"></div>
         </div>
-        <div class="col-filters" id="cf1">
-          <button class="fb active" onclick="setF(1,'all',this)">TODOS</button>
-          <button class="fb fu" onclick="setF(1,'urgent',this)">URGENTE</button>
-          <button class="fb fh" onclick="setF(1,'high',this)">DESTAQUE</button>
-          <button class="fb" onclick="setF(1,'bookmarked',this)">SALVOS</button>
-          <span class="fst loading" id="fst1">aguardando...</span>
+
+        <div class="v-resizer" id="vr1"></div>
+
+        <div class="col" id="col4">
+          <div class="col-head">
+            <div class="col-label">
+              <div class="col-dot" style="background:#00cc99"></div>
+              <span class="lname" style="color:#00cc99">BRASIL / POLÍTICA</span>
+              <span class="col-cnt" id="cnt4">0</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <button class="ftoggle" id="ft4" onclick="toggleFilters(4)"><span class="arr">▼</span> FILTROS</button>
+              <button class="rb" id="rb4" onclick="fetchCol(4)"><i class="fas fa-sync-alt"></i></button>
+              <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(4,this.value)">
+            </div>
+          </div>
+          <div class="col-filters" id="cf4">
+            <button class="fb active" onclick="setF(4,'all',this)">TODOS</button>
+            <button class="fb fu" onclick="setF(4,'urgent',this)">URGENTE</button>
+            <button class="fb fh" onclick="setF(4,'high',this)">DESTAQUE</button>
+            <button class="fb" onclick="setF(4,'bookmarked',this)">SALVOS</button>
+            <span class="fst loading" id="fst4">aguardando...</span>
+          </div>
+          <div class="nlist" id="list4"></div>
         </div>
-        <div class="nlist" id="list1"></div>
+
       </div>
       <div class="resizer" id="r1"></div>
 
-      <!-- COL 2 INTERNACIONAL -->
-      <div class="col" id="col2" style="flex:1">
-        <div class="col-head">
-          <div class="col-label"><div class="col-dot" style="background:var(--blue)"></div><span style="color:var(--blue)">INTERNACIONAL / POLÍTICA</span><span class="col-cnt" id="cnt2">0</span></div>
-          <div style="display:flex;align-items:center;gap:5px">
-            <button class="ftoggle" id="ft2" onclick="toggleFilters(2)" title="Mostrar/ocultar filtros"><span class="arr">▼</span> FILTROS</button>
-            <button class="rb" id="rb2" onclick="fetchCol(2)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
-            <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(2,this.value)">
+      <!-- ═══ GRUPO 2 ═══ col2 (topo) + col5 (baixo) -->
+      <div class="col-group" id="grp2">
+
+        <div class="col" id="col2">
+          <div class="col-head">
+            <div class="col-label">
+              <div class="col-dot" style="background:var(--blue)"></div>
+              <span class="lname" style="color:var(--blue)">INTERNACIONAL / POLÍTICA</span>
+              <span class="col-cnt" id="cnt2">0</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <button class="ftoggle" id="ft2" onclick="toggleFilters(2)"><span class="arr">▼</span> FILTROS</button>
+              <button class="rb" id="rb2" onclick="fetchCol(2)"><i class="fas fa-sync-alt"></i></button>
+              <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(2,this.value)">
+            </div>
           </div>
+          <div class="col-filters" id="cf2">
+            <button class="fb active" onclick="setF(2,'all',this)">TODOS</button>
+            <button class="fb fu" onclick="setF(2,'urgent',this)">URGENTE</button>
+            <button class="fb fh" onclick="setF(2,'high',this)">DESTAQUE</button>
+            <button class="fb" onclick="setF(2,'bookmarked',this)">SALVOS</button>
+            <span class="fst loading" id="fst2">aguardando...</span>
+          </div>
+          <div class="nlist" id="list2"></div>
         </div>
-        <div class="col-filters" id="cf2">
-          <button class="fb active" onclick="setF(2,'all',this)">TODOS</button>
-          <button class="fb fu" onclick="setF(2,'urgent',this)">URGENTE</button>
-          <button class="fb fh" onclick="setF(2,'high',this)">DESTAQUE</button>
-          <button class="fb" onclick="setF(2,'bookmarked',this)">SALVOS</button>
-          <span class="fst loading" id="fst2">aguardando...</span>
+
+        <div class="v-resizer" id="vr2"></div>
+
+        <div class="col" id="col5">
+          <div class="col-head">
+            <div class="col-label">
+              <div class="col-dot" style="background:#5599ff"></div>
+              <span class="lname" style="color:#5599ff">GUERRA / GEOPOLÍTICA</span>
+              <span class="col-cnt" id="cnt5">0</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <button class="ftoggle" id="ft5" onclick="toggleFilters(5)"><span class="arr">▼</span> FILTROS</button>
+              <button class="rb" id="rb5" onclick="fetchCol(5)"><i class="fas fa-sync-alt"></i></button>
+              <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(5,this.value)">
+            </div>
+          </div>
+          <div class="col-filters" id="cf5">
+            <button class="fb active" onclick="setF(5,'all',this)">TODOS</button>
+            <button class="fb fu" onclick="setF(5,'urgent',this)">URGENTE</button>
+            <button class="fb fh" onclick="setF(5,'high',this)">DESTAQUE</button>
+            <button class="fb" onclick="setF(5,'bookmarked',this)">SALVOS</button>
+            <span class="fst loading" id="fst5">aguardando...</span>
+          </div>
+          <div class="nlist" id="list5"></div>
         </div>
-        <div class="nlist" id="list2"></div>
+
       </div>
       <div class="resizer" id="r2"></div>
 
-      <!-- COL 3 MACRO -->
-      <div class="col" id="col3" style="flex:1">
-        <div class="col-head">
-          <div class="col-label"><div class="col-dot" style="background:var(--gold)"></div><span style="color:var(--gold)">MERCADOS / TECNOLOGIA</span><span class="col-cnt" id="cnt3">0</span></div>
-          <div style="display:flex;align-items:center;gap:5px">
-            <button class="ftoggle" id="ft3" onclick="toggleFilters(3)" title="Mostrar/ocultar filtros"><span class="arr">▼</span> FILTROS</button>
-            <button class="rb" id="rb3" onclick="fetchCol(3)" title="Atualizar agora"><i class="fas fa-sync-alt"></i></button>
-            <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(3,this.value)">
+      <!-- ═══ GRUPO 3 ═══ col3 (topo) + col6 (baixo) -->
+      <div class="col-group" id="grp3">
+
+        <div class="col" id="col3">
+          <div class="col-head">
+            <div class="col-label">
+              <div class="col-dot" style="background:var(--gold)"></div>
+              <span class="lname" style="color:var(--gold)">MERCADOS / TECNOLOGIA</span>
+              <span class="col-cnt" id="cnt3">0</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <button class="ftoggle" id="ft3" onclick="toggleFilters(3)"><span class="arr">▼</span> FILTROS</button>
+              <button class="rb" id="rb3" onclick="fetchCol(3)"><i class="fas fa-sync-alt"></i></button>
+              <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(3,this.value)">
+            </div>
           </div>
+          <div class="col-filters" id="cf3">
+            <button class="fb active" onclick="setF(3,'all',this)">TODOS</button>
+            <button class="fb fu" onclick="setF(3,'urgent',this)">URGENTE</button>
+            <button class="fb fh" onclick="setF(3,'high',this)">DESTAQUE</button>
+            <button class="fb" onclick="setF(3,'bookmarked',this)">SALVOS</button>
+            <span class="fst loading" id="fst3">aguardando...</span>
+          </div>
+          <div class="nlist" id="list3"></div>
         </div>
-        <div class="col-filters" id="cf3">
-          <button class="fb active" onclick="setF(3,'all',this)">TODOS</button>
-          <button class="fb fu" onclick="setF(3,'urgent',this)">URGENTE</button>
-          <button class="fb fh" onclick="setF(3,'high',this)">DESTAQUE</button>
-          <button class="fb" onclick="setF(3,'bookmarked',this)">SALVOS</button>
-          <span class="fst loading" id="fst3">aguardando...</span>
+
+        <div class="v-resizer" id="vr3"></div>
+
+        <div class="col" id="col6">
+          <div class="col-head">
+            <div class="col-label">
+              <div class="col-dot" style="background:#ff9f43"></div>
+              <span class="lname" style="color:#ff9f43">ENERGIA / COMMODITIES</span>
+              <span class="col-cnt" id="cnt6">0</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <button class="ftoggle" id="ft6" onclick="toggleFilters(6)"><span class="arr">▼</span> FILTROS</button>
+              <button class="rb" id="rb6" onclick="fetchCol(6)"><i class="fas fa-sync-alt"></i></button>
+              <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(6,this.value)">
+            </div>
+          </div>
+          <div class="col-filters" id="cf6">
+            <button class="fb active" onclick="setF(6,'all',this)">TODOS</button>
+            <button class="fb fu" onclick="setF(6,'urgent',this)">URGENTE</button>
+            <button class="fb fh" onclick="setF(6,'high',this)">DESTAQUE</button>
+            <button class="fb" onclick="setF(6,'bookmarked',this)">SALVOS</button>
+            <span class="fst loading" id="fst6">aguardando...</span>
+          </div>
+          <div class="nlist" id="list6"></div>
         </div>
-        <div class="nlist" id="list3"></div>
+
       </div>
 
       <!-- YOUTUBE -->
@@ -491,36 +597,46 @@ const NEWS_API_KEY = 'f152991e970d4a4aad5c1f43155e28ca';
 
 const SRCI={br:{n:'Brasil',f:'🇧🇷',r:'América do Sul'},us:{n:'EUA / Global',f:'🇺🇸',r:'América do Norte'},eu:{n:'Europa',f:'🇪🇺',r:'Europa'},asia:{n:'Ásia',f:'🌏',r:'Ásia-Pacífico'}};
 const SL={br:'BR',us:'US',eu:'EU',asia:'ASIA'};
-const COL_NAMES={1:'Brasil / Economia BR',2:'Internacional / Política',3:'Mercados / Tecnologia'};
+const COL_NAMES={1:'Brasil / Economia',2:'Internacional / Política',3:'Mercados / Tecnologia',4:'Brasil / Política',5:'Guerra / Geopolítica',6:'Energia / Commodities'};
 const SRC_CLS_MAP={br:'s-br',us:'s-us',eu:'s-eu',asia:'s-asia'};
 
 // ── NewsAPI: queries por coluna ──
 const NEWSAPI_QUERIES = {
   1: [
-    // Brasil / Economia BR — PT + EN
-    {q:'economia brasil',     language:'pt', src:'br', label:'NewsAPI · Brasil'},
-    {q:'mercado financeiro brasil', language:'pt', src:'br', label:'NewsAPI · Finanças BR'},
-    {q:'política brasil',     language:'pt', src:'br', label:'NewsAPI · Política BR'},
-    {q:'brazil economy',      language:'en', src:'us', label:'NewsAPI · Brazil EN'},
-    {q:'banco central brasil selic', language:'pt', src:'br', label:'NewsAPI · BCB'},
+    {q:'economia brasil',              language:'pt', src:'br', label:'NewsAPI · Brasil'},
+    {q:'mercado financeiro brasil',    language:'pt', src:'br', label:'NewsAPI · Finanças BR'},
+    {q:'brazil economy',               language:'en', src:'us', label:'NewsAPI · Brazil EN'},
+    {q:'banco central brasil selic',   language:'pt', src:'br', label:'NewsAPI · BCB'},
   ],
   2: [
-    // Internacional / Política — EN + PT
-    {q:'world politics',      language:'en', src:'us', label:'NewsAPI · World'},
-    {q:'international news',  language:'en', src:'eu', label:'NewsAPI · Intl'},
-    {q:'us politics trump',   language:'en', src:'us', label:'NewsAPI · US Politics'},
-    {q:'europa política',     language:'pt', src:'eu', label:'NewsAPI · Europa PT'},
-    {q:'guerra conflito',     language:'pt', src:'br', label:'NewsAPI · Conflitos'},
-    {q:'geopolitics sanctions',language:'en',src:'us', label:'NewsAPI · Geopolitics'},
+    {q:'world politics',               language:'en', src:'us', label:'NewsAPI · World'},
+    {q:'international news',           language:'en', src:'eu', label:'NewsAPI · Intl'},
+    {q:'us politics trump',            language:'en', src:'us', label:'NewsAPI · US Politics'},
+    {q:'europa política',              language:'pt', src:'eu', label:'NewsAPI · Europa PT'},
   ],
   3: [
-    // Mercados / Tecnologia — EN + PT
-    {q:'stock market finance', language:'en', src:'us', label:'NewsAPI · Markets'},
+    {q:'stock market finance',         language:'en', src:'us', label:'NewsAPI · Markets'},
     {q:'technology artificial intelligence', language:'en', src:'us', label:'NewsAPI · Tech AI'},
-    {q:'bitcoin crypto',      language:'en', src:'us', label:'NewsAPI · Crypto'},
-    {q:'mercados ações commodities', language:'pt', src:'br', label:'NewsAPI · Mercados PT'},
-    {q:'tecnologia inovação', language:'pt', src:'br', label:'NewsAPI · Tech PT'},
-    {q:'oil energy commodities',language:'en',src:'us', label:'NewsAPI · Energy'},
+    {q:'bitcoin crypto',               language:'en', src:'us', label:'NewsAPI · Crypto'},
+    {q:'mercados ações',               language:'pt', src:'br', label:'NewsAPI · Mercados PT'},
+  ],
+  4: [
+    {q:'política brasil governo',      language:'pt', src:'br', label:'NewsAPI · Política BR'},
+    {q:'lula congresso senado',        language:'pt', src:'br', label:'NewsAPI · Congresso'},
+    {q:'eleições partidos brasil',     language:'pt', src:'br', label:'NewsAPI · Eleições'},
+    {q:'brazil politics',              language:'en', src:'us', label:'NewsAPI · Brazil Politics EN'},
+  ],
+  5: [
+    {q:'guerra conflito',              language:'pt', src:'br', label:'NewsAPI · Conflitos PT'},
+    {q:'war ukraine russia',           language:'en', src:'us', label:'NewsAPI · Ukraine'},
+    {q:'middle east conflict',         language:'en', src:'us', label:'NewsAPI · Middle East'},
+    {q:'geopolitics sanctions nato',   language:'en', src:'us', label:'NewsAPI · Geopolitics'},
+  ],
+  6: [
+    {q:'oil energy crude',             language:'en', src:'us', label:'NewsAPI · Oil'},
+    {q:'commodities gold silver',      language:'en', src:'us', label:'NewsAPI · Commodities'},
+    {q:'petróleo energia',             language:'pt', src:'br', label:'NewsAPI · Petróleo PT'},
+    {q:'natural gas lng',              language:'en', src:'us', label:'NewsAPI · Gas'},
   ],
 };
 
@@ -546,6 +662,21 @@ const FEEDS = {
     {url:'https://feeds.bbci.co.uk/news/technology/rss.xml',  label:'BBC Tech',           src:'eu'},
     {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',  src:'us'},
     {url:'https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml',label:'NYT Tech',  src:'us'},
+  ],
+  4: [
+    {url:'https://agenciabrasil.ebc.com.br/politica/feed/',   label:'Agência Brasil Pol.',src:'br'},
+    {url:'https://g1.globo.com/rss/g1/politica/',             label:'G1 Política',        src:'br'},
+    {url:'https://www.infomoney.com.br/economia/feed/',        label:'InfoMoney Econ.',    src:'br'},
+  ],
+  5: [
+    {url:'https://feeds.bbci.co.uk/news/world/rss.xml',       label:'BBC World',          src:'eu'},
+    {url:'https://feeds.reuters.com/reuters/worldNews',        label:'Reuters World',      src:'us'},
+    {url:'https://feeds.bbci.co.uk/news/world/europe/rss.xml',label:'BBC Europe',         src:'eu'},
+  ],
+  6: [
+    {url:'https://feeds.reuters.com/reuters/businessNews',     label:'Reuters Business',   src:'us'},
+    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',  src:'us'},
+    {url:'https://www.infomoney.com.br/mercados/feed/',        label:'InfoMoney Mercados', src:'br'},
   ],
 };
 
@@ -648,11 +779,11 @@ const KW_HIGH = ['ibovespa','bolsa','mercado','market','pib','gdp','câmbio','d�
   'artificial intelligence','inteligência artificial','tech','tecnologia','sanções','sanctions'];
 
 // Estado global
-let allItems   = {1:[],2:[],3:[]};
+let allItems   = {1:[],2:[],3:[],4:[],5:[],6:[]};
 let seenIds    = new Set();
 let bmk        = new Set();
 let ytOn=false, paused=false, activeM=null, mktTimer=null, autoTimer=null, countdownTimer=null;
-let state      = {1:{f:'all',s:''},2:{f:'all',s:''},3:{f:'all',s:''},sort:false};
+let state      = {1:{f:'all',s:''},2:{f:'all',s:''},3:{f:'all',s:''},4:{f:'all',s:''},5:{f:'all',s:''},6:{f:'all',s:''},sort:false};
 let autoMs     = 90000;
 let countdown  = 0;
 
@@ -754,7 +885,7 @@ async function fetchCol(col){
 async function refreshAll(){
   const icon=document.getElementById('gri');
   if(icon) icon.style.animation='spin2 .7s linear infinite';
-  await Promise.all([fetchCol(1),fetchCol(2),fetchCol(3)]);
+  await Promise.all([1,2,3,4,5,6].map(c=>fetchCol(c)));
   if(icon) icon.style.animation='';
   document.getElementById('nUpdate').textContent='Atualizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   resetCountdown();
@@ -824,7 +955,7 @@ function renderCol(col){
 }
 
 function upd(){
-  let t=0;[1,2,3].forEach(c=>t+=allItems[c].length);
+  let t=0;[1,2,3,4,5,6].forEach(c=>t+=allItems[c].length);
   document.getElementById('nCount').textContent=t+' notícias';
 }
 function setF(col,f,btn){state[col].f=f;btn.closest('.col-filters').querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderCol(col);}
@@ -844,7 +975,7 @@ function setPrio(col,id,p,e){
   }
 }
 function toggleBmk(id,col,e){e.stopPropagation();bmk.has(id)?bmk.delete(id):bmk.add(id);renderCol(col);}
-function toggleSort(){state.sort=!state.sort;document.getElementById('sortBtn').classList.toggle('on',state.sort);[1,2,3].forEach(renderCol);}
+function toggleSort(){state.sort=!state.sort;document.getElementById('sortBtn').classList.toggle('on',state.sort);[1,2,3,4,5,6].forEach(renderCol);}
 function pauseFeed(){
   paused=!paused;
   document.getElementById('pi').className=paused?'fas fa-play':'fas fa-pause';
@@ -989,12 +1120,25 @@ function setTheme(n,btn){document.querySelectorAll('.thmb').forEach(b=>b.classLi
 
 // ── RESIZERS ──
 function initResizers(){
-  [['r1','col1','col2'],['r2','col2','col3']].forEach(([rid,lid,rid2])=>{
+  // Horizontal resizers entre grupos (largura)
+  [['r1','grp1','grp2'],['r2','grp2','grp3']].forEach(([rid,lid,rid2])=>{
     const r=document.getElementById(rid),L=document.getElementById(lid),R=document.getElementById(rid2);
+    if(!r||!L||!R) return;
     let drag=false,sx,sl,sr;
     r.addEventListener('mousedown',e=>{drag=true;sx=e.clientX;sl=L.offsetWidth;sr=R.offsetWidth;r.classList.add('drag');document.body.style.cursor='col-resize';document.body.style.userSelect='none';});
-    document.addEventListener('mousemove',e=>{if(!drag)return;const dx=e.clientX-sx;L.style.flex='none';R.style.flex='none';L.style.width=Math.max(200,sl+dx)+'px';R.style.width=Math.max(200,sr-dx)+'px';});
+    document.addEventListener('mousemove',e=>{if(!drag)return;const dx=e.clientX-sx;L.style.flex='none';R.style.flex='none';L.style.width=Math.max(180,sl+dx)+'px';R.style.width=Math.max(180,sr-dx)+'px';});
     document.addEventListener('mouseup',()=>{if(!drag)return;drag=false;r.classList.remove('drag');document.body.style.cursor='';document.body.style.userSelect='';});
+  });
+
+  // Vertical resizers dentro de cada grupo (altura dos painéis)
+  // vr1 entre col1 e col4, vr2 entre col2 e col5, vr3 entre col3 e col6
+  [['vr1','col1','col4'],['vr2','col2','col5'],['vr3','col3','col6']].forEach(([rid,topId,botId])=>{
+    const r=document.getElementById(rid),T=document.getElementById(topId),B=document.getElementById(botId);
+    if(!r||!T||!B) return;
+    let drag=false,sy,th,bh;
+    r.addEventListener('mousedown',e=>{drag=true;sy=e.clientY;th=T.offsetHeight;bh=B.offsetHeight;r.classList.add('vdrag');document.body.style.cursor='row-resize';document.body.style.userSelect='none';e.preventDefault();});
+    document.addEventListener('mousemove',e=>{if(!drag)return;const dy=e.clientY-sy;T.style.flex='none';B.style.flex='none';T.style.height=Math.max(60,th+dy)+'px';B.style.height=Math.max(60,bh-dy)+'px';});
+    document.addEventListener('mouseup',()=>{if(!drag)return;drag=false;r.classList.remove('vdrag');document.body.style.cursor='';document.body.style.userSelect='';});
   });
 }
 
@@ -1011,10 +1155,13 @@ function initClock(){const u=()=>document.getElementById('clock').textContent=ne
 initClock();
 initResizers();
 
-// Carrega as 3 colunas com delay escalonado (NewsAPI + RSS em paralelo)
-setTimeout(()=>fetchCol(1), 300);
-setTimeout(()=>fetchCol(2), 700);
-setTimeout(()=>fetchCol(3), 1100);
+// Carrega as 6 colunas com delay escalonado (NewsAPI + RSS em paralelo)
+setTimeout(()=>fetchCol(1), 200);
+setTimeout(()=>fetchCol(4), 400);
+setTimeout(()=>fetchCol(2), 600);
+setTimeout(()=>fetchCol(5), 800);
+setTimeout(()=>fetchCol(3), 1000);
+setTimeout(()=>fetchCol(6), 1200);
 
 // Auto-refresh
 setTimeout(()=>startAutoTimer(), 2000);
