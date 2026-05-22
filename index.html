@@ -452,6 +452,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
           <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCz3VGZY1uQoJhQOkf0uRKNQ')">Bloomberg</button>
           <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCN-o3Fhqe7dSFmlqG88QFSA')">CNBC</button>
           <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCIALMKvObZNtJ6AmdCLP7Lg')">Reuters TV</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UC16niRr50-MSBwiO3YDb3RA')">BBC News</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCNye-wNBqNL5ZzHSJj3l8Bg')">Al Jazeera</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCGovLWVGwwKqnCy7V5MYoKQ')">Sky News</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCBi2mrWuNuyYy4gbM6fU18Q')">ABC News</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCVTyTA7-g9nopHeHbeuvpRA')">DW News</button>
+          <button class="yt-p" onclick="loadYTP('https://www.youtube.com/embed/live_stream?channel=UCeY0bbntWzzVIaj2z3QigXg')">NBC News</button>
         </div>
         <div class="yt-embed" id="ytEmbed">
           <div class="yt-ph"><i class="fab fa-youtube"></i><p>Cole uma URL ou escolha um canal</p></div>
@@ -564,6 +570,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
       <div class="sg">
         <div class="slbl">Intervalo de Atualização</div>
         <div class="szbts">
+          <button class="szb" onclick="setAutoInterval(30000);markAI(this)">30s</button>
           <button class="szb" onclick="setAutoInterval(60000);markAI(this)">1 min</button>
           <button class="szb on" id="aiBtn90" onclick="setAutoInterval(90000);markAI(this)">90s</button>
           <button class="szb" onclick="setAutoInterval(180000);markAI(this)">3 min</button>
@@ -612,76 +619,132 @@ const NEWSAPI_QUERIES = {
     {q:'mercado financeiro brasil',    language:'pt', src:'br', label:'NewsAPI · Finanças BR'},
     {q:'brazil economy',               language:'en', src:'us', label:'NewsAPI · Brazil EN'},
     {q:'banco central brasil selic',   language:'pt', src:'br', label:'NewsAPI · BCB'},
+    {q:'ibovespa bolsa valores',       language:'pt', src:'br', label:'NewsAPI · Ibovespa'},
+    {q:'ipca inflação brasil',         language:'pt', src:'br', label:'NewsAPI · Inflação'},
   ],
   2: [
     {q:'world politics',               language:'en', src:'us', label:'NewsAPI · World'},
     {q:'international news',           language:'en', src:'eu', label:'NewsAPI · Intl'},
     {q:'us politics trump',            language:'en', src:'us', label:'NewsAPI · US Politics'},
     {q:'europa política',              language:'pt', src:'eu', label:'NewsAPI · Europa PT'},
+    {q:'united nations diplomacy',     language:'en', src:'eu', label:'NewsAPI · UN'},
+    {q:'china usa relations',          language:'en', src:'asia',label:'NewsAPI · China-US'},
   ],
   3: [
     {q:'stock market finance',         language:'en', src:'us', label:'NewsAPI · Markets'},
     {q:'technology artificial intelligence', language:'en', src:'us', label:'NewsAPI · Tech AI'},
-    {q:'bitcoin crypto',               language:'en', src:'us', label:'NewsAPI · Crypto'},
+    {q:'bitcoin crypto blockchain',    language:'en', src:'us', label:'NewsAPI · Crypto'},
     {q:'mercados ações',               language:'pt', src:'br', label:'NewsAPI · Mercados PT'},
+    {q:'federal reserve interest rates',language:'en',src:'us', label:'NewsAPI · Fed'},
+    {q:'nasdaq sp500 dow jones',       language:'en', src:'us', label:'NewsAPI · Wall St'},
   ],
   4: [
     {q:'política brasil governo',      language:'pt', src:'br', label:'NewsAPI · Política BR'},
     {q:'lula congresso senado',        language:'pt', src:'br', label:'NewsAPI · Congresso'},
     {q:'eleições partidos brasil',     language:'pt', src:'br', label:'NewsAPI · Eleições'},
     {q:'brazil politics',              language:'en', src:'us', label:'NewsAPI · Brazil Politics EN'},
+    {q:'supremo tribunal federal STF', language:'pt', src:'br', label:'NewsAPI · STF'},
+    {q:'câmara deputados votação',     language:'pt', src:'br', label:'NewsAPI · Câmara'},
   ],
   5: [
     {q:'guerra conflito',              language:'pt', src:'br', label:'NewsAPI · Conflitos PT'},
     {q:'war ukraine russia',           language:'en', src:'us', label:'NewsAPI · Ukraine'},
-    {q:'middle east conflict',         language:'en', src:'us', label:'NewsAPI · Middle East'},
+    {q:'middle east conflict israel',  language:'en', src:'us', label:'NewsAPI · Middle East'},
     {q:'geopolitics sanctions nato',   language:'en', src:'us', label:'NewsAPI · Geopolitics'},
+    {q:'taiwan china military',        language:'en', src:'asia',label:'NewsAPI · Taiwan'},
+    {q:'russia putin sanctions',       language:'en', src:'eu', label:'NewsAPI · Russia'},
   ],
   6: [
     {q:'oil energy crude',             language:'en', src:'us', label:'NewsAPI · Oil'},
     {q:'commodities gold silver',      language:'en', src:'us', label:'NewsAPI · Commodities'},
     {q:'petróleo energia',             language:'pt', src:'br', label:'NewsAPI · Petróleo PT'},
     {q:'natural gas lng',              language:'en', src:'us', label:'NewsAPI · Gas'},
+    {q:'renewable energy solar wind',  language:'en', src:'eu', label:'NewsAPI · Renewables'},
+    {q:'opec oil production',          language:'en', src:'us', label:'NewsAPI · OPEC'},
   ],
 };
 
 // ── RSS feeds por coluna (fallback e volume extra) ──
 const FEEDS = {
   1: [
-    {url:'https://www.infomoney.com.br/economia/feed/',        label:'InfoMoney Economia', src:'br'},
-    {url:'https://agenciabrasil.ebc.com.br/economia/feed/',   label:'Agência Brasil',     src:'br'},
-    {url:'https://g1.globo.com/rss/g1/economia/',             label:'G1 Economia',        src:'br'},
-    {url:'https://valor.globo.com/rss/financas/',             label:'Valor Econômico',    src:'br'},
-    {url:'https://www.infomoney.com.br/mercados/feed/',        label:'InfoMoney Mercados', src:'br'},
+    // Brasil Economia
+    {url:'https://www.infomoney.com.br/economia/feed/',              label:'InfoMoney Economia',   src:'br'},
+    {url:'https://www.infomoney.com.br/mercados/feed/',              label:'InfoMoney Mercados',   src:'br'},
+    {url:'https://www.infomoney.com.br/onde-investir/feed/',         label:'InfoMoney Investir',   src:'br'},
+    {url:'https://agenciabrasil.ebc.com.br/economia/feed/',         label:'Agência Brasil Econ.', src:'br'},
+    {url:'https://g1.globo.com/rss/g1/economia/',                   label:'G1 Economia',          src:'br'},
+    {url:'https://valor.globo.com/rss/financas/',                   label:'Valor Econômico',      src:'br'},
+    {url:'https://valor.globo.com/rss/brasil/',                     label:'Valor Brasil',         src:'br'},
+    {url:'https://www.estadao.com.br/economia/feed/',               label:'Estadão Economia',     src:'br'},
+    {url:'https://feeds.folha.uol.com.br/mercado/rss091.xml',       label:'Folha Mercado',        src:'br'},
+    {url:'https://www.cnnbrasil.com.br/economy/feed/',              label:'CNN Brasil Econ.',     src:'br'},
+    {url:'https://feeds.reuters.com/reuters/businessNews',           label:'Reuters Business',     src:'us'},
+    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',          src:'us'},
   ],
   2: [
-    {url:'https://feeds.bbci.co.uk/news/world/rss.xml',       label:'BBC World',          src:'eu'},
-    {url:'https://feeds.reuters.com/reuters/worldNews',        label:'Reuters World',      src:'us'},
-    {url:'https://feeds.bbci.co.uk/news/business/rss.xml',    label:'BBC Business',       src:'eu'},
-    {url:'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', label:'NYT World',     src:'us'},
-    {url:'https://www.ft.com/?format=rss',                    label:'Financial Times',    src:'eu'},
+    // Internacional / Política
+    {url:'https://feeds.bbci.co.uk/news/world/rss.xml',             label:'BBC World',            src:'eu'},
+    {url:'https://feeds.reuters.com/reuters/worldNews',              label:'Reuters World',        src:'us'},
+    {url:'https://feeds.bbci.co.uk/news/business/rss.xml',          label:'BBC Business',         src:'eu'},
+    {url:'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',  label:'NYT World',            src:'us'},
+    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml',label:'NYT Politics',        src:'us'},
+    {url:'https://www.ft.com/?format=rss',                          label:'Financial Times',      src:'eu'},
+    {url:'https://feeds.washingtonpost.com/rss/world',              label:'Washington Post World',src:'us'},
+    {url:'https://feeds.washingtonpost.com/rss/politics',           label:'Washington Post Pol.', src:'us'},
+    {url:'https://feeds.skynews.com/feeds/rss/world.xml',           label:'Sky News World',       src:'eu'},
+    {url:'https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml',label:'BBC US & Canada',     src:'us'},
+    {url:'https://feeds.bbci.co.uk/news/world/latin_america/rss.xml',label:'BBC América Latina',  src:'eu'},
+    {url:'https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada',label:'El País',      src:'eu'},
+    {url:'https://www.dw.com/rss/rss-br-all/s-9977',               label:'Deutsche Welle PT',    src:'eu'},
   ],
   3: [
-    {url:'https://www.infomoney.com.br/onde-investir/feed/',  label:'InfoMoney Invest.',  src:'br'},
-    {url:'https://feeds.reuters.com/reuters/businessNews',     label:'Reuters Business',   src:'us'},
-    {url:'https://feeds.bbci.co.uk/news/technology/rss.xml',  label:'BBC Tech',           src:'eu'},
-    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',  src:'us'},
-    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml',label:'NYT Tech',  src:'us'},
+    // Mercados / Tecnologia
+    {url:'https://feeds.reuters.com/reuters/businessNews',           label:'Reuters Business',     src:'us'},
+    {url:'https://feeds.bbci.co.uk/news/technology/rss.xml',        label:'BBC Tech',             src:'eu'},
+    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml',label:'NYT Tech',          src:'us'},
+    {url:'https://feeds.washingtonpost.com/rss/business/technology',label:'WPost Tech',           src:'us'},
+    {url:'https://www.infomoney.com.br/onde-investir/feed/',         label:'InfoMoney Invest.',    src:'br'},
+    {url:'https://valor.globo.com/rss/financas/',                   label:'Valor Econômico',      src:'br'},
+    {url:'https://www.estadao.com.br/economia/feed/',               label:'Estadão Economia',     src:'br'},
+    {url:'https://feeds.folha.uol.com.br/mercado/rss091.xml',       label:'Folha Mercado',        src:'br'},
+    {url:'https://techcrunch.com/feed/',                            label:'TechCrunch',           src:'us'},
+    {url:'https://feeds.feedburner.com/TheHackersNews',             label:'The Hacker News',      src:'us'},
+    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',          src:'us'},
   ],
   4: [
-    {url:'https://agenciabrasil.ebc.com.br/politica/feed/',   label:'Agência Brasil Pol.',src:'br'},
-    {url:'https://g1.globo.com/rss/g1/politica/',             label:'G1 Política',        src:'br'},
-    {url:'https://www.infomoney.com.br/economia/feed/',        label:'InfoMoney Econ.',    src:'br'},
+    // Brasil / Política
+    {url:'https://agenciabrasil.ebc.com.br/politica/feed/',         label:'Agência Brasil Pol.',  src:'br'},
+    {url:'https://g1.globo.com/rss/g1/politica/',                   label:'G1 Política',          src:'br'},
+    {url:'https://feeds.folha.uol.com.br/poder/rss091.xml',         label:'Folha Poder',          src:'br'},
+    {url:'https://www.estadao.com.br/politica/feed/',               label:'Estadão Política',     src:'br'},
+    {url:'https://www.cnnbrasil.com.br/politica/feed/',             label:'CNN Brasil Política',  src:'br'},
+    {url:'https://valor.globo.com/rss/brasil/',                     label:'Valor Brasil',         src:'br'},
+    {url:'https://feeds.bbci.co.uk/portuguese/brazil/rss.xml',      label:'BBC Brasil',           src:'eu'},
+    {url:'https://www.dw.com/rss/rss-br-all/s-9977',               label:'Deutsche Welle PT',    src:'eu'},
   ],
   5: [
-    {url:'https://feeds.bbci.co.uk/news/world/rss.xml',       label:'BBC World',          src:'eu'},
-    {url:'https://feeds.reuters.com/reuters/worldNews',        label:'Reuters World',      src:'us'},
-    {url:'https://feeds.bbci.co.uk/news/world/europe/rss.xml',label:'BBC Europe',         src:'eu'},
+    // Guerra / Geopolítica
+    {url:'https://feeds.bbci.co.uk/news/world/rss.xml',             label:'BBC World',            src:'eu'},
+    {url:'https://feeds.reuters.com/reuters/worldNews',              label:'Reuters World',        src:'us'},
+    {url:'https://feeds.bbci.co.uk/news/world/europe/rss.xml',      label:'BBC Europe',           src:'eu'},
+    {url:'https://feeds.bbci.co.uk/news/world/middle_east/rss.xml', label:'BBC Middle East',      src:'eu'},
+    {url:'https://feeds.bbci.co.uk/news/world/asia/rss.xml',        label:'BBC Asia',             src:'asia'},
+    {url:'https://feeds.skynews.com/feeds/rss/world.xml',           label:'Sky News World',       src:'eu'},
+    {url:'https://feeds.washingtonpost.com/rss/world',              label:'WPost World',          src:'us'},
+    {url:'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',  label:'NYT World',            src:'us'},
+    {url:'https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada',label:'El País',      src:'eu'},
+    {url:'https://www.dw.com/rss/rss-br-all/s-9977',               label:'Deutsche Welle PT',    src:'eu'},
   ],
   6: [
-    {url:'https://feeds.reuters.com/reuters/businessNews',     label:'Reuters Business',   src:'us'},
-    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',  src:'us'},
-    {url:'https://www.infomoney.com.br/mercados/feed/',        label:'InfoMoney Mercados', src:'br'},
+    // Energia / Commodities
+    {url:'https://feeds.reuters.com/reuters/businessNews',           label:'Reuters Business',     src:'us'},
+    {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',          src:'us'},
+    {url:'https://www.infomoney.com.br/mercados/feed/',              label:'InfoMoney Mercados',   src:'br'},
+    {url:'https://valor.globo.com/rss/financas/',                   label:'Valor Econômico',      src:'br'},
+    {url:'https://www.infomoney.com.br/onde-investir/feed/',         label:'InfoMoney Invest.',    src:'br'},
+    {url:'https://feeds.washingtonpost.com/rss/business',           label:'WPost Business',       src:'us'},
+    {url:'https://feeds.folha.uol.com.br/mercado/rss091.xml',       label:'Folha Mercado',        src:'br'},
+    {url:'https://feeds.bbci.co.uk/news/business/rss.xml',          label:'BBC Business',         src:'eu'},
   ],
 };
 
@@ -777,11 +840,19 @@ const KW_URGENT = ['selic','copom','fed','juros','inflação','inflation','inter
   'banco central','central bank','guerra','war','crash','crise','crisis','desaba',
   'dispara','mínima histórica','máxima histórica','recessão','recession','default',
   'urgente','breaking','alert','alerta','petróleo','oil surge','rate hike','rate cut',
-  'impeachment','golpe','coup','ataque','attack','explosão','colapso','collapse'];
+  'impeachment','golpe','coup','ataque','attack','explosão','colapso','collapse',
+  'terremoto','earthquake','tsunami','furacão','hurricane','tornado','catástrofe',
+  'sanções','sanctions','embargo','guerra comercial','trade war','invasão','invasion',
+  'assassinato','assassination','colapso bancário','bank run','falência','bankruptcy',
+  'emergência','emergency','lockdown','quarentena','quarantine'];
 const KW_HIGH = ['ibovespa','bolsa','mercado','market','pib','gdp','câmbio','dólar',
   'dollar','trump','lula','powell','haddad','resultado','earnings','lucro','ipca','cpi',
   'commodities','ouro','gold','bitcoin','taxa','economy','economia','stocks','ações',
-  'artificial intelligence','inteligência artificial','tech','tecnologia','sanções','sanctions'];
+  'artificial intelligence','inteligência artificial','tech','tecnologia','sanções','sanctions',
+  'china','russia','ukraine','israel','iran','nato','opec','petrobras','vale','embraer',
+  'real','euro','iene','yen','libra','sterling','fed','bce','ecb','imf','fmi','world bank',
+  'acordo','deal','eleição','election','reforma','reform','privatização','privatization',
+  'déficit','surplus','superávit','dívida','debt','pix','bacen','tesouro','treasury'];
 
 // Estado global
 let allItems   = {1:[],2:[],3:[],4:[],5:[],6:[]};
