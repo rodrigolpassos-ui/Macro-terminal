@@ -777,8 +777,11 @@ async function fetchNewsAPI(queryObj){
 
 // ── Parser XML RSS manual ──
 function parseRSSXml(xmlText){
+  // Remove a declaração de encoding para que o DOMParser não tente re-decodificar
+  // o texto (já foi decodificado corretamente pelo TextDecoder)
+  const sanitized=xmlText.replace(/(<\?xml[^?]*?)encoding=["'][^"']*["']([^?]*?\?>)/i,'$1encoding="UTF-8"$2');
   const parser=new DOMParser();
-  const doc=parser.parseFromString(xmlText,'application/xml');
+  const doc=parser.parseFromString(sanitized,'application/xml');
   const items=doc.querySelectorAll('item');
   const results=[];
   items.forEach(it=>{
@@ -792,17 +795,28 @@ function parseRSSXml(xmlText){
   return results;
 }
 
+// ── Decodifica resposta respeitando o charset declarado no XML ──
+async function decodeXmlResponse(response){
+  const buf=await response.arrayBuffer();
+  // Lê os primeiros bytes como Latin-1 só para detectar o encoding declarado
+  const probe=new TextDecoder('iso-8859-1').decode(buf.slice(0,500));
+  const m=probe.match(/<?xml[^>]+encoding=["']([^"']+)["']/i);
+  const enc=(m&&m[1])||'utf-8';
+  try{return new TextDecoder(enc).decode(buf);}
+  catch(e){return new TextDecoder('utf-8').decode(buf);}
+}
+
 // ── RSS: estratégia multi-proxy em cascata ──
 async function fetchWithProxy(feedUrl){
   try{
     const ao=`https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}&t=${Date.now()}`;
     const r=await fetch(ao,{signal:AbortSignal.timeout(8000)});
-    if(r.ok){const txt=await r.text();if(txt.includes('<item>')||txt.includes('<entry>'))return{mode:'xml',data:txt};}
+    if(r.ok){const txt=await decodeXmlResponse(r);if(txt.includes('<item>')||txt.includes('<entry>'))return{mode:'xml',data:txt};}
   }catch(e){}
   try{
     const cp=`https://corsproxy.io/?${encodeURIComponent(feedUrl)}`;
     const r=await fetch(cp,{signal:AbortSignal.timeout(8000)});
-    if(r.ok){const txt=await r.text();if(txt.includes('<item>')||txt.includes('<entry>'))return{mode:'xml',data:txt};}
+    if(r.ok){const txt=await decodeXmlResponse(r);if(txt.includes('<item>')||txt.includes('<entry>'))return{mode:'xml',data:txt};}
   }catch(e){}
   const r2j=`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}&count=25`;
   const r=await fetch(r2j,{signal:AbortSignal.timeout(10000)});
