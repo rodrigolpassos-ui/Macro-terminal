@@ -150,6 +150,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .yt-ph i{font-size:40px;color:var(--red);opacity:.4;}
 .yt-ph p{font-size:11px;font-family:var(--font-mono);}
 
+/* ── LINKS SALVOS ── */
+.yt-saved-head{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-bottom:1px solid var(--border);}
+.yt-saved-title{font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.08em;display:flex;align-items:center;gap:6px;}
+.yt-add-btn{background:transparent;border:1px solid #3a3000;color:var(--gold);font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:2px;cursor:pointer;transition:all .1s;}
+.yt-add-btn:hover{background:#1a1400;border-color:var(--gold);}
+.yt-add-form{display:none;flex-direction:column;gap:4px;padding:7px 10px;border-bottom:1px solid var(--border);background:var(--bg);}
+.yt-add-form.open{display:flex;}
+.yt-add-form input{background:var(--bg2);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:10px;padding:4px 7px;border-radius:2px;outline:none;}
+.yt-add-form input:focus{border-color:var(--gold);}
+.yt-add-actions{display:flex;gap:4px;}
+.yt-save-ok{flex:1;background:var(--gold);border:none;color:#000;font-family:var(--font-mono);font-size:9px;font-weight:700;padding:4px;border-radius:2px;cursor:pointer;}
+.yt-save-cancel{background:var(--bg3);border:1px solid var(--borderl);color:var(--text2);font-family:var(--font-mono);font-size:9px;padding:4px 8px;border-radius:2px;cursor:pointer;}
+.yt-links-list{display:flex;flex-direction:column;gap:0;max-height:160px;overflow-y:auto;}
+.yt-links-list::-webkit-scrollbar{width:2px;}
+.yt-links-list::-webkit-scrollbar-thumb{background:var(--borderl);}
+.yt-link-item{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--border);transition:background .1s;}
+.yt-link-item:hover{background:var(--bgh);}
+.yt-link-btn{flex:1;background:transparent;border:none;color:var(--text);font-family:var(--font-mono);font-size:10px;padding:6px 10px;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.yt-link-btn:hover{color:var(--gold);}
+.yt-link-open{background:transparent;border:none;color:var(--text2);font-size:9px;padding:0 7px 0 0;cursor:pointer;font-family:var(--font-mono);}
+.yt-link-open:hover{color:var(--blue);}
+.yt-link-del{background:transparent;border:none;color:var(--textm);font-size:9px;padding:0 8px 0 0;cursor:pointer;}
+.yt-link-del:hover{color:var(--red);}
+.yt-no-links{font-family:var(--font-mono);font-size:9px;color:var(--textm);padding:8px 10px;font-style:italic;}
+
 /* ── STATUS BAR ── */
 .sbar{background:var(--bg2);border-top:1px solid var(--border);height:20px;display:flex;align-items:center;padding:0 12px;gap:16px;flex-shrink:0;}
 .si{font-family:var(--font-mono);font-size:9px;color:var(--textm);display:flex;align-items:center;gap:4px;}
@@ -461,6 +486,23 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
         </div>
         <div class="yt-embed" id="ytEmbed">
           <div class="yt-ph"><i class="fab fa-youtube"></i><p>Cole uma URL ou escolha um canal</p></div>
+        </div>
+
+        <!-- LINKS SALVOS -->
+        <div style="border-top:1px solid var(--border);flex-shrink:0;">
+          <div class="yt-saved-head">
+            <div class="yt-saved-title"><i class="fas fa-bookmark"></i>LINKS SALVOS</div>
+            <button class="yt-add-btn" onclick="toggleAddLink()"><i class="fas fa-plus"></i> ADICIONAR</button>
+          </div>
+          <div class="yt-add-form" id="ytAddForm">
+            <input type="text" id="ytLinkTitle" placeholder="Nome / Título do link..." maxlength="40">
+            <input type="text" id="ytLinkUrl" placeholder="URL do vídeo, live ou notícia...">
+            <div class="yt-add-actions">
+              <button class="yt-save-ok" onclick="saveLink()"><i class="fas fa-save"></i> SALVAR</button>
+              <button class="yt-save-cancel" onclick="toggleAddLink()">CANCELAR</button>
+            </div>
+          </div>
+          <div class="yt-links-list" id="ytLinksList"></div>
         </div>
       </div>
     </div>
@@ -1327,11 +1369,64 @@ function initResizers(){
 }
 
 // ── YOUTUBE ──
-function toggleYT(){ytOn=!ytOn;document.getElementById('ytPanel').style.display=ytOn?'flex':'none';document.getElementById('r3').style.display=ytOn?'block':'none';}
+function toggleYT(){ytOn=!ytOn;document.getElementById('ytPanel').style.display=ytOn?'flex':'none';document.getElementById('r3').style.display=ytOn?'block':'none';if(ytOn)renderLinks();}
 function exYTid(url){const rs=[/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/];for(const r of rs){const m=url.match(r);if(m)return m[1];}if(/^[a-zA-Z0-9_-]{11}$/.test(url.trim()))return url.trim();return null;}
 function loadYT(){const url=document.getElementById('ytUrl').value.trim();const id=exYTid(url);const e=document.getElementById('ytEmbed');if(id)e.innerHTML=`<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`;else if(url.includes('live_stream'))e.innerHTML=`<iframe src="${url}&autoplay=1" allowfullscreen allow="autoplay"></iframe>`;else e.innerHTML=`<div class="yt-ph"><i class="fab fa-youtube"></i><p>URL inválida</p></div>`;}
 function loadYTP(url){document.getElementById('ytUrl').value=url;document.getElementById('ytEmbed').innerHTML=`<iframe src="${url}&autoplay=1" allowfullscreen allow="autoplay"></iframe>`;}
 document.getElementById('ytUrl').addEventListener('keydown',e=>{if(e.key==='Enter')loadYT();});
+
+// ── LINKS SALVOS ──
+function getLinks(){try{return JSON.parse(localStorage.getItem('mt_saved_links')||'[]');}catch(e){return[];}}
+function setLinks(arr){localStorage.setItem('mt_saved_links',JSON.stringify(arr));}
+
+function renderLinks(){
+  const list=document.getElementById('ytLinksList');
+  const links=getLinks();
+  if(!links.length){list.innerHTML='<div class="yt-no-links">Nenhum link salvo ainda.</div>';return;}
+  list.innerHTML=links.map((l,i)=>`
+    <div class="yt-link-item">
+      <button class="yt-link-btn" title="${l.url}" onclick="openLink('${encodeURIComponent(l.url)}')">${l.title||l.url}</button>
+      <button class="yt-link-open" title="Abrir em nova aba" onclick="window.open(decodeURIComponent('${encodeURIComponent(l.url)}'),'_blank')"><i class="fas fa-external-link-alt"></i></button>
+      <button class="yt-link-del" title="Remover" onclick="deleteLink(${i})"><i class="fas fa-times"></i></button>
+    </div>`).join('');
+}
+
+function openLink(encodedUrl){
+  const url=decodeURIComponent(encodedUrl);
+  const id=exYTid(url);
+  const e=document.getElementById('ytEmbed');
+  document.getElementById('ytUrl').value=url;
+  if(id){e.innerHTML=`<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`;}
+  else if(url.includes('live_stream')){e.innerHTML=`<iframe src="${url}&autoplay=1" allowfullscreen allow="autoplay"></iframe>`;}
+  else{window.open(url,'_blank');}
+}
+
+function toggleAddLink(){
+  const form=document.getElementById('ytAddForm');
+  const open=form.classList.toggle('open');
+  if(open){document.getElementById('ytLinkTitle').focus();}
+  else{document.getElementById('ytLinkTitle').value='';document.getElementById('ytLinkUrl').value='';}
+}
+
+function saveLink(){
+  const title=document.getElementById('ytLinkTitle').value.trim();
+  const url=document.getElementById('ytLinkUrl').value.trim();
+  if(!url){document.getElementById('ytLinkUrl').style.borderColor='var(--red)';setTimeout(()=>document.getElementById('ytLinkUrl').style.borderColor='',1200);return;}
+  const links=getLinks();
+  links.unshift({title:title||url,url});
+  setLinks(links);
+  renderLinks();
+  toggleAddLink();
+}
+
+function deleteLink(idx){
+  const links=getLinks();
+  links.splice(idx,1);
+  setLinks(links);
+  renderLinks();
+}
+
+document.getElementById('ytLinkUrl').addEventListener('keydown',e=>{if(e.key==='Enter')saveLink();});
 
 // ── INIT ──
 function initClock(){const u=()=>document.getElementById('clock').textContent=new Date().toTimeString().slice(0,8);u();setInterval(u,1000);}
