@@ -577,6 +577,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
   <!-- FLUXO FINANCEIRO PANE -->
   <div class="vpane" id="pane-fluxo">
     <div class="fluxo-pane">
+
+      <!-- BARRA GOOGLE SHEETS -->
+      <div id="fx-sheets-bar" style="max-width:1800px;margin:0 auto 10px;display:flex;align-items:center;gap:8px;padding:0 2px;">
+        <i class="fas fa-table" style="color:#0f9d58;font-size:11px"></i>
+        <span style="font-family:var(--font-mono);font-size:9px;color:var(--text2)">Google Sheets:</span>
+        <input id="fx-sheets-url" type="text" placeholder="Cole o link da sua planilha aqui..."
+          style="flex:1;background:var(--bg3);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:9px;padding:4px 8px;border-radius:3px;outline:none;"
+          onfocus="this.style.borderColor='#0f9d58'" onblur="this.style.borderColor='var(--borderl)'">
+        <button class="tbtn" id="fx-sheets-sync-btn" onclick="fxSyncSheets()" style="background:#0a2a1a;border-color:#0f9d58;color:#0f9d58;font-size:9px;padding:4px 10px;">
+          <i class="fas fa-sync-alt" id="fx-sheets-icon"></i> Sincronizar
+        </button>
+        <span id="fx-sheets-status" style="font-family:var(--font-mono);font-size:9px;color:var(--textm)"></span>
+      </div>
+
       <div class="fx-grid">
 
         <!-- DÓLAR -->
@@ -1856,10 +1870,152 @@ function fxApplyPanel(prefix,raw){
   fxRenderChart('fx-'+prefix+'-chart',groups);
 }
 
+// ═══════════════════════════════════════════
+// GOOGLE SHEETS — SINCRONIZAÇÃO DIRETA
+// ═══════════════════════════════════════════
+
+function fxExtractSheetId(url){
+  const m = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  return m ? m[1] : null;
+}
+
+// Converte URL de compartilhamento para URL de export CSV
+function fxSheetsCsvUrl(sheetId, sheetName){
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+}
+
+// Parse CSV respeitando aspas
+function fxParseCSV(text){
+  const rows = [];
+  const lines = text.split('\n');
+  for(const line of lines){
+    if(!line.trim()) continue;
+    const cols = [];
+    let cur = '', inQ = false;
+    for(let i=0;i<line.length;i++){
+      const c = line[i];
+      if(c==='"'){ inQ=!inQ; }
+      else if(c===','&&!inQ){ cols.push(cur.trim()); cur=''; }
+      else { cur+=c; }
+    }
+    cols.push(cur.trim());
+    rows.push(cols);
+  }
+  return rows;
+}
+
+// Extrai bloco de uma tabela a partir de coluna inicial (planilha tem 3 tabelas lado a lado)
+// Estrutura: linha 4 = cabeçalho (Corretora, %, Vol. Fin., Vol. Qtd), dados a partir da linha 5
+function fxExtractBlockFromCSV(rows, startCol){
+  // Encontra linha de cabeçalho buscando "Corretora" na coluna startCol
+  let dataStart = -1;
+  for(let i=0;i<rows.length;i++){
+    const cell = (rows[i][startCol]||'').toLowerCase().trim();
+    if(cell==='corretora'){ dataStart=i+1; break; }
+  }
+  if(dataStart<0) return null;
+
+  let raw = 'Corretora\t%\tVol. Financeiro (R$)\tVol. Qtd\n';
+  for(let i=dataStart;i<rows.length;i++){
+    const row = rows[i];
+    const name = (row[startCol]||'').trim();
+    if(!name) continue;
+    const pct  = (row[startCol+1]||'').replace(',','.');
+    const vol  = (row[startCol+2]||'').replace(/\./g,'').replace(',','.');
+    const qty  = (row[startCol+3]||'').replace(/\./g,'').replace(',','.');
+    raw += `${name}\t${pct}\t${vol}\t${qty}\n`;
+  }
+  return raw;
+}
+
+async function fxSyncSheets(){
+  const urlInput = document.getElementById('fx-sheets-url');
+  const statusEl = document.getElementById('fx-sheets-status');
+  const iconEl   = document.getElementById('fx-sheets-icon');
+  const btn      = document.getElementById('fx-sheets-sync-btn');
+
+  const urlVal = urlInput.value.trim() || (await (async()=>{
+    try{ return (await window.storage.get('fx_sheets_url'))?.value||''; }catch(e){ return localStorage.getItem('fx_sheets_url')||''; }
+  })());
+
+  if(!urlVal){ statusEl.style.color='var(--red)'; statusEl.textContent='⚠ Cole o link da planilha primeiro'; return; }
+
+  const sheetId = fxExtractSheetId(urlVal);
+  if(!sheetId){ statusEl.style.color='var(--red)'; statusEl.textContent='⚠ Link inválido'; return; }
+
+  // Salva URL
+  localStorage.setItem('fx_sheets_url', urlVal);
+  try{ await window.storage.set('fx_sheets_url', urlVal); }catch(e){}
+  if(urlInput.value.trim()) urlInput.value = urlVal;
+
+  // Spinner
+  iconEl.className='fas fa-spinner fa-spin';
+  btn.disabled=true;
+  statusEl.style.color='var(--gold)';
+  statusEl.textContent='Buscando dados...';
+
+  try {
+    const csvUrl = fxSheetsCsvUrl(sheetId, 'Dados a ser Importados');
+    const resp = await fetch(csvUrl);
+    if(!resp.ok) throw new Error(`HTTP ${resp.status} — verifique se a planilha está pública`);
+    const text = await resp.text();
+    if(text.includes('Redirecting') || text.includes('<html')) throw new Error('Planilha não está pública. Compartilhe como "Qualquer pessoa com o link".');
+
+    const rows = fxParseCSV(text);
+
+    // Colunas: DÓLAR=0, ÍNDICE=4 (col E no sheets = índice 4), ATIVO=9 (col J = índice 9)
+    // Detecta automaticamente pela posição do texto "DÓLAR", "ÍNDICE", "ATIVO" na linha 2
+    let colWin=0, colWdo=4, colAtv=9;
+    for(let r=0;r<5;r++){
+      if(!rows[r]) continue;
+      for(let c=0;c<rows[r].length;c++){
+        const v=(rows[r][c]||'').toUpperCase().trim();
+        if(v.includes('DÓLAR')||v.includes('DOLAR')||v==='WIN') colWin=c;
+        if(v.includes('ÍNDICE')||v.includes('INDICE')||v==='WDO') colWdo=c;
+        if(v.includes('ATIVO')) colAtv=c;
+      }
+    }
+
+    const rawWin = fxExtractBlockFromCSV(rows, colWin);
+    const rawWdo = fxExtractBlockFromCSV(rows, colWdo);
+    const rawAtv = fxExtractBlockFromCSV(rows, colAtv);
+
+    let ok=0, errs='';
+    if(rawWin){try{fxApplyPanel('win',rawWin);fxSave('fx_raw_win',rawWin);ok++;}catch(e){errs+='DÓLAR: '+e.message+' ';}}
+    if(rawWdo){try{fxApplyPanel('wdo',rawWdo);fxSave('fx_raw_wdo',rawWdo);ok++;}catch(e){errs+='ÍNDICE: '+e.message+' ';}}
+    if(rawAtv){try{fxApplyPanel('atv',rawAtv);fxSave('fx_raw_atv',rawAtv);ok++;}catch(e){errs+='ATIVO: '+e.message+' ';}}
+
+    if(errs){ statusEl.style.color='var(--red)'; statusEl.textContent='⚠ '+errs; }
+    else {
+      const now = new Date().toTimeString().slice(0,8);
+      statusEl.style.color='var(--green)';
+      statusEl.textContent=`✓ ${ok} ativo(s) atualizados — ${now}`;
+    }
+  } catch(e){
+    statusEl.style.color='var(--red)';
+    statusEl.textContent='⚠ '+e.message;
+  } finally {
+    iconEl.className='fas fa-sync-alt';
+    btn.disabled=false;
+  }
+}
+
+// Restaura URL salva no input ao carregar
+async function fxRestoreSheetsUrl(){
+  let url='';
+  try{ url=(await window.storage.get('fx_sheets_url'))?.value||''; }catch(e){}
+  if(!url) url=localStorage.getItem('fx_sheets_url')||'';
+  if(url){
+    const inp=document.getElementById('fx-sheets-url');
+    if(inp) inp.value=url;
+  }
+}
+
 function initClock(){const u=()=>document.getElementById('clock').textContent=new Date().toTimeString().slice(0,8);u();setInterval(u,1000);}
 
 initClock();
 initResizers();
+fxRestoreSheetsUrl();
 
 // ── Restaurar dados do Fluxo Financeiro (nuvem + localStorage fallback) ──
 async function fxRestore(){
