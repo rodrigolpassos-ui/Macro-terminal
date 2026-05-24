@@ -354,6 +354,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
     </div>
   </div>
   <div class="t-right">
+    <button class="tbtn btn-blue" id="fxImportBtn" style="display:none;background:#0d2a45;border-color:var(--blue);color:var(--blue)" onclick="fxOpenModal(null)"><i class="fas fa-upload"></i> Importar Dados</button>
     <button class="tbtn" onclick="refreshAll()" title="Atualizar todos os feeds agora"><i class="fas fa-sync-alt" id="gri"></i> Atualizar</button>
     <button class="tbtn" onclick="toggleYT()"><i class="fab fa-youtube"></i> YouTube</button>
     <button class="tbtn" id="sortBtn" onclick="toggleSort()"><i class="fas fa-sort-amount-down"></i> Prioridade</button>
@@ -1472,6 +1473,10 @@ function switchTab(tab,btn){
   btn.classList.add('active');
   document.querySelectorAll('.vpane').forEach(p=>p.classList.remove('active'));
   document.getElementById('pane-'+tab).classList.add('active');
+  // Mostra/esconde botão de importar e outros botões conforme aba
+  const isFluxo = tab==='fluxo';
+  document.getElementById('fxImportBtn').style.display = isFluxo ? '' : 'none';
+  document.getElementById('sortBtn').style.display = isFluxo ? 'none' : '';
   if(tab==='mkt'){renderMkt();if(!mktTimer)mktTimer=setInterval(()=>{document.querySelectorAll('.mclk').forEach(el=>el.textContent=getLT(el.dataset.tz));},1000);}
   else{clearInterval(mktTimer);mktTimer=null;}
 }
