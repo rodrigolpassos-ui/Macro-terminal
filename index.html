@@ -578,17 +578,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
     <div class="fluxo-pane">
 
       <!-- BARRA GOOGLE SHEETS -->
-      <div id="fx-sheets-bar" style="max-width:1800px;margin:0 auto 10px;display:flex;align-items:center;gap:8px;padding:0 2px;">
+      <div id="fx-sheets-bar" style="max-width:1800px;margin:0 auto 10px;display:flex;align-items:center;gap:8px;padding:0 2px;flex-wrap:wrap;">
         <i class="fas fa-table" style="color:#0f9d58;font-size:11px"></i>
         <span style="font-family:var(--font-mono);font-size:9px;color:var(--text2)">Google Sheets:</span>
         <input id="fx-sheets-url" type="text" placeholder="Cole o link da sua planilha aqui..."
-          style="flex:1;background:var(--bg3);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:9px;padding:4px 8px;border-radius:3px;outline:none;"
+          style="flex:1;min-width:200px;background:var(--bg3);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:9px;padding:4px 8px;border-radius:3px;outline:none;"
           onfocus="this.style.borderColor='#0f9d58'" onblur="this.style.borderColor='var(--borderl)'">
-        <button class="tbtn" id="fx-sheets-sync-btn" onclick="fxSyncSheets()" style="background:#0a2a1a;border-color:#0f9d58;color:#0f9d58;font-size:9px;padding:4px 10px;">
+        <span style="font-family:var(--font-mono);font-size:9px;color:var(--text2);flex-shrink:0;">Aba:</span>
+        <input id="fx-sheets-tab" type="text" placeholder="Nome da aba (opcional)"
+          style="width:160px;background:var(--bg3);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:9px;padding:4px 8px;border-radius:3px;outline:none;flex-shrink:0;"
+          onfocus="this.style.borderColor='#0f9d58'" onblur="this.style.borderColor='var(--borderl)'">
+        <button class="tbtn" id="fx-sheets-sync-btn" onclick="fxSyncSheets()" style="background:#0a2a1a;border-color:#0f9d58;color:#0f9d58;font-size:9px;padding:4px 10px;flex-shrink:0;">
           <i class="fas fa-sync-alt" id="fx-sheets-icon"></i> Sincronizar
         </button>
         <span id="fx-sheets-status" style="font-family:var(--font-mono);font-size:9px;color:var(--textm)"></span>
-        <button class="tbtn" style="background:#0d2a45;border-color:var(--blue);color:var(--blue);font-size:9px;padding:4px 10px;" onclick="fxOpenModal(null)"><i class="fas fa-upload"></i> Importar Manual</button>
+        <button class="tbtn" style="background:#0d2a45;border-color:var(--blue);color:var(--blue);font-size:9px;padding:4px 10px;flex-shrink:0;" onclick="fxOpenModal(null)"><i class="fas fa-upload"></i> Importar Manual</button>
       </div>
 
       <div class="fx-grid">
@@ -1855,6 +1859,12 @@ function fxExtractSheetId(url){
   return m ? m[1] : null;
 }
 
+function fxExtractGid(url){
+  // Tenta extrair gid (id numérico da aba) da URL
+  const m = url.match(/[#&?]gid=([0-9]+)/);
+  return m ? m[1] : null;
+}
+
 // Parse CSV completo respeitando aspas e vírgulas dentro de strings
 function fxParseCSV(text){
   const rows=[];
@@ -1949,36 +1959,99 @@ async function fxSyncSheets(){
   statusEl.textContent='Buscando dados...';
 
   try {
-    const sheetName = 'Dados a ser Importados';
-    const urls = [
-      `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`,
-      `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&sheet=${encodeURIComponent(sheetName)}`,
-      `https://corsproxy.io/?${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`)}`,
+    // Nomes de aba para tentar (ordem de prioridade)
+    const userTab = (document.getElementById('fx-sheets-tab')?.value||'').trim();
+    // Salva nome da aba
+    if(userTab){ localStorage.setItem('fx_sheets_tab', userTab); try{ await window.storage.set('fx_sheets_tab', userTab); }catch(e){} }
+
+    const tabCandidates = userTab
+      ? [userTab]  // Se usuário informou, tenta só esse
+      : [
+          'Dados a ser Importados',
+          'Dados',
+          'dados',
+          'Fluxo',
+          'fluxo',
+          'fluxo_participantes',
+          'Participantes',
+          'Sheet1',
+          'Plan1',
+          'Planilha1',
+          '',  // sem nome = primeira aba / aba padrão
+        ];
+
+    // Proxies CORS — tentados em ordem até um funcionar
+    const PROXIES = [
+      url => url,
+      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      url => `https://proxy.cors.sh/${url}`,
+      url => `https://thingproxy.freeboard.io/fetch/${url}`,
     ];
+
+    const urlGid = fxExtractGid(urlVal); // gid extraído da URL original se houver
+
+    function buildCsvUrls(sheetId, sheetName){
+      const urls = [];
+      // Por nome de aba
+      if(sheetName){
+        urls.push(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`);
+        urls.push(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&sheet=${encodeURIComponent(sheetName)}`);
+      } else {
+        // Sem nome: tenta por gid (id da aba na URL) e depois sem parâmetro (primeira aba)
+        if(urlGid){
+          urls.push(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${urlGid}`);
+          urls.push(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${urlGid}`);
+        }
+        urls.push(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`);
+        urls.push(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`);
+      }
+      return urls;
+    }
+
+    function isValidCsv(t){
+      if(!t || t.trim().startsWith('<!')) return false;
+      if(t.includes('ServiceLogin') || t.includes('accounts.google.com')) return 'private';
+      // Detecta resposta de aba não encontrada do gviz
+      if(t.includes('"errors"') && t.includes('reason')) return false;
+      return t.includes(',') && t.split('\n').length > 3;
+    }
 
     let text = null;
     let lastErr = '';
-    for(const csvUrl of urls){
-      try{
-        const resp = await fetch(csvUrl, {signal: AbortSignal.timeout(12000)});
-        if(!resp.ok){ lastErr=`HTTP ${resp.status}`; continue; }
-        const t = await resp.text();
-        if(t.trim().startsWith('<!') || t.includes('ServiceLogin') || t.includes('accounts.google.com')){
-          lastErr='Planilha privada'; continue;
+    let isPrivate = false;
+
+    const proxyLabels = ['direto','corsproxy.io','allorigins','cors.sh','thingproxy'];
+    outerLoop:
+    for(const tab of tabCandidates){
+      const baseUrls = buildCsvUrls(sheetId, tab);
+      for(const baseUrl of baseUrls){
+        for(let pi=0; pi<PROXIES.length; pi++){
+          const proxy = PROXIES[pi];
+          const csvUrl = proxy(baseUrl);
+          try{
+            statusEl.style.color='var(--gold)';
+            statusEl.textContent=`[${proxyLabels[pi]}] Buscando${tab ? ' aba "'+tab+'"' : ' (aba padrão)'}...`;
+            const resp = await fetch(csvUrl, {signal: AbortSignal.timeout(10000)});
+            if(!resp.ok){ lastErr=`HTTP ${resp.status} via ${proxyLabels[pi]}`; continue; }
+            const t = await resp.text();
+            const valid = isValidCsv(t);
+            if(valid === 'private'){ isPrivate=true; lastErr='Planilha privada'; break outerLoop; }
+            if(valid){ text=t; break outerLoop; }
+            lastErr=`Resposta inválida via ${proxyLabels[pi]}`;
+          }catch(e){ lastErr=e.message; }
         }
-        if(t.includes(',') && t.split('\n').length > 3){ text=t; break; }
-        lastErr='Resposta inválida';
-      }catch(e){ lastErr=e.message; }
+      }
     }
 
     if(!text) throw new Error(
-      lastErr==='Planilha privada'
+      isPrivate
         ? 'Planilha privada — vá em Compartilhar → "Qualquer pessoa com o link" → Leitor'
-        : `Não foi possível buscar os dados (${lastErr}). Verifique se a planilha está pública.`
+        : `Não foi possível buscar os dados (${lastErr}). Verifique: 1) planilha pública, 2) nome da aba correto no campo "Aba:".`
     );
 
     const rows=fxParseCSV(text);
-    if(rows.length<3) throw new Error('Planilha retornou vazia. Verifique o nome da aba: "Dados a ser Importados"');
+    if(rows.length<3) throw new Error('Planilha retornou vazia. Confira o nome da aba no campo "Aba:" e se a planilha é pública.');
 
     // Debug: log primeiras linhas para diagnóstico
     console.log('[FX Sheets] Primeiras 5 linhas do CSV:');
@@ -2057,12 +2130,17 @@ async function fxSyncSheets(){
   }
 }
 
-// Restaura URL salva no input ao carregar
+// Restaura URL e nome da aba salvos ao carregar
 async function fxRestoreSheetsUrl(){
-  let url='';
-  try{ url=(await window.storage.get('fx_sheets_url'))?.value||''; }catch(e){}
+  let url='', tab='';
+  try{
+    url=(await window.storage.get('fx_sheets_url'))?.value||'';
+    tab=(await window.storage.get('fx_sheets_tab'))?.value||'';
+  }catch(e){}
   if(!url) url=localStorage.getItem('fx_sheets_url')||'';
+  if(!tab) tab=localStorage.getItem('fx_sheets_tab')||'';
   if(url){ const inp=document.getElementById('fx-sheets-url'); if(inp) inp.value=url; }
+  if(tab){ const inp=document.getElementById('fx-sheets-tab'); if(inp) inp.value=tab; }
 }
 
 function initClock(){const u=()=>document.getElementById('clock').textContent=new Date().toTimeString().slice(0,8);u();setInterval(u,1000);}
