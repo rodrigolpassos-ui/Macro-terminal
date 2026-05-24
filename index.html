@@ -1695,12 +1695,12 @@ fxOverlay.addEventListener('click',e=>{if(e.target===fxOverlay)fxOverlay.classLi
 
 // ── Persistir título do ATIVO Livre ──
 const fxAtvTitleInp=document.getElementById('fx-atv-title-input');
-if(fxAtvTitleInp){fxAtvTitleInp.addEventListener('input',()=>localStorage.setItem('fx_atv_title',fxAtvTitleInp.value));}
+if(fxAtvTitleInp){fxAtvTitleInp.addEventListener('input',()=>fxSave('fx_atv_title',fxAtvTitleInp.value));}
 
 // ── Botão Limpar dados salvos ──
 document.getElementById('fx-btn-clear').addEventListener('click',()=>{
   if(!confirm('Apagar todos os dados salvos do Fluxo Financeiro?')) return;
-  ['fx_raw_win','fx_raw_wdo','fx_raw_atv','fx_atv_title'].forEach(k=>localStorage.removeItem(k));
+  fxClearAll();
   ['fx-paste-win','fx-paste-wdo','fx-paste-atv'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   fxOverlay.classList.remove('open');
   location.reload();
@@ -1733,9 +1733,9 @@ document.getElementById('fx-btn-apply').addEventListener('click',()=>{
   const ro=document.getElementById('fx-paste-wdo').value.trim();
   const ra=document.getElementById('fx-paste-atv').value.trim();
   if(!rw&&!ro&&!ra){errEl.textContent='Cole os dados em pelo menos um campo.';return;}
-  if(rw){try{fxApplyPanel('win',rw);localStorage.setItem('fx_raw_win',rw);ok++;}catch(e){errMsg+='DÓLAR: '+e.message+' ';}}
-  if(ro){try{fxApplyPanel('wdo',ro);localStorage.setItem('fx_raw_wdo',ro);ok++;}catch(e){errMsg+='ÍNDICE: '+e.message+' ';}}
-  if(ra){try{fxApplyPanel('atv',ra);localStorage.setItem('fx_raw_atv',ra);ok++;}catch(e){errMsg+='ATIVO: '+e.message+' ';}}
+  if(rw){try{fxApplyPanel('win',rw);fxSave('fx_raw_win',rw);ok++;}catch(e){errMsg+='DÓLAR: '+e.message+' ';}}
+  if(ro){try{fxApplyPanel('wdo',ro);fxSave('fx_raw_wdo',ro);ok++;}catch(e){errMsg+='ÍNDICE: '+e.message+' ';}}
+  if(ra){try{fxApplyPanel('atv',ra);fxSave('fx_raw_atv',ra);ok++;}catch(e){errMsg+='ATIVO: '+e.message+' ';}}
   if(errMsg){errEl.textContent=errMsg;return;}
   fxOverlay.classList.remove('open');
 });
@@ -1861,20 +1861,46 @@ function initClock(){const u=()=>document.getElementById('clock').textContent=ne
 initClock();
 initResizers();
 
-// ── Restaurar dados do Fluxo Financeiro do localStorage ──
-(function fxRestore(){
-  const rw=localStorage.getItem('fx_raw_win');
-  const ro=localStorage.getItem('fx_raw_wdo');
-  const ra=localStorage.getItem('fx_raw_atv');
-  const atvTitle=localStorage.getItem('fx_atv_title');
-  if(atvTitle){
-    const inp=document.getElementById('fx-atv-title-input');
-    if(inp) inp.value=atvTitle;
-  }
-  if(rw){try{fxApplyPanel('win',rw);}catch(e){localStorage.removeItem('fx_raw_win');}}
-  if(ro){try{fxApplyPanel('wdo',ro);}catch(e){localStorage.removeItem('fx_raw_wdo');}}
-  if(ra){try{fxApplyPanel('atv',ra);}catch(e){localStorage.removeItem('fx_raw_atv');}}
-})();
+// ── Restaurar dados do Fluxo Financeiro (nuvem + localStorage fallback) ──
+async function fxRestore(){
+  // Tenta nuvem primeiro
+  let rw='', ro='', ra='', atvTitle='';
+  try {
+    const [cw,co,ca,ct] = await Promise.all([
+      window.storage.get('fx_raw_win'),
+      window.storage.get('fx_raw_wdo'),
+      window.storage.get('fx_raw_atv'),
+      window.storage.get('fx_atv_title'),
+    ]).catch(()=>[null,null,null,null]);
+    rw = cw?.value || '';
+    ro = co?.value || '';
+    ra = ca?.value || '';
+    atvTitle = ct?.value || '';
+  } catch(e) {}
+  // Fallback localStorage
+  if(!rw) rw = localStorage.getItem('fx_raw_win')||'';
+  if(!ro) ro = localStorage.getItem('fx_raw_wdo')||'';
+  if(!ra) ra = localStorage.getItem('fx_raw_atv')||'';
+  if(!atvTitle) atvTitle = localStorage.getItem('fx_atv_title')||'';
+
+  if(atvTitle){const inp=document.getElementById('fx-atv-title-input');if(inp)inp.value=atvTitle;}
+  if(rw){try{fxApplyPanel('win',rw);}catch(e){}}
+  if(ro){try{fxApplyPanel('wdo',ro);}catch(e){}}
+  if(ra){try{fxApplyPanel('atv',ra);}catch(e){}}
+}
+
+async function fxSave(key, value){
+  localStorage.setItem(key, value);
+  try { await window.storage.set(key, value); } catch(e){}
+}
+async function fxClearAll(){
+  ['fx_raw_win','fx_raw_wdo','fx_raw_atv','fx_atv_title'].forEach(k=>{
+    localStorage.removeItem(k);
+    try{window.storage.delete(k);}catch(e){}
+  });
+}
+
+fxRestore();
 
 // Carrega as 6 colunas com delay escalonado (NewsAPI + RSS em paralelo)
 setTimeout(()=>fetchCol(1), 200);
