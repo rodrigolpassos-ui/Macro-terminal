@@ -745,6 +745,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
       <div class="fx-modal-hint">Dados processados localmente — nada sai do navegador.</div>
       <div class="fx-modal-btns">
         <button class="tbtn" id="fx-btn-cancel">Cancelar</button>
+        <button class="tbtn" style="color:var(--red);border-color:#3a0000" id="fx-btn-clear" title="Apaga os dados salvos de todos os painéis">🗑 Limpar</button>
         <button class="tbtn" style="background:#0d2a45;border-color:var(--blue);color:var(--blue)" id="fx-btn-apply">Aplicar ▶</button>
       </div>
     </div>
@@ -1692,6 +1693,19 @@ const fxOverlay=document.getElementById('fxOverlay');
 document.getElementById('fx-btn-cancel').addEventListener('click',()=>fxOverlay.classList.remove('open'));
 fxOverlay.addEventListener('click',e=>{if(e.target===fxOverlay)fxOverlay.classList.remove('open');});
 
+// ── Persistir título do ATIVO Livre ──
+const fxAtvTitleInp=document.getElementById('fx-atv-title-input');
+if(fxAtvTitleInp){fxAtvTitleInp.addEventListener('input',()=>localStorage.setItem('fx_atv_title',fxAtvTitleInp.value));}
+
+// ── Botão Limpar dados salvos ──
+document.getElementById('fx-btn-clear').addEventListener('click',()=>{
+  if(!confirm('Apagar todos os dados salvos do Fluxo Financeiro?')) return;
+  ['fx_raw_win','fx_raw_wdo','fx_raw_atv','fx_atv_title'].forEach(k=>localStorage.removeItem(k));
+  ['fx-paste-win','fx-paste-wdo','fx-paste-atv'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  fxOverlay.classList.remove('open');
+  location.reload();
+});
+
 document.querySelectorAll('.fx-modal-tab').forEach(t=>{
   t.addEventListener('click',()=>{
     document.querySelectorAll('.fx-modal-tab').forEach(x=>x.classList.remove('active'));
@@ -1719,9 +1733,9 @@ document.getElementById('fx-btn-apply').addEventListener('click',()=>{
   const ro=document.getElementById('fx-paste-wdo').value.trim();
   const ra=document.getElementById('fx-paste-atv').value.trim();
   if(!rw&&!ro&&!ra){errEl.textContent='Cole os dados em pelo menos um campo.';return;}
-  if(rw){try{fxApplyPanel('win',rw);ok++;}catch(e){errMsg+='DÓLAR: '+e.message+' ';}}
-  if(ro){try{fxApplyPanel('wdo',ro);ok++;}catch(e){errMsg+='ÍNDICE: '+e.message+' ';}}
-  if(ra){try{fxApplyPanel('atv',ra);ok++;}catch(e){errMsg+='ATIVO: '+e.message+' ';}}
+  if(rw){try{fxApplyPanel('win',rw);localStorage.setItem('fx_raw_win',rw);ok++;}catch(e){errMsg+='DÓLAR: '+e.message+' ';}}
+  if(ro){try{fxApplyPanel('wdo',ro);localStorage.setItem('fx_raw_wdo',ro);ok++;}catch(e){errMsg+='ÍNDICE: '+e.message+' ';}}
+  if(ra){try{fxApplyPanel('atv',ra);localStorage.setItem('fx_raw_atv',ra);ok++;}catch(e){errMsg+='ATIVO: '+e.message+' ';}}
   if(errMsg){errEl.textContent=errMsg;return;}
   fxOverlay.classList.remove('open');
 });
@@ -1846,6 +1860,21 @@ function initClock(){const u=()=>document.getElementById('clock').textContent=ne
 
 initClock();
 initResizers();
+
+// ── Restaurar dados do Fluxo Financeiro do localStorage ──
+(function fxRestore(){
+  const rw=localStorage.getItem('fx_raw_win');
+  const ro=localStorage.getItem('fx_raw_wdo');
+  const ra=localStorage.getItem('fx_raw_atv');
+  const atvTitle=localStorage.getItem('fx_atv_title');
+  if(atvTitle){
+    const inp=document.getElementById('fx-atv-title-input');
+    if(inp) inp.value=atvTitle;
+  }
+  if(rw){try{fxApplyPanel('win',rw);}catch(e){localStorage.removeItem('fx_raw_win');}}
+  if(ro){try{fxApplyPanel('wdo',ro);}catch(e){localStorage.removeItem('fx_raw_wdo');}}
+  if(ra){try{fxApplyPanel('atv',ra);}catch(e){localStorage.removeItem('fx_raw_atv');}}
+})();
 
 // Carrega as 6 colunas com delay escalonado (NewsAPI + RSS em paralelo)
 setTimeout(()=>fetchCol(1), 200);
