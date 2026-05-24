@@ -693,6 +693,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
         </div>
 
       </div>
+
+      <!-- RODAPÉ FLUXO -->
+      <div style="max-width:1800px;margin:10px auto 0;display:flex;align-items:center;justify-content:space-between;padding:0 2px;">
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text2);display:flex;align-items:center;gap:10px;">
+          <span style="color:var(--textm)">Dados processados localmente — nenhuma informação sai do navegador.</span>
+        </div>
+        <a id="fx-planilha-link" href="fluxo_participantes.xlsx" download="fluxo_participantes.xlsx"
+           style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;
+                  color:var(--gold);border:1px solid #3a3000;background:#0d0a00;padding:5px 13px;
+                  border-radius:3px;text-decoration:none;transition:all .15s;letter-spacing:.04em;"
+           onmouseover="this.style.background='#1a1400';this.style.borderColor='var(--gold)'"
+           onmouseout="this.style.background='#0d0a00';this.style.borderColor='#3a3000'">
+          <i class="fas fa-file-excel"></i> Planilha de Fluxo
+        </a>
+      </div>
+
     </div>
   </div>
 </div>
