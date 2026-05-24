@@ -6,6 +6,7 @@
 <title>MacroTerminal</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root{
   --bg:#000000;--bg2:#0d0d0d;--bg3:#141414;--bgh:#1a1a1a;
@@ -238,7 +239,77 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .mact.mr:hover{color:var(--red);border-color:var(--red);}
 .mact.mg:hover{color:var(--gold);border-color:var(--gold);}
 
-/* ── SETTINGS ── */
+/* ── FLUXO FINANCEIRO ── */
+.fluxo-pane{flex:1;overflow-y:auto;padding:14px;background:var(--bg);}
+.fluxo-pane::-webkit-scrollbar{width:3px;}
+.fluxo-pane::-webkit-scrollbar-thumb{background:var(--borderl);}
+.fx-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-width:1800px;margin:0 auto;}
+.fx-panel{background:var(--bg2);border:1px solid var(--borderl);border-radius:4px;overflow:hidden;}
+.fx-head{padding:8px 12px;border-bottom:1px solid var(--borderl);}
+.fx-title-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.fx-title{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:13px;font-weight:700;}
+.fx-saldo-sub{font-family:var(--font-mono);font-size:10px;margin-top:1px;}
+.fx-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:4px;}
+.fx-stat{background:var(--bg3);border-radius:3px;padding:5px 8px;}
+.fx-stat-l{font-family:var(--font-mono);font-size:8px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;}
+.fx-stat-v{font-family:var(--font-mono);font-size:11px;font-weight:700;margin-top:2px;}
+.fx-sec{font-family:var(--font-mono);font-size:8px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;padding:5px 12px 3px;border-top:1px solid var(--borderl);}
+.fx-tbl{width:100%;border-collapse:collapse;}
+.fx-tbl th{font-family:var(--font-mono);font-size:8px;color:var(--text2);text-transform:uppercase;padding:3px 12px;text-align:left;font-weight:400;border-bottom:1px solid var(--borderl);}
+.fx-tbl th.r,.fx-tbl td.r{text-align:right;}
+.fx-tbl td{padding:3px 12px;font-family:var(--font-mono);font-size:10px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;}
+.fx-tbl tbody tr:hover{background:var(--bg3);}
+.fx-badge{font-size:8px;padding:2px 6px;border-radius:2px;font-weight:700;letter-spacing:.3px;white-space:nowrap;font-family:var(--font-mono);}
+.fx-b-buy{background:#0d3b2a;color:#3fb950;border:1px solid #1a5c3a;}
+.fx-b-sell{background:#3d1515;color:#e63946;border:1px solid #5c2020;}
+.fx-b-neu{background:var(--bg3);color:var(--text2);border:1px solid var(--borderl);}
+.fx-vol-section{padding:5px 12px 8px;}
+.fx-vol-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.fx-vol-lbl{font-family:var(--font-mono);font-size:8px;width:80px;flex-shrink:0;}
+.fx-vol-bar-bg{flex:1;height:5px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.fx-vol-bar{height:100%;border-radius:2px;transition:width .4s;}
+.fx-vol-bar.g{background:#00cc55;}.fx-vol-bar.r{background:#e63946;}
+.fx-vol-val{font-family:var(--font-mono);font-size:9px;min-width:65px;text-align:right;font-variant-numeric:tabular-nums;}
+.fx-tab-row{display:flex;padding:0 12px;border-top:1px solid var(--borderl);border-bottom:1px solid var(--borderl);}
+.fx-tab{font-family:var(--font-mono);font-size:9px;padding:5px 10px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s;user-select:none;}
+.fx-tab.on-g{color:#00cc55;border-bottom-color:#00cc55;}
+.fx-tab.on-r{color:#e63946;border-bottom-color:#e63946;}
+.fx-chart-outer{padding:6px 12px 0;}
+.fx-chart-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:6px;}
+.fx-legend-item{display:flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:8px;color:var(--text2);}
+.fx-legend-line{width:16px;height:2px;border-radius:1px;flex-shrink:0;}
+.fx-chart-wrap{height:90px;position:relative;}
+.fx-empty{padding:16px 12px;text-align:center;color:var(--text2);font-family:var(--font-mono);font-size:9px;line-height:1.8;}
+.fx-empty strong{display:block;color:var(--text);font-size:10px;margin-bottom:2px;}
+.fx-import-link{font-family:var(--font-mono);font-size:9px;color:var(--blue);cursor:pointer;text-decoration:underline;text-underline-offset:2px;user-select:none;}
+.fx-import-link:hover{color:var(--text);}
+.fx-cg{color:#00cc55;}.fx-cr{color:#e63946;}.fx-cm{color:var(--text2);}
+.fx-title-input{background:transparent;border:none;border-bottom:1px dashed var(--borderl);color:inherit;font-family:var(--font-mono);font-size:13px;font-weight:700;width:130px;outline:none;cursor:text;padding:0 2px;}
+.fx-title-input:focus{border-bottom-color:var(--blue);}
+
+/* Modal Fluxo */
+.fx-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.82);z-index:400;display:none;align-items:center;justify-content:center;padding:16px;}
+.fx-overlay.open{display:flex;}
+.fx-modal{background:var(--bg2);border:1px solid var(--borderl);border-radius:5px;width:100%;max-width:640px;padding:22px;}
+.fx-modal h2{font-family:var(--font-mono);font-size:12px;font-weight:700;margin-bottom:6px;color:var(--text);}
+.fx-modal-desc{font-size:10px;color:var(--text2);line-height:1.7;margin-bottom:14px;font-family:var(--font-mono);}
+.fx-modal-desc code{background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--blue);}
+.fx-modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--borderl);margin-bottom:14px;}
+.fx-modal-tab{font-family:var(--font-mono);font-size:10px;padding:6px 14px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s;}
+.fx-modal-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.fx-modal-panel{display:none;}
+.fx-modal-panel.active{display:block;}
+.fx-modal-panel label{font-family:var(--font-mono);font-size:8px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:5px;}
+.fx-modal-panel textarea{width:100%;height:190px;background:var(--bg3);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:10px;padding:10px;border-radius:3px;resize:vertical;outline:none;line-height:1.5;}
+.fx-modal-panel textarea:focus{border-color:var(--blue);}
+.fx-modal-panel textarea::placeholder{color:var(--text2);}
+.fx-modal-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+.fx-modal-hint{font-family:var(--font-mono);font-size:9px;color:var(--text2);}
+.fx-modal-btns{display:flex;gap:8px;}
+.fx-modal-error{font-family:var(--font-mono);font-size:10px;color:var(--red);margin-top:6px;min-height:16px;}
+@media(max-width:1100px){.fx-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:700px){.fx-grid{grid-template-columns:1fr;}}
+
 .sov{position:fixed;inset:0;z-index:500;pointer-events:none;}
 .sov.open{pointer-events:all;}
 .sov-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .2s;}
@@ -279,6 +350,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
     <div class="nav-tabs">
       <button class="ntab active" onclick="switchTab('news',this)"><i class="fas fa-rss" style="font-size:9px;margin-right:4px"></i>NOTÍCIAS</button>
       <button class="ntab" onclick="switchTab('mkt',this)"><i class="fas fa-clock" style="font-size:9px;margin-right:4px"></i>BOLSAS DO MUNDO</button>
+      <button class="ntab" onclick="switchTab('fluxo',this)"><i class="fas fa-chart-bar" style="font-size:9px;margin-right:4px"></i>FLUXO FINANCEIRO</button>
     </div>
   </div>
   <div class="t-right">
@@ -499,6 +571,166 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
   <!-- MARKETS PANE -->
   <div class="vpane" id="pane-mkt">
     <div class="mkt-pane" id="mktList"></div>
+  </div>
+
+  <!-- FLUXO FINANCEIRO PANE -->
+  <div class="vpane" id="pane-fluxo">
+    <div class="fluxo-pane">
+      <div class="fx-grid">
+
+        <!-- DÓLAR -->
+        <div class="fx-panel" id="fx-panel-win">
+          <div class="fx-head">
+            <div class="fx-title-row">
+              <div class="fx-title"><span style="color:#e63946;font-size:14px">▪</span> DÓLAR</div>
+              <div style="text-align:right">
+                <div class="fx-saldo-sub fx-cm" id="fx-win-sub"><span class="fx-import-link" onclick="fxOpenModal('win')">Clique para importar dados</span></div>
+              </div>
+            </div>
+            <div class="fx-stats">
+              <div class="fx-stat"><div class="fx-stat-l">Compras</div><div class="fx-stat-v fx-cg" id="fx-win-s-buy">—</div></div>
+              <div class="fx-stat"><div class="fx-stat-l">Vendas</div><div class="fx-stat-v fx-cr" id="fx-win-s-sell">—</div></div>
+              <div class="fx-stat"><div class="fx-stat-l">Saldo Líq.</div><div class="fx-stat-v" id="fx-win-s-net">—</div></div>
+            </div>
+          </div>
+          <div class="fx-sec">Participantes</div>
+          <div id="fx-win-parts"><div class="fx-empty"><strong>Sem dados</strong>Use o botão Importar Dados</div></div>
+          <div class="fx-sec">Posição % Volume</div>
+          <div class="fx-vol-section" id="fx-win-vol"><div class="fx-empty" style="padding:6px 0">Aguardando...</div></div>
+          <div class="fx-sec">Top Corretoras — Saldo</div>
+          <div class="fx-tab-row">
+            <div class="fx-tab on-g" data-fp="win" data-fs="buy">Comprando</div>
+            <div class="fx-tab" data-fp="win" data-fs="sell" style="color:#e63946">Vendendo</div>
+          </div>
+          <div id="fx-win-br-buy"><div class="fx-empty" style="padding:8px">Aguardando...</div></div>
+          <div id="fx-win-br-sell" style="display:none"><div class="fx-empty" style="padding:8px">Aguardando...</div></div>
+          <div class="fx-sec">Saldo Acumulado (R$ M)</div>
+          <div class="fx-chart-outer">
+            <div class="fx-chart-legend">
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#00aaff"></div>Estrangeiro</div>
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#f0b429"></div>Bancos</div>
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#00cc55"></div>Pess. Física</div>
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#888"></div>Outros</div>
+            </div>
+            <div class="fx-chart-wrap"><canvas id="fx-win-chart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- ÍNDICE -->
+        <div class="fx-panel" id="fx-panel-wdo">
+          <div class="fx-head">
+            <div class="fx-title-row">
+              <div class="fx-title"><span style="color:#00cc55;font-size:14px">▪</span> ÍNDICE</div>
+              <div style="text-align:right">
+                <div class="fx-saldo-sub fx-cm" id="fx-wdo-sub"><span class="fx-import-link" onclick="fxOpenModal('wdo')">Clique para importar dados</span></div>
+              </div>
+            </div>
+            <div class="fx-stats">
+              <div class="fx-stat"><div class="fx-stat-l">Compras</div><div class="fx-stat-v fx-cg" id="fx-wdo-s-buy">—</div></div>
+              <div class="fx-stat"><div class="fx-stat-l">Vendas</div><div class="fx-stat-v fx-cr" id="fx-wdo-s-sell">—</div></div>
+              <div class="fx-stat"><div class="fx-stat-l">Saldo Líq.</div><div class="fx-stat-v" id="fx-wdo-s-net">—</div></div>
+            </div>
+          </div>
+          <div class="fx-sec">Participantes</div>
+          <div id="fx-wdo-parts"><div class="fx-empty"><strong>Sem dados</strong>Use o botão Importar Dados</div></div>
+          <div class="fx-sec">Posição % Volume</div>
+          <div class="fx-vol-section" id="fx-wdo-vol"><div class="fx-empty" style="padding:6px 0">Aguardando...</div></div>
+          <div class="fx-sec">Top Corretoras — Saldo</div>
+          <div class="fx-tab-row">
+            <div class="fx-tab on-g" data-fp="wdo" data-fs="buy">Comprando</div>
+            <div class="fx-tab" data-fp="wdo" data-fs="sell" style="color:#e63946">Vendendo</div>
+          </div>
+          <div id="fx-wdo-br-buy"><div class="fx-empty" style="padding:8px">Aguardando...</div></div>
+          <div id="fx-wdo-br-sell" style="display:none"><div class="fx-empty" style="padding:8px">Aguardando...</div></div>
+          <div class="fx-sec">Saldo Acumulado (R$ M)</div>
+          <div class="fx-chart-outer">
+            <div class="fx-chart-legend">
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#00aaff"></div>Estrangeiro</div>
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#f0b429"></div>Bancos</div>
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#00cc55"></div>Pess. Física</div>
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#888"></div>Outros</div>
+            </div>
+            <div class="fx-chart-wrap"><canvas id="fx-wdo-chart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- ATIVO LIVRE -->
+        <div class="fx-panel" id="fx-panel-atv">
+          <div class="fx-head">
+            <div class="fx-title-row">
+              <div class="fx-title"><span style="color:#a371f7;font-size:14px">▪</span> <input class="fx-title-input" id="fx-atv-title-input" value="ATIVO" maxlength="20" title="Clique para editar"></div>
+              <div style="text-align:right">
+                <div class="fx-saldo-sub fx-cm" id="fx-atv-sub"><span class="fx-import-link" onclick="fxOpenModal('atv')">Clique para importar dados</span></div>
+              </div>
+            </div>
+            <div class="fx-stats">
+              <div class="fx-stat"><div class="fx-stat-l">Compras</div><div class="fx-stat-v fx-cg" id="fx-atv-s-buy">—</div></div>
+              <div class="fx-stat"><div class="fx-stat-l">Vendas</div><div class="fx-stat-v fx-cr" id="fx-atv-s-sell">—</div></div>
+              <div class="fx-stat"><div class="fx-stat-l">Saldo Líq.</div><div class="fx-stat-v" id="fx-atv-s-net">—</div></div>
+            </div>
+          </div>
+          <div class="fx-sec">Participantes</div>
+          <div id="fx-atv-parts"><div class="fx-empty"><strong>Sem dados</strong>Use o botão Importar Dados</div></div>
+          <div class="fx-sec">Posição % Volume</div>
+          <div class="fx-vol-section" id="fx-atv-vol"><div class="fx-empty" style="padding:6px 0">Aguardando...</div></div>
+          <div class="fx-sec">Top Corretoras — Saldo</div>
+          <div class="fx-tab-row">
+            <div class="fx-tab on-g" data-fp="atv" data-fs="buy">Comprando</div>
+            <div class="fx-tab" data-fp="atv" data-fs="sell" style="color:#e63946">Vendendo</div>
+          </div>
+          <div id="fx-atv-br-buy"><div class="fx-empty" style="padding:8px">Aguardando...</div></div>
+          <div id="fx-atv-br-sell" style="display:none"><div class="fx-empty" style="padding:8px">Aguardando...</div></div>
+          <div class="fx-sec">Saldo Acumulado (R$ M)</div>
+          <div class="fx-chart-outer">
+            <div class="fx-chart-legend">
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#00aaff"></div>Estrangeiro</div>
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#f0b429"></div>Bancos</div>
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#00cc55"></div>Pess. Física</div>
+              <div class="fx-legend-item"><div class="fx-legend-line" style="background:#888"></div>Outros</div>
+            </div>
+            <div class="fx-chart-wrap"><canvas id="fx-atv-chart"></canvas></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL FLUXO FINANCEIRO ══ -->
+<div class="fx-overlay" id="fxOverlay">
+  <div class="fx-modal">
+    <h2><i class="fas fa-chart-bar" style="margin-right:6px;color:var(--blue)"></i>Importar Dados — Fluxo Financeiro</h2>
+    <div class="fx-modal-desc">
+      Na planilha, vá na aba <code>Entrada de Dados</code>. Selecione todas as linhas com dados
+      (incluindo o cabeçalho: <code>Corretora | % | Vol. Financeiro (R$) | Vol. Qtd</code>),
+      copie com <code>Ctrl+C</code> e cole no campo abaixo.
+    </div>
+    <div class="fx-modal-tabs">
+      <div class="fx-modal-tab active" data-target="fxtab-win">Dólar</div>
+      <div class="fx-modal-tab" data-target="fxtab-wdo">Índice</div>
+      <div class="fx-modal-tab" data-target="fxtab-atv">Ativo Livre</div>
+    </div>
+    <div class="fx-modal-panel active" id="fxtab-win">
+      <label>Dados do DÓLAR</label>
+      <textarea id="fx-paste-win" placeholder="Cole aqui os dados...&#10;Exemplo:&#10;Corretora	%	Vol. Financeiro (R$)	Vol. Qtd&#10;UBS	18,77	676492017	19030&#10;Goldman	7,55	271993300	7651&#10;Terra	12,90	-465330904	-13079"></textarea>
+    </div>
+    <div class="fx-modal-panel" id="fxtab-wdo">
+      <label>Dados do ÍNDICE</label>
+      <textarea id="fx-paste-wdo" placeholder="Cole aqui os dados...&#10;Exemplo:&#10;Corretora	%	Vol. Financeiro (R$)	Vol. Qtd&#10;XP	7,08	254623548	7181&#10;Morgan	9,70	349676978	9840"></textarea>
+    </div>
+    <div class="fx-modal-panel" id="fxtab-atv">
+      <label>Dados do Ativo Livre</label>
+      <textarea id="fx-paste-atv" placeholder="Cole aqui os dados...&#10;Exemplo:&#10;Corretora	%	Vol. Financeiro (R$)	Vol. Qtd&#10;XP	7,08	254623548	7181&#10;Morgan	9,70	349676978	9840"></textarea>
+    </div>
+    <div class="fx-modal-error" id="fx-modal-err"></div>
+    <div class="fx-modal-actions">
+      <div class="fx-modal-hint">Dados processados localmente — nada sai do navegador.</div>
+      <div class="fx-modal-btns">
+        <button class="tbtn" id="fx-btn-cancel">Cancelar</button>
+        <button class="tbtn" style="background:#0d2a45;border-color:var(--blue);color:var(--blue)" id="fx-btn-apply">Aplicar ▶</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1416,7 +1648,179 @@ function deleteLink(idx){
 
 document.getElementById('ytLinkUrl').addEventListener('keydown',e=>{if(e.key==='Enter')saveLink();});
 
-// ── INIT ──
+// ═══════════════════════════════════════════
+// FLUXO FINANCEIRO
+// ═══════════════════════════════════════════
+
+// ── Tabs nos painéis ──
+document.querySelectorAll('.fx-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    const p=tab.dataset.fp, s=tab.dataset.fs;
+    tab.closest('.fx-tab-row').querySelectorAll('.fx-tab').forEach(t=>{
+      t.classList.remove('on-g','on-r');
+      t.style.color=t.dataset.fs==='sell'?'#e63946':'var(--text2)';
+    });
+    tab.classList.add(s==='buy'?'on-g':'on-r'); tab.style.color='';
+    document.getElementById('fx-'+p+'-br-buy').style.display=s==='buy'?'':'none';
+    document.getElementById('fx-'+p+'-br-sell').style.display=s==='sell'?'':'none';
+  });
+});
+
+// ── Modal ──
+const fxOverlay=document.getElementById('fxOverlay');
+document.getElementById('fx-btn-cancel').addEventListener('click',()=>fxOverlay.classList.remove('open'));
+fxOverlay.addEventListener('click',e=>{if(e.target===fxOverlay)fxOverlay.classList.remove('open');});
+
+document.querySelectorAll('.fx-modal-tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.fx-modal-tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.fx-modal-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.target).classList.add('active');
+  });
+});
+
+function fxOpenModal(panel){
+  const map={win:'fxtab-win',wdo:'fxtab-wdo',atv:'fxtab-atv'};
+  const target=map[panel]||'fxtab-win';
+  document.querySelectorAll('.fx-modal-tab').forEach(t=>t.classList.toggle('active',t.dataset.target===target));
+  document.querySelectorAll('.fx-modal-panel').forEach(p=>p.classList.toggle('active',p.id===target));
+  fxOverlay.classList.add('open');
+  const ta=document.querySelector('.fx-modal-panel.active textarea');
+  if(ta) setTimeout(()=>ta.focus(),50);
+}
+
+document.getElementById('fx-btn-apply').addEventListener('click',()=>{
+  const errEl=document.getElementById('fx-modal-err');
+  errEl.textContent='';
+  let ok=0, errMsg='';
+  const rw=document.getElementById('fx-paste-win').value.trim();
+  const ro=document.getElementById('fx-paste-wdo').value.trim();
+  const ra=document.getElementById('fx-paste-atv').value.trim();
+  if(!rw&&!ro&&!ra){errEl.textContent='Cole os dados em pelo menos um campo.';return;}
+  if(rw){try{fxApplyPanel('win',rw);ok++;}catch(e){errMsg+='DÓLAR: '+e.message+' ';}}
+  if(ro){try{fxApplyPanel('wdo',ro);ok++;}catch(e){errMsg+='ÍNDICE: '+e.message+' ';}}
+  if(ra){try{fxApplyPanel('atv',ra);ok++;}catch(e){errMsg+='ATIVO: '+e.message+' ';}}
+  if(errMsg){errEl.textContent=errMsg;return;}
+  fxOverlay.classList.remove('open');
+});
+
+// ── Category map ──
+const FX_CAT={
+  Barclays:'EXT',BNP:'EXT',Citibank:'EXT',Credit:'EXT',Deutsche:'EXT',
+  Goldman:'EXT',HSBC:'EXT','JP Morgan':'EXT','JPMorgan':'EXT',Macquarie:'EXT',
+  Merrill:'EXT',Morgan:'EXT',Nomura:'EXT',UBS:'EXT',Tullett:'EXT',
+  ABN:'INST',BB:'INST',Bradesco:'INST',BTG:'INST',C6:'INST',Caixa:'INST',
+  Inter:'INST',Itau:'INST','Itaú':'INST',Mirae:'INST',Santander:'INST',
+  Agora:'PF',Ativa:'PF','BGC Liquidez':'PF','CM Capital':'PF',
+  Genial:'PF',Ideal:'PF',LEV:'PF',Necton:'PF',Safra:'PF',Terra:'PF',XP:'PF',
+};
+const FX_GROUP_META={EXT:{label:'Estrangeiro'},INST:{label:'Bancos'},PF:{label:'Pess. Física'},OUT:{label:'Outros'}};
+function fxGetGroup(name){
+  if(!name) return 'OUT';
+  if(FX_CAT[name]) return FX_CAT[name];
+  for(const k in FX_CAT){if(name.toLowerCase().includes(k.toLowerCase()))return FX_CAT[k];}
+  return 'OUT';
+}
+
+// ── Parse ──
+function fxParseNum(s){
+  if(!s||!s.trim()) return 0;
+  return parseFloat(s.replace(/R\$\s?/g,'').replace(/\s/g,'').replace(/\.(?=\d{3})/g,'').replace(',','.')) || 0;
+}
+function fxParseRows(raw){
+  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  const start=lines[0].toLowerCase().includes('corretora')?1:0;
+  const rows=[];
+  for(let i=start;i<lines.length;i++){
+    const c=lines[i].split('\t');
+    if(c.length<3) continue;
+    const name=c[0].trim();
+    if(!name||name==='—'||name.toLowerCase()==='nan') continue;
+    rows.push({name,pct:fxParseNum(c[1]),vol:fxParseNum(c[2]),qty:c[3]?fxParseNum(c[3]):0,group:fxGetGroup(name)});
+  }
+  if(!rows.length) throw new Error('Nenhuma linha válida. Verifique o formato.');
+  return rows;
+}
+
+// ── Compute groups ──
+function fxComputeGroups(rows){
+  const g={EXT:{buy:0,sell:0},INST:{buy:0,sell:0},PF:{buy:0,sell:0},OUT:{buy:0,sell:0}};
+  for(const r of rows){const grp=g[r.group]||g['OUT'];if(r.vol>=0)grp.buy+=r.vol;else grp.sell+=r.vol;}
+  for(const k in g){g[k].net=g[k].buy+g[k].sell;}
+  return g;
+}
+
+// ── Format ──
+function fxFmtV(v){const a=Math.abs(v),s=v>=0?'+':'-';if(a>=1e9)return s+'R$ '+(a/1e9).toFixed(1)+'B';if(a>=1e6)return s+'R$ '+Math.round(a/1e6)+'M';if(a>=1e3)return s+'R$ '+Math.round(a/1e3)+'K';return s+'R$ '+a;}
+function fxFmtM(v){const a=Math.abs(v),s=v>=0?'+':'-';if(a>=1e9)return s+(a/1e9).toFixed(2)+'B';if(a>=1e6)return s+(a/1e6).toFixed(1)+'M';return s+a.toFixed(0);}
+function fxCc(v){return v>0?'fx-cg':v<0?'fx-cr':'fx-cm';}
+function fxBadge(v){return v>0?'<span class="fx-badge fx-b-buy">COMPRADO</span>':v<0?'<span class="fx-badge fx-b-sell">VENDIDO</span>':'<span class="fx-badge fx-b-neu">NEUTRO</span>';}
+
+// ── Render parts ──
+function fxRenderParts(id,groups){
+  const order=['EXT','INST','PF','OUT'];
+  let h=`<table class="fx-tbl"><thead><tr><th>Participante</th><th class="r">Compra</th><th class="r">Venda</th><th class="r">Saldo</th><th class="r">Pos.</th></tr></thead><tbody>`;
+  for(const k of order){const g=groups[k];h+=`<tr><td>${FX_GROUP_META[k].label}</td><td class="r ${g.buy>0?'fx-cg':''}">${g.buy?fxFmtV(g.buy):'0'}</td><td class="r ${g.sell<0?'fx-cr':''}">${g.sell?fxFmtV(g.sell):'0'}</td><td class="r ${fxCc(g.net)}">${fxFmtV(g.net)}</td><td class="r">${fxBadge(g.net)}</td></tr>`;}
+  document.getElementById(id).innerHTML=h+'</tbody></table>';
+}
+
+// ── Render vol bars ──
+function fxRenderVol(id,groups){
+  const order=['EXT','INST','PF','OUT'];
+  const maxA=Math.max(...order.map(k=>Math.abs(groups[k].net)),1);
+  let h='';
+  for(const k of order){const g=groups[k],pct=Math.round(Math.abs(g.net)/maxA*95),buy=g.net>=0;h+=`<div class="fx-vol-row"><div class="fx-vol-lbl">${FX_GROUP_META[k].label}</div><div class="fx-vol-bar-bg"><div class="fx-vol-bar ${buy?'g':'r'}" style="width:${pct}%"></div></div><div class="fx-vol-val ${fxCc(g.net)}">${fxFmtV(g.net)}</div></div>`;}
+  document.getElementById(id).innerHTML=h;
+}
+
+// ── Render brokers ──
+function fxRenderBrokers(buyId,sellId,rows){
+  const buying=[...rows].filter(r=>r.vol>0).sort((a,b)=>b.vol-a.vol).slice(0,5);
+  const selling=[...rows].filter(r=>r.vol<0).sort((a,b)=>a.vol-b.vol).slice(0,5);
+  function tbl(list,isBuy){if(!list.length)return '<div class="fx-empty" style="padding:8px">Sem dados</div>';let h=`<table class="fx-tbl"><thead><tr><th>Corretora</th><th class="r">%</th><th class="r">Vol. Fin. (M)</th></tr></thead><tbody>`;for(const r of list)h+=`<tr><td>${r.name}</td><td class="r">${r.pct.toFixed(2)}%</td><td class="r ${isBuy?'fx-cg':'fx-cr'}">${fxFmtM(r.vol)}</td></tr>`;return h+'</tbody></table>';}
+  document.getElementById(buyId).innerHTML=tbl(buying,true);
+  document.getElementById(sellId).innerHTML=tbl(selling,false);
+}
+
+// ── Render stats header ──
+function fxRenderStats(prefix,groups){
+  const totalBuy=Object.values(groups).reduce((s,g)=>s+g.buy,0);
+  const totalSell=Object.values(groups).reduce((s,g)=>s+g.sell,0);
+  const net=totalBuy+totalSell;
+  document.getElementById('fx-'+prefix+'-s-buy').textContent=fxFmtV(totalBuy);
+  document.getElementById('fx-'+prefix+'-s-sell').textContent=fxFmtV(totalSell);
+  const netEl=document.getElementById('fx-'+prefix+'-s-net');
+  netEl.textContent=fxFmtV(net); netEl.className='fx-stat-v '+fxCc(net);
+  const sub=document.getElementById('fx-'+prefix+'-sub');
+  sub.textContent='Saldo: '+fxFmtV(net); sub.className='fx-saldo-sub '+fxCc(net);
+}
+
+// ── Charts ──
+const fxCharts={};
+const FX_GCOL={EXT:'#00aaff',INST:'#f0b429',PF:'#00cc55',OUT:'#888888'};
+const FX_GLBL={EXT:'Estrangeiro',INST:'Bancos',PF:'Pess. Física',OUT:'Outros'};
+const FX_HOURS=['9h','10h','11h','12h','13h','14h','15h','16h','17h'];
+const FX_CURVE=[0.03,0.08,0.18,0.32,0.50,0.66,0.80,0.91,1.0];
+function fxBuildCurve(v){return FX_CURVE.map(w=>+((v*w)/1e6).toFixed(2));}
+function fxRenderChart(id,groups){
+  if(fxCharts[id])fxCharts[id].destroy();
+  const ORDER=['EXT','INST','PF','OUT'];
+  const datasets=ORDER.map(k=>({label:FX_GLBL[k],data:fxBuildCurve(groups[k].net),borderColor:FX_GCOL[k],borderWidth:1.5,pointRadius:0,tension:0.4,fill:false}));
+  fxCharts[id]=new Chart(document.getElementById(id),{type:'line',data:{labels:FX_HOURS,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#141414',borderColor:'#2a2a2a',borderWidth:1,titleColor:'#888',bodyColor:'#e0e0e0',titleFont:{family:'JetBrains Mono',size:9},bodyFont:{family:'JetBrains Mono',size:10},callbacks:{label:c=>{const v=c.raw;return ' '+c.dataset.label+': '+(v>=0?'+':'')+v.toFixed(1)+'M';}}}},scales:{x:{ticks:{color:'#888',font:{size:9,family:'JetBrains Mono'},maxRotation:0},grid:{color:'#1a1a1a'},border:{display:false}},y:{ticks:{color:'#888',font:{size:9,family:'JetBrains Mono'},callback:v=>(v>=0?'+':'')+v+'M'},grid:{color:'#1a1a1a'},border:{display:false}}}}});
+}
+
+// ── Apply panel ──
+function fxApplyPanel(prefix,raw){
+  const rows=fxParseRows(raw);
+  const groups=fxComputeGroups(rows);
+  fxRenderStats(prefix,groups);
+  fxRenderParts('fx-'+prefix+'-parts',groups);
+  fxRenderVol('fx-'+prefix+'-vol',groups);
+  fxRenderBrokers('fx-'+prefix+'-br-buy','fx-'+prefix+'-br-sell',rows);
+  fxRenderChart('fx-'+prefix+'-chart',groups);
+}
+
 function initClock(){const u=()=>document.getElementById('clock').textContent=new Date().toTimeString().slice(0,8);u();setInterval(u,1000);}
 
 initClock();
