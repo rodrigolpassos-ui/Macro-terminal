@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MacroTerminal — Terminal de notícias financeiras em tempo real com IA. Brasil, mercados internacionais, geopolítica e commodities.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="MacroTerminal">
+<meta property="og:description" content="Terminal de notícias financeiras em tempo real com IA">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23000'/><circle cx='8' cy='16' r='4' fill='%2300ff88'/><text x='14' y='21' font-family='monospace' font-size='14' fill='%2300aaff' font-weight='bold'>M</text></svg>">
 <title>MacroTerminal</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -102,11 +108,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 
 .nm-row{display:flex;align-items:center;gap:7px;}
 .nm{font-family:var(--font-mono);font-size:9px;color:var(--meta-color);flex-shrink:0;}
-.nsrc{font-family:var(--font-mono);font-size:8px;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.05em;flex-shrink:0;}
-.s-br{background:rgba(0,204,85,.12);color:#00cc55;}
-.s-us{background:rgba(0,170,255,.12);color:#00aaff;}
-.s-eu{background:rgba(240,180,41,.1);color:#f0b429;}
-.s-asia{background:rgba(230,57,70,.1);color:#e63946;}
+.nsrc{font-family:var(--font-mono);font-size:8px;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.05em;flex-shrink:0;border:1px solid;}
+.s-br{background:rgba(0,204,85,.12);color:#00cc55;border-color:rgba(0,204,85,.3);}
+.s-us{background:rgba(0,170,255,.12);color:#00aaff;border-color:rgba(0,170,255,.3);}
+.s-eu{background:rgba(240,180,41,.12);color:#f0c030;border-color:rgba(240,180,41,.35);}
+.s-asia{background:rgba(230,57,70,.12);color:#ff6b6b;border-color:rgba(230,57,70,.3);}
 .nh{font-size:var(--hl-size);line-height:1.45;color:var(--hl-color);font-weight:400;}
 .ni-acts{display:flex;gap:5px;opacity:0;transition:opacity .12s;}
 .ni:hover .ni-acts{opacity:1;}
@@ -124,6 +130,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .fst{font-family:var(--font-mono);font-size:8px;margin-left:auto;}
 .fst.ok{color:var(--green);}.fst.err{color:var(--red);}.fst.loading{color:var(--gold);}
 .rb{background:transparent;border:1px solid var(--borderl);color:var(--textm);font-size:9px;padding:2px 6px;border-radius:2px;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.col-ts{font-family:var(--font-mono);font-size:8px;color:var(--textm);margin-left:auto;padding-right:4px;white-space:nowrap;}
 .rb:hover{color:var(--blue);border-color:var(--blue);}
 .mlink{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;color:var(--blue);text-decoration:none;padding:6px 12px;border:1px solid var(--blue);border-radius:3px;margin-bottom:14px;transition:all .15s;}
 .mlink:hover{background:rgba(0,170,255,.1);}
@@ -310,6 +317,32 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 @media(max-width:1100px){.fx-grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:700px){.fx-grid{grid-template-columns:1fr;}}
 
+/* ── RESPONSIVE / MOBILE ── */
+@media(max-width:900px){
+  body{overflow:auto;}
+  .topbar{flex-wrap:wrap;height:auto;padding:6px 10px;gap:6px;}
+  .t-left{flex-wrap:wrap;gap:6px;width:100%;}
+  .nav-tabs{margin-left:0;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .ntab{font-size:9px;padding:5px 10px;}
+  .t-right{flex-wrap:wrap;gap:4px;width:100%;}
+  .tbtn{font-size:9px;padding:4px 8px;}
+  .view-area{overflow:auto;}
+  .vpane.active{flex-direction:column;}
+  .cols-wrap{flex-direction:column;overflow:visible;}
+  .col-group{flex-direction:row;min-width:0;}
+  .col{min-width:0;min-height:200px;}
+  .v-resizer{width:5px;height:auto;cursor:col-resize;}
+  .resizer{display:none!important;}
+  .yt-panel{width:100%;min-width:0;border-left:none;border-top:1px solid var(--border);}
+  .sbar{flex-wrap:wrap;height:auto;padding:4px 10px;gap:8px;}
+}
+@media(max-width:600px){
+  .col-group{flex-direction:column;}
+  .v-resizer{height:5px;width:auto;cursor:row-resize;}
+  .logo{font-size:12px;}
+  .clk{display:none;}
+  .live-pill{display:none;}
+}
 .sov{position:fixed;inset:0;z-index:500;pointer-events:none;}
 .sov.open{pointer-events:all;}
 .sov-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .2s;}
@@ -381,6 +414,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
               <span class="col-cnt" id="cnt1">0</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px">
+              <span class="col-ts" id="col-ts1"></span>
               <button class="ftoggle" id="ft1" onclick="toggleFilters(1)"><span class="arr">▼</span> FILTROS</button>
               <button class="rb" id="rb1" onclick="fetchCol(1)"><i class="fas fa-sync-alt"></i></button>
               <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(1,this.value)">
@@ -406,6 +440,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
               <span class="col-cnt" id="cnt4">0</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px">
+              <span class="col-ts" id="col-ts4"></span>
               <button class="ftoggle" id="ft4" onclick="toggleFilters(4)"><span class="arr">▼</span> FILTROS</button>
               <button class="rb" id="rb4" onclick="fetchCol(4)"><i class="fas fa-sync-alt"></i></button>
               <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(4,this.value)">
@@ -435,6 +470,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
               <span class="col-cnt" id="cnt2">0</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px">
+              <span class="col-ts" id="col-ts2"></span>
               <button class="ftoggle" id="ft2" onclick="toggleFilters(2)"><span class="arr">▼</span> FILTROS</button>
               <button class="rb" id="rb2" onclick="fetchCol(2)"><i class="fas fa-sync-alt"></i></button>
               <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(2,this.value)">
@@ -460,6 +496,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
               <span class="col-cnt" id="cnt5">0</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px">
+              <span class="col-ts" id="col-ts5"></span>
               <button class="ftoggle" id="ft5" onclick="toggleFilters(5)"><span class="arr">▼</span> FILTROS</button>
               <button class="rb" id="rb5" onclick="fetchCol(5)"><i class="fas fa-sync-alt"></i></button>
               <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(5,this.value)">
@@ -489,6 +526,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
               <span class="col-cnt" id="cnt3">0</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px">
+              <span class="col-ts" id="col-ts3"></span>
               <button class="ftoggle" id="ft3" onclick="toggleFilters(3)"><span class="arr">▼</span> FILTROS</button>
               <button class="rb" id="rb3" onclick="fetchCol(3)"><i class="fas fa-sync-alt"></i></button>
               <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(3,this.value)">
@@ -514,6 +552,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
               <span class="col-cnt" id="cnt6">0</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px">
+              <span class="col-ts" id="col-ts6"></span>
               <button class="ftoggle" id="ft6" onclick="toggleFilters(6)"><span class="arr">▼</span> FILTROS</button>
               <button class="rb" id="rb6" onclick="fetchCol(6)"><i class="fas fa-sync-alt"></i></button>
               <input class="col-srch" placeholder="filtrar..." onkeyup="filterCol(6,this.value)">
@@ -756,6 +795,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
   <div class="si"><div class="sd"></div>NewsAPI + RSS · TEMPO REAL</div>
   <div class="si" id="nCount">carregando...</div>
   <div class="si" id="nextRef" style="color:var(--gold)">—</div>
+  <div class="si" id="feedStatus" style="display:flex;gap:6px;align-items:center"></div>
   <div class="si" style="margin-left:auto" id="nUpdate">—</div>
 </div>
 
@@ -772,7 +812,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
     </div>
     <div class="mbody">
       <div class="morigin" id="morigin"></div>
-      <img id="mimg" style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:3px;margin-bottom:14px;border:1px solid var(--borderl)" onerror="this.style.display='none'">
+      <img id="mimg" style="display:none;width:100%;max-height:220px;object-fit:cover;border-radius:4px;margin-bottom:14px;border:1px solid var(--borderl);box-shadow:0 2px 12px rgba(0,0,0,.4)" onerror="this.style.display='none'">
       <a id="mlink" class="mlink" href="#" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Ler notícia completa na fonte</a>
       <div class="mtext" id="mtext"></div>
     </div>
@@ -1023,9 +1063,27 @@ const FEEDS = {
   ],
 };
 
+// ── Cache de notícias (5 min por query) para reduzir chamadas à API ──
+const NEWS_CACHE = {};
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
+
+function cacheGet(key) {
+  const entry = NEWS_CACHE[key];
+  if (!entry) return null;
+  if (Date.now() - entry.ts > CACHE_TTL_MS) { delete NEWS_CACHE[key]; return null; }
+  return entry.data;
+}
+function cacheSet(key, data) {
+  NEWS_CACHE[key] = { ts: Date.now(), data };
+}
+
 // ── Busca notícias via Claude AI (web_search em tempo quase real) ──
 async function fetchNewsAPI(queryObj){
   const {q, language, src, label} = queryObj;
+  const cacheKey = `${q}|${language}`;
+  const cached = cacheGet(cacheKey);
+  if (cached) return cached;
+
   const langHint = language === 'pt' ? 'em português, fontes brasileiras' : 'in English, international sources';
   const now = new Date().toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});
 
@@ -1079,7 +1137,7 @@ Focus on: breaking news, market moves, political developments, economic data. Pr
     throw new Error('Claude JSON parse error: ' + e.message);
   }
 
-  return (Array.isArray(articles) ? articles : [])
+  const result = (Array.isArray(articles) ? articles : [])
     .filter(a => a && a.title)
     .map(a => ({
       id:    mkId(a.title, a.publishedAt||''),
@@ -1095,7 +1153,8 @@ Focus on: breaking news, market moves, political developments, economic data. Pr
       _man:  false,
       _api:  'claude-ai',
     }));
-}
+  cacheSet(cacheKey, result);
+  return result;
 
 // ── Parser XML RSS manual ──
 function parseRSSXml(xmlText){
@@ -1160,7 +1219,7 @@ async function fetchOneFeed(feed){
     h:     (item.title||'').trim(),
     body:  stripHtml(item.description||item.content||''),
     link:  item.link||'',
-    img:   '',
+    img:   item.thumbnail||item.enclosure?.link||item['media:thumbnail']?.['@_url']||extractImgFromHtml(item.description||item.content||'')||'',
     time:  fmtTime(item.pubDate),
     pubMs: new Date(item.pubDate||0).getTime()||0,
     _src:  feed.label,
@@ -1171,27 +1230,35 @@ async function fetchOneFeed(feed){
   })).filter(i=>i.h);
 }
 
-// Palavras que sobem prioridade automaticamente
-const KW_URGENT = ['selic','copom','fed','juros','inflação','inflation','interest rate',
-  'banco central','central bank','guerra','war','crash','crise','crisis','desaba',
-  'dispara','mínima histórica','máxima histórica','recessão','recession','default',
-  'urgente','breaking','alert','alerta','petróleo','oil surge','rate hike','rate cut',
-  'impeachment','golpe','coup','ataque','attack','explosão','colapso','collapse',
-  'terremoto','earthquake','tsunami','furacão','hurricane','tornado','catástrofe',
-  'sanções','sanctions','embargo','guerra comercial','trade war','invasão','invasion',
-  'assassinato','assassination','colapso bancário','bank run','falência','bankruptcy',
-  'emergência','emergency','lockdown','quarentena','quarantine'];
-const KW_HIGH = ['ibovespa','bolsa','mercado','market','pib','gdp','câmbio','dólar',
-  'dollar','trump','lula','powell','haddad','resultado','earnings','lucro','ipca','cpi',
-  'commodities','ouro','gold','bitcoin','taxa','economy','economia','stocks','ações',
-  'artificial intelligence','inteligência artificial','tech','tecnologia','sanções','sanctions',
-  'china','russia','ukraine','israel','iran','nato','opec','petrobras','vale','embraer',
-  'real','euro','iene','yen','libra','sterling','fed','bce','ecb','imf','fmi','world bank',
-  'acordo','deal','eleição','election','reforma','reform','privatização','privatization',
-  'déficit','surplus','superávit','dívida','debt','pix','bacen','tesouro','treasury'];
+// Palavras que sobem prioridade automaticamente (mais precisas para evitar falsos positivos)
+const KW_URGENT = ['selic emergencial','copom decisão','fed rate decision','juros emergência',
+  'inflação acima do teto','inflation surges','interest rate surprise',
+  'banco central intervém','central bank emergency','banco central corta juros',
+  'guerra declarada','war declared','crash mercado','crise sistêmica','financial crisis',
+  'bolsa desaba','bolsa derrete','mercado em colapso','recessão técnica',
+  'recession confirmed','default soberano','sovereign default',
+  'urgente:','breaking:','alerta máximo','flash urgente',
+  'petróleo colapsa','oil price crash','oil supply cut','rate hike surprise',
+  'impeachment votação','golpe de estado','coup attempt','ataque terrorista',
+  'explosão em','colapso bancário','bank collapse','bank run','falência de banco',
+  'emergência nacional','lockdown total','invasão militar','invasão russa',
+  'assassinato presidente','assassination attempt'];
+const KW_HIGH = ['ibovespa','bolsa brasileira','b3 pontos','mercado financeiro',
+  'pib trimestral','gdp growth','gdp falls','câmbio real','dólar comercial','dollar index',
+  'trump tarifa','trump sanção','lula anuncia','powell discurso','haddad propõe',
+  'resultado trimestral','quarterly earnings','lucro líquido','ipca mensal','cpi report',
+  'ouro futuro','gold futures','bitcoin etf','taxa básica de juros',
+  'ações sobem','ações caem','stocks rally','stocks tumble',
+  'regulação ia','ai regulation','big tech','petrobras resultado','vale produção','embraer contrato',
+  'real se valoriza','real desvaloriza','zona do euro','fed meeting','bce reunião',
+  'ecb decision','imf report','fmi projeção','world bank forecast',
+  'acordo comercial','trade deal','eleição resultado','reforma tributária',
+  'privatização aprovada','déficit fiscal','superávit primário','dívida pública',
+  'bacen nota','tesouro direto','treasury yield','opec produção','petróleo barril'];
 
 // Estado global
 let allItems   = {1:[],2:[],3:[],4:[],5:[],6:[]};
+let colLastUpd = {1:0,2:0,3:0,4:0,5:0,6:0}; // timestamp da última atualização por coluna
 let seenIds    = new Set();
 let bmk        = new Set();
 let ytOn=false, paused=false, activeM=null, mktTimer=null, autoTimer=null, countdownTimer=null;
@@ -1204,6 +1271,10 @@ function classify(title='',desc=''){
   if(KW_URGENT.some(k=>t.includes(k))) return 'urgent';
   if(KW_HIGH.some(k=>t.includes(k)))   return 'high';
   return 'normal';
+}
+function extractImgFromHtml(html=''){
+  const m=html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return m?m[1]:'';
 }
 function stripHtml(h=''){return h.replace(/<[^>]+>/g,' ').replace(/&[a-z#0-9]+;/gi,' ').replace(/\s+/g,' ').trim().slice(0,600);}
 function fmtTime(d){try{const dt=new Date(d);if(isNaN(dt))return new Date().toTimeString().slice(0,5);return dt.toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return new Date().toTimeString().slice(0,5);}}
@@ -1272,9 +1343,14 @@ async function fetchCol(col){
 
   items.sort((a,b)=>b.pubMs-a.pubMs);
   allItems[col]=items.slice(0,120);
+  colLastUpd[col] = Date.now();
 
   renderCol(col);
   upd();
+
+  // Atualiza timestamp no cabeçalho da coluna
+  const tsEl = document.getElementById(`col-ts${col}`);
+  if (tsEl) tsEl.textContent = 'atualizado ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 
   const nc=newIds.size;
   const total=NEWSAPI_QUERIES[col].length+FEEDS[col].length;
@@ -1301,7 +1377,26 @@ async function refreshAll(){
   await Promise.all([1,2,3,4,5,6].map(c=>fetchCol(c)));
   if(icon) icon.style.animation='';
   document.getElementById('nUpdate').textContent='Atualizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  updateFeedStatus();
   resetCountdown();
+}
+
+// ── Resumo de status dos feeds na statusbar ──
+function updateFeedStatus(){
+  const el=document.getElementById('feedStatus');
+  if(!el) return;
+  const cols=[1,2,3,4,5,6];
+  const names={1:'BR/EC',2:'INT/POL',3:'MKT',4:'BR/POL',5:'GEO',6:'ENE'};
+  const colors={1:'var(--green)',2:'var(--blue)',3:'var(--gold)',4:'#00cc99',5:'#5599ff',6:'#ff9f43'};
+  el.innerHTML=cols.map(c=>{
+    const ok=allItems[c].length>0;
+    const ts=colLastUpd[c];
+    const age=ts?Math.round((Date.now()-ts)/60000):null;
+    const ageStr=age===null?'—':(age<1?'<1min':age+'min');
+    return `<span title="${names[c]}: ${allItems[c].length} itens · ${ageStr} atrás" style="font-size:8px;font-family:var(--font-mono);padding:1px 5px;border-radius:2px;border:1px solid ${ok?colors[c]:'var(--borderl)'};color:${ok?colors[c]:'var(--textm)'}">
+      ${names[c]} ${ok?'●':'○'}
+    </span>`;
+  }).join('');
 }
 
 // ── Countdown para próxima atualização ──
