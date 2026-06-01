@@ -346,6 +346,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
   <div class="t-left">
     <div class="logo"><div class="logo-dot"></div>MACRO<span style="color:var(--blue)">TERMINAL</span></div>
     <div class="live-pill">AO VIVO</div>
+        <span style="font-family:var(--font-mono);font-size:8px;color:#c89fff;background:rgba(200,150,255,.12);padding:2px 7px;border-radius:2px;border:1px solid rgba(200,150,255,.25);letter-spacing:.08em">AI⚡ REAL-TIME</span>
     <div class="clk" id="clock">--:--:--</div>
     <div class="nav-tabs">
       <button class="ntab active" onclick="switchTab('news',this)"><i class="fas fa-rss" style="font-size:9px;margin-right:4px"></i>NOTÍCIAS</button>
@@ -354,7 +355,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
     </div>
   </div>
   <div class="t-right">
-    <button class="tbtn btn-blue" id="fxImportBtn" style="display:none;background:#0d2a45;border-color:var(--blue);color:var(--blue)" onclick="fxOpenModal(null)"><i class="fas fa-upload"></i> Importar Dados</button>
     <button class="tbtn" onclick="refreshAll()" title="Atualizar todos os feeds agora"><i class="fas fa-sync-alt" id="gri"></i> Atualizar</button>
     <button class="tbtn" onclick="toggleYT()"><i class="fab fa-youtube"></i> YouTube</button>
     <button class="tbtn" id="sortBtn" onclick="toggleSort()"><i class="fas fa-sort-amount-down"></i> Prioridade</button>
@@ -745,7 +745,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
       <div class="fx-modal-hint">Dados processados localmente — nada sai do navegador.</div>
       <div class="fx-modal-btns">
         <button class="tbtn" id="fx-btn-cancel">Cancelar</button>
-        <button class="tbtn" style="color:var(--red);border-color:#3a0000" id="fx-btn-clear" title="Apaga os dados salvos de todos os painéis">🗑 Limpar</button>
         <button class="tbtn" style="background:#0d2a45;border-color:var(--blue);color:var(--blue)" id="fx-btn-apply">Aplicar ▶</button>
       </div>
     </div>
@@ -851,8 +850,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
         <div class="slbl">Intervalo de Atualização</div>
         <div class="szbts">
           <button class="szb" onclick="setAutoInterval(30000);markAI(this)">30s</button>
-          <button class="szb" onclick="setAutoInterval(60000);markAI(this)">1 min</button>
-          <button class="szb on" id="aiBtn90" onclick="setAutoInterval(90000);markAI(this)">90s</button>
+          <button class="szb on" onclick="setAutoInterval(60000);markAI(this)">1 min</button>
+          <button class="szb" id="aiBtn90" onclick="setAutoInterval(90000);markAI(this)">90s</button>
           <button class="szb" onclick="setAutoInterval(180000);markAI(this)">3 min</button>
           <button class="szb" onclick="setAutoInterval(300000);markAI(this)">5 min</button>
           <button class="szb" onclick="setAutoInterval(0);markAI(this)">Manual</button>
@@ -879,13 +878,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// MOTOR DUAL: NewsAPI.org + RSS Multi-proxy
-// NewsAPI: busca direta com chave própria
-// RSS: cascata allorigins → corsproxy → rss2json
-// ═══════════════════════════════════════════
-
-const NEWS_API_KEY = 'f152991e970d4a4aad5c1f43155e28ca';
+// ── Motor: Claude AI (web_search real-time) + RSS Multi-proxy
+// Claude AI: notícias em tempo quase real via web_search
+// RSS: feeds adicionais em cascata allorigins → corsproxy → rss2json
 
 const SRCI={br:{n:'Brasil',f:'🇧🇷',r:'América do Sul'},us:{n:'EUA / Global',f:'🇺🇸',r:'América do Norte'},eu:{n:'Europa',f:'🇪🇺',r:'Europa'},asia:{n:'Ásia',f:'🌏',r:'Ásia-Pacífico'}};
 const SL={br:'BR',us:'US',eu:'EU',asia:'ASIA'};
@@ -1028,30 +1023,77 @@ const FEEDS = {
   ],
 };
 
-// ── Busca NewsAPI para uma query ──
+// ── Busca notícias via Claude AI (web_search em tempo quase real) ──
 async function fetchNewsAPI(queryObj){
   const {q, language, src, label} = queryObj;
-  const from = new Date(Date.now() - 24*60*60*1000).toISOString().slice(0,10);
-  const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(q)}&language=${language}&sortBy=publishedAt&pageSize=20&from=${from}&apiKey=${NEWS_API_KEY}`;
-  const r = await fetch(url, {signal: AbortSignal.timeout(10000)});
-  if(!r.ok) throw new Error('NewsAPI HTTP '+r.status);
-  const d = await r.json();
-  if(d.status !== 'ok') throw new Error(d.message||'NewsAPI error');
-  return (d.articles||[])
-    .filter(a => a.title && a.title !== '[Removed]')
+  const langHint = language === 'pt' ? 'em português, fontes brasileiras' : 'in English, international sources';
+  const now = new Date().toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});
+
+  const prompt = `You are a financial news aggregator assistant. Search the web RIGHT NOW for the latest breaking news about: "${q}".
+Current time (Brasília): ${now}
+Language preference: ${langHint}
+
+Return ONLY a JSON array (no markdown, no explanation) with up to 12 news items. Each item must have exactly these fields:
+{
+  "title": "headline text",
+  "description": "2-3 sentence summary",
+  "url": "source URL if available, else empty string",
+  "publishedAt": "ISO 8601 timestamp or approximate like '2025-01-15T14:30:00Z'",
+  "source": "publication name"
+}
+
+Focus on: breaking news, market moves, political developments, economic data. Prioritize items from the last 2 hours. Return only the JSON array, nothing else.`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user', content: prompt }]
+    }),
+    signal: AbortSignal.timeout(30000)
+  });
+
+  if (!response.ok) throw new Error('Claude API HTTP ' + response.status);
+  const data = await response.json();
+
+  // Extract text content from response (may include tool_use blocks)
+  const textContent = (data.content || [])
+    .filter(b => b.type === 'text')
+    .map(b => b.text)
+    .join('');
+
+  if (!textContent) throw new Error('Claude: no text response');
+
+  // Parse JSON — strip any accidental markdown fences
+  let articles = [];
+  try {
+    const clean = textContent.replace(/```json|```/g, '').trim();
+    // Find the JSON array
+    const match = clean.match(/\[[\s\S]*\]/);
+    if (!match) throw new Error('No JSON array found');
+    articles = JSON.parse(match[0]);
+  } catch(e) {
+    throw new Error('Claude JSON parse error: ' + e.message);
+  }
+
+  return (Array.isArray(articles) ? articles : [])
+    .filter(a => a && a.title)
     .map(a => ({
       id:    mkId(a.title, a.publishedAt||''),
       h:     (a.title||'').trim(),
-      body:  stripHtml(a.description||a.content||''),
+      body:  stripHtml(a.description||''),
       link:  a.url||'',
-      img:   a.urlToImage||'',
+      img:   '',
       time:  fmtTime(a.publishedAt),
-      pubMs: new Date(a.publishedAt||0).getTime()||0,
-      _src:  (a.source&&a.source.name)||label,
+      pubMs: new Date(a.publishedAt||0).getTime() || (Date.now() - Math.random()*3600000),
+      _src:  a.source || label,
       src,
       p:     classify(a.title, a.description||''),
       _man:  false,
-      _api:  'newsapi',
+      _api:  'claude-ai',
     }));
 }
 
@@ -1154,7 +1196,7 @@ let seenIds    = new Set();
 let bmk        = new Set();
 let ytOn=false, paused=false, activeM=null, mktTimer=null, autoTimer=null, countdownTimer=null;
 let state      = {1:{f:'all',s:''},2:{f:'all',s:''},3:{f:'all',s:''},4:{f:'all',s:''},5:{f:'all',s:''},6:{f:'all',s:''},sort:false};
-let autoMs     = 90000;
+let autoMs     = 60000;
 let countdown  = 0;
 
 function classify(title='',desc=''){
@@ -1179,7 +1221,8 @@ function showSkeleton(col){
 
 // ── Badge de origem ──
 function apiBadge(api){
-  if(api==='newsapi') return '<span style="font-family:var(--font-mono);font-size:7px;padding:1px 4px;border-radius:2px;background:rgba(0,170,255,.15);color:#00aaff;margin-left:3px">API</span>';
+  if(api==='claude-ai') return '<span style="font-family:var(--font-mono);font-size:7px;padding:1px 4px;border-radius:2px;background:rgba(200,150,255,.18);color:#c89fff;margin-left:3px;font-weight:700">AI⚡</span>';
+  if(api==='newsapi')   return '<span style="font-family:var(--font-mono);font-size:7px;padding:1px 4px;border-radius:2px;background:rgba(0,170,255,.15);color:#00aaff;margin-left:3px">API</span>';
   return '<span style="font-family:var(--font-mono);font-size:7px;padding:1px 4px;border-radius:2px;background:rgba(255,255,255,.07);color:#666;margin-left:3px">RSS</span>';
 }
 
@@ -1238,8 +1281,8 @@ async function fetchCol(col){
   const totalOk=apiOk+rssOk;
   if(st){
     st.className='fst ok';
-    st.textContent= nc>0 ? `✦ ${nc} novas · API:${apiOk} RSS:${rssOk}` : `API:${apiOk}/${NEWSAPI_QUERIES[col].length} RSS:${rssOk}/${FEEDS[col].length} · ${items.length} itens`;
-    if(nc>0) setTimeout(()=>{ if(st) st.textContent=`API:${apiOk} RSS:${rssOk} · ${items.length} itens`; },6000);
+    st.textContent= nc>0 ? `✦ ${nc} novas · AI:${apiOk} RSS:${rssOk}` : `AI:${apiOk}/${NEWSAPI_QUERIES[col].length} RSS:${rssOk}/${FEEDS[col].length} · ${items.length} itens`;
+    if(nc>0) setTimeout(()=>{ if(st) st.textContent=`AI:${apiOk} RSS:${rssOk} · ${items.length} itens`; },6000);
   }
 
   setTimeout(()=>{
@@ -1474,10 +1517,6 @@ function switchTab(tab,btn){
   btn.classList.add('active');
   document.querySelectorAll('.vpane').forEach(p=>p.classList.remove('active'));
   document.getElementById('pane-'+tab).classList.add('active');
-  // Mostra/esconde botão de importar e outros botões conforme aba
-  const isFluxo = tab==='fluxo';
-  document.getElementById('fxImportBtn').style.display = isFluxo ? '' : 'none';
-  document.getElementById('sortBtn').style.display = isFluxo ? 'none' : '';
   if(tab==='mkt'){renderMkt();if(!mktTimer)mktTimer=setInterval(()=>{document.querySelectorAll('.mclk').forEach(el=>el.textContent=getLT(el.dataset.tz));},1000);}
   else{clearInterval(mktTimer);mktTimer=null;}
 }
@@ -1693,19 +1732,6 @@ const fxOverlay=document.getElementById('fxOverlay');
 document.getElementById('fx-btn-cancel').addEventListener('click',()=>fxOverlay.classList.remove('open'));
 fxOverlay.addEventListener('click',e=>{if(e.target===fxOverlay)fxOverlay.classList.remove('open');});
 
-// ── Persistir título do ATIVO Livre ──
-const fxAtvTitleInp=document.getElementById('fx-atv-title-input');
-if(fxAtvTitleInp){fxAtvTitleInp.addEventListener('input',()=>fxSave('fx_atv_title',fxAtvTitleInp.value));}
-
-// ── Botão Limpar dados salvos ──
-document.getElementById('fx-btn-clear').addEventListener('click',()=>{
-  if(!confirm('Apagar todos os dados salvos do Fluxo Financeiro?')) return;
-  fxClearAll();
-  ['fx-paste-win','fx-paste-wdo','fx-paste-atv'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  fxOverlay.classList.remove('open');
-  location.reload();
-});
-
 document.querySelectorAll('.fx-modal-tab').forEach(t=>{
   t.addEventListener('click',()=>{
     document.querySelectorAll('.fx-modal-tab').forEach(x=>x.classList.remove('active'));
@@ -1733,9 +1759,9 @@ document.getElementById('fx-btn-apply').addEventListener('click',()=>{
   const ro=document.getElementById('fx-paste-wdo').value.trim();
   const ra=document.getElementById('fx-paste-atv').value.trim();
   if(!rw&&!ro&&!ra){errEl.textContent='Cole os dados em pelo menos um campo.';return;}
-  if(rw){try{fxApplyPanel('win',rw);fxSave('fx_raw_win',rw);ok++;}catch(e){errMsg+='DÓLAR: '+e.message+' ';}}
-  if(ro){try{fxApplyPanel('wdo',ro);fxSave('fx_raw_wdo',ro);ok++;}catch(e){errMsg+='ÍNDICE: '+e.message+' ';}}
-  if(ra){try{fxApplyPanel('atv',ra);fxSave('fx_raw_atv',ra);ok++;}catch(e){errMsg+='ATIVO: '+e.message+' ';}}
+  if(rw){try{fxApplyPanel('win',rw);ok++;}catch(e){errMsg+='DÓLAR: '+e.message+' ';}}
+  if(ro){try{fxApplyPanel('wdo',ro);ok++;}catch(e){errMsg+='ÍNDICE: '+e.message+' ';}}
+  if(ra){try{fxApplyPanel('atv',ra);ok++;}catch(e){errMsg+='ATIVO: '+e.message+' ';}}
   if(errMsg){errEl.textContent=errMsg;return;}
   fxOverlay.classList.remove('open');
 });
@@ -1860,47 +1886,6 @@ function initClock(){const u=()=>document.getElementById('clock').textContent=ne
 
 initClock();
 initResizers();
-
-// ── Restaurar dados do Fluxo Financeiro (nuvem + localStorage fallback) ──
-async function fxRestore(){
-  // Tenta nuvem primeiro
-  let rw='', ro='', ra='', atvTitle='';
-  try {
-    const [cw,co,ca,ct] = await Promise.all([
-      window.storage.get('fx_raw_win'),
-      window.storage.get('fx_raw_wdo'),
-      window.storage.get('fx_raw_atv'),
-      window.storage.get('fx_atv_title'),
-    ]).catch(()=>[null,null,null,null]);
-    rw = cw?.value || '';
-    ro = co?.value || '';
-    ra = ca?.value || '';
-    atvTitle = ct?.value || '';
-  } catch(e) {}
-  // Fallback localStorage
-  if(!rw) rw = localStorage.getItem('fx_raw_win')||'';
-  if(!ro) ro = localStorage.getItem('fx_raw_wdo')||'';
-  if(!ra) ra = localStorage.getItem('fx_raw_atv')||'';
-  if(!atvTitle) atvTitle = localStorage.getItem('fx_atv_title')||'';
-
-  if(atvTitle){const inp=document.getElementById('fx-atv-title-input');if(inp)inp.value=atvTitle;}
-  if(rw){try{fxApplyPanel('win',rw);}catch(e){}}
-  if(ro){try{fxApplyPanel('wdo',ro);}catch(e){}}
-  if(ra){try{fxApplyPanel('atv',ra);}catch(e){}}
-}
-
-async function fxSave(key, value){
-  localStorage.setItem(key, value);
-  try { await window.storage.set(key, value); } catch(e){}
-}
-async function fxClearAll(){
-  ['fx_raw_win','fx_raw_wdo','fx_raw_atv','fx_atv_title'].forEach(k=>{
-    localStorage.removeItem(k);
-    try{window.storage.delete(k);}catch(e){}
-  });
-}
-
-fxRestore();
 
 // Carrega as 6 colunas com delay escalonado (NewsAPI + RSS em paralelo)
 setTimeout(()=>fetchCol(1), 200);
