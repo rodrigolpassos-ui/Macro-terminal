@@ -18,26 +18,33 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.008) 2px,rgba(255,255,255,.008) 4px);pointer-events:none;z-index:9999;}
 
 /* ── TOPBAR ── */
-.topbar{background:var(--bg2);border-bottom:1px solid #1a1a1a;padding:0 14px;height:44px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:300;}
-.t-left{display:flex;align-items:center;gap:10px;}
-.logo{font-family:var(--font-mono);font-size:14px;font-weight:700;color:#fff;letter-spacing:.06em;display:flex;align-items:center;gap:8px;}
+.topbar{background:var(--bg2);border-bottom:1px solid #1f1f1f;padding:0;display:flex;flex-direction:column;flex-shrink:0;z-index:300;}
+.topbar-main{padding:0 16px;height:48px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #181818;}
+.topbar-nav{padding:0 16px;height:34px;display:flex;align-items:stretch;gap:0;background:var(--bg);}
+.t-left{display:flex;align-items:center;gap:12px;}
+.t-right{display:flex;align-items:center;gap:6px;}
+.logo{font-family:var(--font-mono);font-size:15px;font-weight:700;color:#fff;letter-spacing:.06em;display:flex;align-items:center;gap:9px;}
 .logo-dot{width:8px;height:8px;background:var(--red);border-radius:50%;animation:blink 1.4s infinite;}
+.logo-sep{width:1px;height:22px;background:#222;margin:0 2px;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.live-pill{font-family:var(--font-mono);font-size:9px;font-weight:700;background:var(--red);color:#fff;padding:2px 8px;border-radius:2px;letter-spacing:.15em;}
-.clk{font-family:var(--font-mono);font-size:13px;color:var(--gold);letter-spacing:.05em;}
-.nav-tabs{display:flex;gap:1px;margin-left:8px;}
-.ntab{font-family:var(--font-mono);font-size:10px;padding:6px 14px;border-radius:3px 3px 0 0;border:1px solid transparent;border-bottom:none;cursor:pointer;color:var(--text2);background:transparent;transition:all .15s;letter-spacing:.04em;}
-.ntab:hover{color:var(--text);background:var(--bg3);}
-.ntab.active{color:var(--blue);background:var(--bg);border-color:var(--borderl);position:relative;}
-.ntab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--bg);}
-.t-right{display:flex;align-items:center;gap:5px;}
-.tbtn{background:var(--bg3);border:1px solid var(--borderl);color:var(--text2);font-family:var(--font-mono);font-size:10px;padding:5px 11px;border-radius:3px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;letter-spacing:.03em;}
-.tbtn:hover{background:var(--bgh);color:var(--text);border-color:#444;}
+.live-pill{font-family:var(--font-mono);font-size:8px;font-weight:700;background:rgba(230,57,70,.15);color:var(--red);padding:3px 8px;border-radius:2px;letter-spacing:.18em;border:1px solid rgba(230,57,70,.3);display:flex;align-items:center;gap:5px;}
+.live-pill::before{content:'';width:5px;height:5px;background:var(--red);border-radius:50%;animation:blink 1.2s infinite;}
+.clk{font-family:var(--font-mono);font-size:14px;color:var(--gold);letter-spacing:.08em;font-variant-numeric:tabular-nums;}
+.nav-tabs{display:flex;align-items:stretch;gap:0;}
+.ntab{font-family:var(--font-mono);font-size:10px;padding:0 18px;border:none;border-right:1px solid #1a1a1a;cursor:pointer;color:var(--text2);background:transparent;transition:all .15s;letter-spacing:.06em;display:flex;align-items:center;gap:7px;position:relative;}
+.ntab:hover{color:var(--text);background:#0d0d0d;}
+.ntab.active{color:var(--blue);background:var(--bg2);}
+.ntab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--blue);}
+.ntab i{font-size:9px;opacity:.7;}
+.tbtn{background:transparent;border:1px solid var(--borderl);color:var(--text2);font-family:var(--font-mono);font-size:10px;padding:5px 11px;border-radius:3px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;letter-spacing:.03em;}
+.tbtn:hover{background:var(--bgh);color:var(--text);border-color:#3a3a3a;}
 .tbtn.on{background:var(--blue);color:#000;border-color:var(--blue);font-weight:600;}
 .tbtn.cfg{color:var(--gold);border-color:#3a3000;}
 .tbtn.cfg:hover{background:#1a1400;border-color:var(--gold);}
+.tbtn-divider{width:1px;height:20px;background:#222;margin:0 2px;}
 
 
 
@@ -51,13 +58,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 /* Cada grupo é uma coluna vertical que contém 2 painéis empilhados */
 .col-group{display:flex;flex-direction:column;flex:1;overflow:hidden;min-width:180px;}
 .col{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;flex:1;min-height:60px;}
-.col-head{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 9px;height:34px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.col-label{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.08em;display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;}
-.col-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
-.col-cnt{font-family:var(--font-mono);font-size:8px;color:var(--textm);background:var(--bg3);padding:1px 5px;border-radius:2px;flex-shrink:0;}
+.col-head{background:linear-gradient(180deg,#101010 0%,var(--bg2) 100%);border-bottom:1px solid var(--border);padding:0 10px;height:40px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.col-label{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.1em;display:flex;align-items:center;gap:7px;min-width:0;overflow:hidden;}
+.col-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;box-shadow:0 0 5px currentColor;}
+.col-cnt{font-family:var(--font-mono);font-size:8px;color:var(--text2);background:var(--bg3);padding:2px 7px;border-radius:10px;flex-shrink:0;border:1px solid var(--border);}
 .col-label .lname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.col-srch{background:var(--bg);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:9px;padding:2px 5px;border-radius:2px;outline:none;width:68px;}
-.col-srch:focus{border-color:var(--blue);}
+.col-srch{background:var(--bg);border:1px solid var(--borderl);color:var(--text);font-family:var(--font-mono);font-size:9px;padding:3px 7px;border-radius:3px;outline:none;width:75px;transition:border-color .15s,width .2s;}
+.col-srch:focus{border-color:var(--blue);width:95px;}
 .col-filters{display:flex;gap:3px;padding:5px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;overflow:hidden;max-height:0;transition:max-height .22s ease, padding .22s ease;padding-top:0;padding-bottom:0;}
 .col-filters.open{max-height:40px;padding:5px 10px;}
 .ftoggle{background:none;border:none;cursor:pointer;color:var(--textm);font-size:9px;padding:2px 4px;display:flex;align-items:center;gap:3px;font-family:var(--font-mono);letter-spacing:.05em;transition:color .15s;}
@@ -80,18 +87,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 
 /* ── NEWS ITEMS ── */
 /* Estilo MacroFloor: urgente = fundo vermelho, destaque = fundo amarelo escuro */
-.ni{padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .08s;display:flex;flex-direction:column;gap:4px;position:relative;}
+.ni{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;display:flex;flex-direction:column;gap:5px;position:relative;}
 .ni:hover{background:var(--bgh);}
 
 /* URGENTE: fundo vermelho como no MacroFloor */
-.ni.p-urgent{background:#1a0000;border-left:3px solid var(--red);}
-.ni.p-urgent:hover{background:#200000;}
-.ni.p-urgent .nh{color:#ff6b6b;}
+.ni.p-urgent{background:linear-gradient(90deg,#1e0000 0%,#0d0d0d 100%);border-left:3px solid var(--red);box-shadow:inset 2px 0 8px rgba(230,57,70,.08);}
+.ni.p-urgent:hover{background:linear-gradient(90deg,#260000 0%,#141414 100%);}
+.ni.p-urgent .nh{color:#ff7070;}
 .ni.p-urgent .nm{color:#cc4444;}
 
 /* DESTAQUE: fundo amarelo escuro */
-.ni.p-high{background:#0f0a00;border-left:3px solid var(--gold);}
-.ni.p-high:hover{background:#140d00;}
+.ni.p-high{background:linear-gradient(90deg,#120c00 0%,#0d0d0d 100%);border-left:3px solid var(--gold);box-shadow:inset 2px 0 8px rgba(240,180,41,.06);}
+.ni.p-high:hover{background:linear-gradient(90deg,#1a1100 0%,#141414 100%);}
 .ni.p-high .nh{color:#f0c040;}
 .ni.p-high .nm{color:#aa8800;}
 
@@ -130,9 +137,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .ni.p-urgent.flash{animation:none;}
 
 /* ── RESIZER ── */
-.resizer{width:5px;background:var(--border);cursor:col-resize;flex-shrink:0;transition:background .15s;position:relative;z-index:10;}
+.resizer{width:4px;background:var(--border);cursor:col-resize;flex-shrink:0;transition:background .15s;position:relative;z-index:10;}
 .resizer::after{content:'';position:absolute;top:0;bottom:0;left:-4px;right:-4px;}
-.resizer:hover,.resizer.drag{background:var(--blue);}
+.resizer:hover,.resizer.drag{background:var(--blue);box-shadow:0 0 8px rgba(0,170,255,.25);}
 
 /* ── YOUTUBE ── */
 .yt-panel{width:360px;min-width:260px;display:flex;flex-direction:column;border-left:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
@@ -177,9 +184,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .yt-no-links{font-family:var(--font-mono);font-size:9px;color:var(--textm);padding:8px 10px;font-style:italic;}
 
 /* ── STATUS BAR ── */
-.sbar{background:var(--bg2);border-top:1px solid var(--border);height:20px;display:flex;align-items:center;padding:0 12px;gap:16px;flex-shrink:0;}
-.si{font-family:var(--font-mono);font-size:9px;color:var(--textm);display:flex;align-items:center;gap:4px;}
-.sd{width:5px;height:5px;border-radius:50%;background:var(--green);}
+.sbar{background:#080808;border-top:1px solid #1a1a1a;height:22px;display:flex;align-items:center;padding:0 14px;gap:18px;flex-shrink:0;}
+.si{font-family:var(--font-mono);font-size:8px;color:var(--textm);display:flex;align-items:center;gap:5px;letter-spacing:.04em;}
+.sd{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green);animation:blink 2s infinite;}
 
 /* ── MARKETS ── */
 .mkt-pane{flex:1;overflow-y:auto;padding:16px 20px;background:var(--bg);}
@@ -187,7 +194,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 .mkt-pane::-webkit-scrollbar-thumb{background:var(--borderl);}
 .mkt-sec-title{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.14em;color:var(--textm);margin:16px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--border);}
 .mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;margin-bottom:4px;}
-.mkt-card{background:var(--bg2);border:1px solid var(--borderl);border-radius:4px;padding:14px;position:relative;overflow:hidden;}
+.mkt-card{background:linear-gradient(135deg,var(--bg2) 0%,#0f0f0f 100%);border:1px solid var(--borderl);border-radius:5px;padding:14px;position:relative;overflow:hidden;transition:border-color .2s;}
+.mkt-card:hover{border-color:#333;}
 .mkt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
 .mkt-card.open::before{background:var(--green);}
 .mkt-card.closed::before{background:var(--textm);}
@@ -343,23 +351,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);height:
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="t-left">
-    <div class="logo"><div class="logo-dot"></div>MACRO<span style="color:var(--blue)">TERMINAL</span></div>
-    <div class="live-pill">AO VIVO</div>
-        <span style="font-family:var(--font-mono);font-size:8px;color:#c89fff;background:rgba(200,150,255,.12);padding:2px 7px;border-radius:2px;border:1px solid rgba(200,150,255,.25);letter-spacing:.08em">AI⚡ REAL-TIME</span>
-    <div class="clk" id="clock">--:--:--</div>
-    <div class="nav-tabs">
-      <button class="ntab active" onclick="switchTab('news',this)"><i class="fas fa-rss" style="font-size:9px;margin-right:4px"></i>NOTÍCIAS</button>
-      <button class="ntab" onclick="switchTab('mkt',this)"><i class="fas fa-clock" style="font-size:9px;margin-right:4px"></i>BOLSAS DO MUNDO</button>
-      <button class="ntab" onclick="switchTab('fluxo',this)"><i class="fas fa-chart-bar" style="font-size:9px;margin-right:4px"></i>FLUXO FINANCEIRO</button>
+  <div class="topbar-main">
+    <div class="t-left">
+      <div class="logo"><div class="logo-dot"></div>MACRO<span style="color:var(--blue)">TERMINAL</span></div>
+      <div class="logo-sep"></div>
+      <div class="live-pill">AO VIVO</div>
+      <span style="font-family:var(--font-mono);font-size:8px;color:#c89fff;background:rgba(200,150,255,.12);padding:2px 7px;border-radius:2px;border:1px solid rgba(200,150,255,.25);letter-spacing:.08em">AI&#9889; REAL-TIME</span>
+      <div class="clk" id="clock">--:--:--</div>
+    </div>
+    <div class="t-right">
+      <button class="tbtn" onclick="refreshAll()" title="Atualizar todos os feeds agora"><i class="fas fa-sync-alt" id="gri"></i> Atualizar</button>
+      <button class="tbtn" onclick="toggleYT()"><i class="fab fa-youtube"></i> YouTube</button>
+      <div class="tbtn-divider"></div>
+      <button class="tbtn" id="sortBtn" onclick="toggleSort()"><i class="fas fa-sort-amount-down"></i> Prioridade</button>
+      <button class="tbtn" onclick="pauseFeed()"><i class="fas fa-pause" id="pi"></i> <span id="pl">Pausar</span></button>
+      <div class="tbtn-divider"></div>
+      <button class="tbtn cfg" onclick="toggleSettings()"><i class="fas fa-sliders-h"></i> Config.</button>
     </div>
   </div>
-  <div class="t-right">
-    <button class="tbtn" onclick="refreshAll()" title="Atualizar todos os feeds agora"><i class="fas fa-sync-alt" id="gri"></i> Atualizar</button>
-    <button class="tbtn" onclick="toggleYT()"><i class="fab fa-youtube"></i> YouTube</button>
-    <button class="tbtn" id="sortBtn" onclick="toggleSort()"><i class="fas fa-sort-amount-down"></i> Prioridade</button>
-    <button class="tbtn" onclick="pauseFeed()"><i class="fas fa-pause" id="pi"></i> <span id="pl">Pausar</span></button>
-    <button class="tbtn cfg" onclick="toggleSettings()"><i class="fas fa-sliders-h"></i> Config.</button>
+  <div class="topbar-nav">
+    <div class="nav-tabs">
+      <button class="ntab active" onclick="switchTab('news',this)"><i class="fas fa-rss"></i>NOT&#205;CIAS</button>
+      <button class="ntab" onclick="switchTab('mkt',this)"><i class="fas fa-chart-line"></i>BOLSAS DO MUNDO</button>
+      <button class="ntab" onclick="switchTab('fluxo',this)"><i class="fas fa-chart-bar"></i>FLUXO FINANCEIRO</button>
+    </div>
   </div>
 </div>
 
