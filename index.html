@@ -903,58 +903,64 @@ const COL_NAMES={1:'Brasil / Economia',2:'Internacional / Política',3:'Mercados
 const SRC_CLS_MAP={br:'s-br',us:'s-us',eu:'s-eu',asia:'s-asia'};
 
 // ── NewsAPI: queries por coluna ──
+// As queries com "site:" / nome de fonte usam o motor de IA (web_search), que cobre
+// Bloomberg e Reuters — fontes SEM RSS público gratuito.
 const NEWSAPI_QUERIES = {
   1: [
     {q:'economia brasil',              language:'pt', src:'br', label:'NewsAPI · Brasil'},
     {q:'mercado financeiro brasil',    language:'pt', src:'br', label:'NewsAPI · Finanças BR'},
-    {q:'brazil economy',               language:'en', src:'us', label:'NewsAPI · Brazil EN'},
+    {q:'Bloomberg Línea Brasil economia mercado', language:'pt', src:'us', label:'Bloomberg Línea BR'},
+    {q:'Reuters Brazil economy markets latest', language:'en', src:'us', label:'Reuters Brasil'},
     {q:'banco central brasil selic',   language:'pt', src:'br', label:'NewsAPI · BCB'},
     {q:'ibovespa bolsa valores',       language:'pt', src:'br', label:'NewsAPI · Ibovespa'},
     {q:'ipca inflação brasil',         language:'pt', src:'br', label:'NewsAPI · Inflação'},
   ],
   2: [
     {q:'world politics',               language:'en', src:'us', label:'NewsAPI · World'},
-    {q:'international news',           language:'en', src:'eu', label:'NewsAPI · Intl'},
+    {q:'Bloomberg Latin America latest news', language:'en', src:'us', label:'Bloomberg LatAm'},
+    {q:'Reuters world news latest',    language:'en', src:'us', label:'Reuters World'},
     {q:'us politics trump',            language:'en', src:'us', label:'NewsAPI · US Politics'},
     {q:'europa política',              language:'pt', src:'eu', label:'NewsAPI · Europa PT'},
-    {q:'united nations diplomacy',     language:'en', src:'eu', label:'NewsAPI · UN'},
     {q:'china usa relations',          language:'en', src:'asia',label:'NewsAPI · China-US'},
   ],
   3: [
     {q:'stock market finance',         language:'en', src:'us', label:'NewsAPI · Markets'},
+    {q:'Bloomberg markets stocks bonds latest', language:'en', src:'us', label:'Bloomberg Markets'},
+    {q:'Reuters business markets latest', language:'en', src:'us', label:'Reuters Business'},
     {q:'technology artificial intelligence', language:'en', src:'us', label:'NewsAPI · Tech AI'},
     {q:'bitcoin crypto blockchain',    language:'en', src:'us', label:'NewsAPI · Crypto'},
-    {q:'mercados ações',               language:'pt', src:'br', label:'NewsAPI · Mercados PT'},
     {q:'federal reserve interest rates',language:'en',src:'us', label:'NewsAPI · Fed'},
     {q:'nasdaq sp500 dow jones',       language:'en', src:'us', label:'NewsAPI · Wall St'},
   ],
   4: [
     {q:'política brasil governo',      language:'pt', src:'br', label:'NewsAPI · Política BR'},
     {q:'lula congresso senado',        language:'pt', src:'br', label:'NewsAPI · Congresso'},
+    {q:'Bloomberg Línea Brasil política governo', language:'pt', src:'us', label:'Bloomberg Línea Pol.'},
     {q:'eleições partidos brasil',     language:'pt', src:'br', label:'NewsAPI · Eleições'},
-    {q:'brazil politics',              language:'en', src:'us', label:'NewsAPI · Brazil Politics EN'},
     {q:'supremo tribunal federal STF', language:'pt', src:'br', label:'NewsAPI · STF'},
     {q:'câmara deputados votação',     language:'pt', src:'br', label:'NewsAPI · Câmara'},
   ],
   5: [
     {q:'guerra conflito',              language:'pt', src:'br', label:'NewsAPI · Conflitos PT'},
     {q:'war ukraine russia',           language:'en', src:'us', label:'NewsAPI · Ukraine'},
+    {q:'Reuters geopolitics conflict latest', language:'en', src:'us', label:'Reuters Geopol.'},
     {q:'middle east conflict israel',  language:'en', src:'us', label:'NewsAPI · Middle East'},
-    {q:'geopolitics sanctions nato',   language:'en', src:'us', label:'NewsAPI · Geopolitics'},
     {q:'taiwan china military',        language:'en', src:'asia',label:'NewsAPI · Taiwan'},
     {q:'russia putin sanctions',       language:'en', src:'eu', label:'NewsAPI · Russia'},
   ],
   6: [
     {q:'oil energy crude',             language:'en', src:'us', label:'NewsAPI · Oil'},
     {q:'commodities gold silver',      language:'en', src:'us', label:'NewsAPI · Commodities'},
+    {q:'Bloomberg commodities energy oil latest', language:'en', src:'us', label:'Bloomberg Energy'},
     {q:'petróleo energia',             language:'pt', src:'br', label:'NewsAPI · Petróleo PT'},
     {q:'natural gas lng',              language:'en', src:'us', label:'NewsAPI · Gas'},
-    {q:'renewable energy solar wind',  language:'en', src:'eu', label:'NewsAPI · Renewables'},
     {q:'opec oil production',          language:'en', src:'us', label:'NewsAPI · OPEC'},
   ],
 };
 
 // ── RSS feeds por coluna (fallback e volume extra) ──
+// NOTA: feeds da Reuters (feeds.reuters.com) foram descontinuados pela Reuters e
+// removidos. Reuters/Bloomberg agora são cobertos pelo motor de IA (web_search) abaixo.
 const FEEDS = {
   1: [
     // Brasil Economia
@@ -963,42 +969,41 @@ const FEEDS = {
     {url:'https://www.infomoney.com.br/onde-investir/feed/',         label:'InfoMoney Investir',   src:'br'},
     {url:'https://agenciabrasil.ebc.com.br/economia/feed/',         label:'Agência Brasil Econ.', src:'br'},
     {url:'https://g1.globo.com/rss/g1/economia/',                   label:'G1 Economia',          src:'br'},
-    {url:'https://valor.globo.com/rss/financas/',                   label:'Valor Econômico',      src:'br'},
-    {url:'https://valor.globo.com/rss/brasil/',                     label:'Valor Brasil',         src:'br'},
-    {url:'https://www.estadao.com.br/economia/feed/',               label:'Estadão Economia',     src:'br'},
-    {url:'https://feeds.folha.uol.com.br/mercado/rss091.xml',       label:'Folha Mercado',        src:'br'},
-    {url:'https://www.cnnbrasil.com.br/economy/feed/',              label:'CNN Brasil Econ.',     src:'br'},
-    {url:'https://feeds.reuters.com/reuters/businessNews',           label:'Reuters Business',     src:'us'},
+    {url:'https://pox.globo.com/rss/valor/financas/',               label:'Valor Finanças',       src:'br'},
+    {url:'https://pox.globo.com/rss/valor/brasil/',                 label:'Valor Brasil',         src:'br'},
+    {url:'https://www.cnnbrasil.com.br/economia/feed/',             label:'CNN Brasil Econ.',     src:'br'},
+    {url:'https://www.moneytimes.com.br/feed/',                     label:'Money Times',          src:'br'},
+    {url:'https://www.cnbc.com/id/20910258/device/rss/rss.html',    label:'CNBC Economy',         src:'us'},
+    {url:'https://feeds.content.dowjones.io/public/rss/mw_topstories',label:'MarketWatch Top',     src:'us'},
     {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',          src:'us'},
   ],
   2: [
     // Internacional / Política
     {url:'https://feeds.bbci.co.uk/news/world/rss.xml',             label:'BBC World',            src:'eu'},
-    {url:'https://feeds.reuters.com/reuters/worldNews',              label:'Reuters World',        src:'us'},
     {url:'https://feeds.bbci.co.uk/news/business/rss.xml',          label:'BBC Business',         src:'eu'},
     {url:'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',  label:'NYT World',            src:'us'},
     {url:'https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml',label:'NYT Politics',        src:'us'},
-    {url:'https://www.ft.com/?format=rss',                          label:'Financial Times',      src:'eu'},
+    {url:'https://www.ft.com/rss/home',                             label:'Financial Times',      src:'eu'},
     {url:'https://feeds.washingtonpost.com/rss/world',              label:'Washington Post World',src:'us'},
-    {url:'https://feeds.washingtonpost.com/rss/politics',           label:'Washington Post Pol.', src:'us'},
     {url:'https://feeds.skynews.com/feeds/rss/world.xml',           label:'Sky News World',       src:'eu'},
     {url:'https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml',label:'BBC US & Canada',     src:'us'},
     {url:'https://feeds.bbci.co.uk/news/world/latin_america/rss.xml',label:'BBC América Latina',  src:'eu'},
     {url:'https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada',label:'El País',      src:'eu'},
+    {url:'https://www.aljazeera.com/xml/rss/all.xml',               label:'Al Jazeera',           src:'asia'},
     {url:'https://www.dw.com/rss/rss-br-all/s-9977',               label:'Deutsche Welle PT',    src:'eu'},
   ],
   3: [
     // Mercados / Tecnologia
-    {url:'https://feeds.reuters.com/reuters/businessNews',           label:'Reuters Business',     src:'us'},
+    {url:'https://www.cnbc.com/id/100003114/device/rss/rss.html',   label:'CNBC Top News',        src:'us'},
+    {url:'https://www.cnbc.com/id/15839135/device/rss/rss.html',    label:'CNBC Markets',         src:'us'},
+    {url:'https://feeds.content.dowjones.io/public/rss/mw_marketpulse',label:'MarketWatch Pulse',  src:'us'},
     {url:'https://feeds.bbci.co.uk/news/technology/rss.xml',        label:'BBC Tech',             src:'eu'},
     {url:'https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml',label:'NYT Tech',          src:'us'},
-    {url:'https://feeds.washingtonpost.com/rss/business/technology',label:'WPost Tech',           src:'us'},
     {url:'https://www.infomoney.com.br/onde-investir/feed/',         label:'InfoMoney Invest.',    src:'br'},
-    {url:'https://valor.globo.com/rss/financas/',                   label:'Valor Econômico',      src:'br'},
-    {url:'https://www.estadao.com.br/economia/feed/',               label:'Estadão Economia',     src:'br'},
-    {url:'https://feeds.folha.uol.com.br/mercado/rss091.xml',       label:'Folha Mercado',        src:'br'},
+    {url:'https://pox.globo.com/rss/valor/financas/',               label:'Valor Finanças',       src:'br'},
+    {url:'https://www.moneytimes.com.br/feed/',                     label:'Money Times',          src:'br'},
     {url:'https://techcrunch.com/feed/',                            label:'TechCrunch',           src:'us'},
-    {url:'https://feeds.feedburner.com/TheHackersNews',             label:'The Hacker News',      src:'us'},
+    {url:'https://www.investing.com/rss/news_25.rss',              label:'Investing.com',        src:'us'},
     {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',          src:'us'},
   ],
   4: [
@@ -1006,19 +1011,19 @@ const FEEDS = {
     {url:'https://agenciabrasil.ebc.com.br/politica/feed/',         label:'Agência Brasil Pol.',  src:'br'},
     {url:'https://g1.globo.com/rss/g1/politica/',                   label:'G1 Política',          src:'br'},
     {url:'https://feeds.folha.uol.com.br/poder/rss091.xml',         label:'Folha Poder',          src:'br'},
-    {url:'https://www.estadao.com.br/politica/feed/',               label:'Estadão Política',     src:'br'},
     {url:'https://www.cnnbrasil.com.br/politica/feed/',             label:'CNN Brasil Política',  src:'br'},
-    {url:'https://valor.globo.com/rss/brasil/',                     label:'Valor Brasil',         src:'br'},
-    {url:'https://feeds.bbci.co.uk/portuguese/brazil/rss.xml',      label:'BBC Brasil',           src:'eu'},
+    {url:'https://www.poder360.com.br/feed/',                       label:'Poder360',             src:'br'},
+    {url:'https://pox.globo.com/rss/valor/brasil/',                 label:'Valor Brasil',         src:'br'},
+    {url:'https://feeds.bbci.co.uk/portuguese/brasil/rss.xml',      label:'BBC Brasil',           src:'eu'},
     {url:'https://www.dw.com/rss/rss-br-all/s-9977',               label:'Deutsche Welle PT',    src:'eu'},
   ],
   5: [
     // Guerra / Geopolítica
     {url:'https://feeds.bbci.co.uk/news/world/rss.xml',             label:'BBC World',            src:'eu'},
-    {url:'https://feeds.reuters.com/reuters/worldNews',              label:'Reuters World',        src:'us'},
     {url:'https://feeds.bbci.co.uk/news/world/europe/rss.xml',      label:'BBC Europe',           src:'eu'},
     {url:'https://feeds.bbci.co.uk/news/world/middle_east/rss.xml', label:'BBC Middle East',      src:'eu'},
     {url:'https://feeds.bbci.co.uk/news/world/asia/rss.xml',        label:'BBC Asia',             src:'asia'},
+    {url:'https://www.aljazeera.com/xml/rss/all.xml',               label:'Al Jazeera',           src:'asia'},
     {url:'https://feeds.skynews.com/feeds/rss/world.xml',           label:'Sky News World',       src:'eu'},
     {url:'https://feeds.washingtonpost.com/rss/world',              label:'WPost World',          src:'us'},
     {url:'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',  label:'NYT World',            src:'us'},
@@ -1027,13 +1032,13 @@ const FEEDS = {
   ],
   6: [
     // Energia / Commodities
-    {url:'https://feeds.reuters.com/reuters/businessNews',           label:'Reuters Business',     src:'us'},
+    {url:'https://www.cnbc.com/id/19836768/device/rss/rss.html',    label:'CNBC Energy',          src:'us'},
+    {url:'https://www.investing.com/rss/news_11.rss',              label:'Investing Commodities',src:'us'},
+    {url:'https://oilprice.com/rss/main',                          label:'OilPrice',             src:'us'},
     {url:'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml',label:'NYT Economy',          src:'us'},
     {url:'https://www.infomoney.com.br/mercados/feed/',              label:'InfoMoney Mercados',   src:'br'},
-    {url:'https://valor.globo.com/rss/financas/',                   label:'Valor Econômico',      src:'br'},
-    {url:'https://www.infomoney.com.br/onde-investir/feed/',         label:'InfoMoney Invest.',    src:'br'},
-    {url:'https://feeds.washingtonpost.com/rss/business',           label:'WPost Business',       src:'us'},
-    {url:'https://feeds.folha.uol.com.br/mercado/rss091.xml',       label:'Folha Mercado',        src:'br'},
+    {url:'https://pox.globo.com/rss/valor/financas/',               label:'Valor Finanças',       src:'br'},
+    {url:'https://www.moneytimes.com.br/feed/',                     label:'Money Times',          src:'br'},
     {url:'https://feeds.bbci.co.uk/news/business/rss.xml',          label:'BBC Business',         src:'eu'},
   ],
 };
@@ -1165,25 +1170,32 @@ async function fetchWithProxy(feedUrl){
 
 // ── Busca um feed RSS individual ──
 async function fetchOneFeed(feed){
-  const result=await fetchWithProxy(feed.url);
-  let rawItems=[];
-  if(result.mode==='xml'){
-    rawItems=parseRSSXml(result.data).map(i=>({title:i.title,description:i.description,link:i.link,pubDate:i.pubDate,content:''}));
-  }else{rawItems=result.data;}
-  return rawItems.map(item=>({
-    id:    mkId(item.title,item.pubDate),
-    h:     (item.title||'').trim(),
-    body:  stripHtml(item.description||item.content||''),
-    link:  item.link||'',
-    img:   '',
-    time:  fmtTime(item.pubDate),
-    pubMs: new Date(item.pubDate||0).getTime()||0,
-    _src:  feed.label,
-    src:   feed.src,
-    p:     classify(item.title,item.description),
-    _man:  false,
-    _api:  'rss',
-  })).filter(i=>i.h);
+  try{
+    const result=await fetchWithProxy(feed.url);
+    let rawItems=[];
+    if(result.mode==='xml'){
+      rawItems=parseRSSXml(result.data).map(i=>({title:i.title,description:i.description,link:i.link,pubDate:i.pubDate,content:''}));
+    }else{rawItems=result.data;}
+    const mapped=rawItems.map(item=>({
+      id:    mkId(item.title,item.pubDate),
+      h:     (item.title||'').trim(),
+      body:  stripHtml(item.description||item.content||''),
+      link:  item.link||'',
+      img:   '',
+      time:  fmtTime(item.pubDate),
+      pubMs: new Date(item.pubDate||0).getTime()||0,
+      _src:  feed.label,
+      src:   feed.src,
+      p:     classify(item.title,item.description),
+      _man:  false,
+      _api:  'rss',
+    })).filter(i=>i.h);
+    if(!mapped.length) throw new Error('vazio');
+    return mapped;
+  }catch(e){
+    // re-lança com o nome da fonte para o diagnóstico saber qual feed quebrou
+    const err=new Error(feed.label); err._feedLabel=feed.label; throw err;
+  }
 }
 
 // Palavras que sobem prioridade automaticamente
@@ -1207,6 +1219,7 @@ const KW_HIGH = ['ibovespa','bolsa','mercado','market','pib','gdp','câmbio','d�
 
 // Estado global
 let allItems   = {1:[],2:[],3:[],4:[],5:[],6:[]};
+let feedHealth = {1:null,2:null,3:null,4:null,5:null,6:null};
 let seenIds    = new Set();
 let bmk        = new Set();
 let ytOn=false, paused=false, activeM=null, mktTimer=null, autoTimer=null, countdownTimer=null;
@@ -1219,6 +1232,18 @@ function classify(title='',desc=''){
   if(KW_URGENT.some(k=>t.includes(k))) return 'urgent';
   if(KW_HIGH.some(k=>t.includes(k)))   return 'high';
   return 'normal';
+}
+
+// Pinta o status da coluna de amarelo quando há feeds fora do ar (degradado).
+function updFeedHealthDot(col){
+  const h=feedHealth[col]; if(!h) return;
+  const st=document.getElementById('fst'+col);
+  if(!st) return;
+  if(h.failed && h.failed.length){
+    st.style.color='var(--gold)';     // degradado: alguns feeds fora
+  } else {
+    st.style.color='';                 // tudo ok
+  }
 }
 function stripHtml(h=''){return h.replace(/<[^>]+>/g,' ').replace(/&[a-z#0-9]+;/gi,' ').replace(/\s+/g,' ').trim().slice(0,600);}
 function fmtTime(d){try{const dt=new Date(d);if(isNaN(dt))return new Date().toTimeString().slice(0,5);return dt.toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return new Date().toTimeString().slice(0,5);}}
@@ -1255,8 +1280,14 @@ async function fetchCol(col){
 
   let merged=[];
   let apiOk=0, rssOk=0;
+  const failedFeeds=[];
   apiResults.forEach(r=>{ if(r.status==='fulfilled'){merged=merged.concat(r.value);apiOk++;} });
-  rssResults.forEach(r=>{ if(r.status==='fulfilled'){merged=merged.concat(r.value);rssOk++;} });
+  rssResults.forEach((r,idx)=>{
+    if(r.status==='fulfilled'){merged=merged.concat(r.value);rssOk++;}
+    else { const lbl=(r.reason&&r.reason._feedLabel)||(FEEDS[col][idx]&&FEEDS[col][idx].label)||'?'; failedFeeds.push(lbl); }
+  });
+  // guarda no estado para o tooltip do indicador
+  feedHealth[col]={failed:failedFeeds, rssTotal:FEEDS[col].length, rssOk};
 
   if(btn) btn.classList.remove('spin');
 
@@ -1294,11 +1325,15 @@ async function fetchCol(col){
   const nc=newIds.size;
   const total=NEWSAPI_QUERIES[col].length+FEEDS[col].length;
   const totalOk=apiOk+rssOk;
+  const nFail=failedFeeds.length;
   if(st){
     st.className='fst ok';
-    st.textContent= nc>0 ? `✦ ${nc} novas · AI:${apiOk} RSS:${rssOk}` : `AI:${apiOk}/${NEWSAPI_QUERIES[col].length} RSS:${rssOk}/${FEEDS[col].length} · ${items.length} itens`;
-    if(nc>0) setTimeout(()=>{ if(st) st.textContent=`AI:${apiOk} RSS:${rssOk} · ${items.length} itens`; },6000);
+    const failTxt = nFail>0 ? ` · ⚠${nFail} fora` : '';
+    st.textContent= nc>0 ? `✦ ${nc} novas · AI:${apiOk} RSS:${rssOk}${failTxt}` : `AI:${apiOk}/${NEWSAPI_QUERIES[col].length} RSS:${rssOk}/${FEEDS[col].length}${failTxt} · ${items.length} itens`;
+    st.title = nFail>0 ? ('Feeds fora do ar: '+failedFeeds.join(', ')) : 'Todos os feeds responderam';
+    if(nc>0) setTimeout(()=>{ if(st) st.textContent=`AI:${apiOk} RSS:${rssOk}${failTxt} · ${items.length} itens`; },6000);
   }
+  updFeedHealthDot(col);
 
   setTimeout(()=>{
     newIds.forEach(id=>{
