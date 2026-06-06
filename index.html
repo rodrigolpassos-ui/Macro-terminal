@@ -221,6 +221,9 @@ const FONTES = {
 
 /* Proxies que contornam o bloqueio CORS — tenta um, se falhar passa ao próximo */
 const PROXIES = [
+  // proxy próprio (Cloudflare Worker) — principal, estável
+  u => "https://noticias-proxy.rodrigolpassos.workers.dev/?url=" + encodeURIComponent(u),
+  // públicos de reserva, caso o principal falhe
   u => "https://corsproxy.io/?url=" + encodeURIComponent(u),
   u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
   u => "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u)
