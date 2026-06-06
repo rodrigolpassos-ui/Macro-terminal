@@ -134,7 +134,7 @@
 </div>
 
 <footer>
-  Fontes via RSS · proxy de leitura: <code id="proxyname">allorigins</code> ·
+  Fontes via RSS · proxy de leitura com fallback automático ·
   atualização automática a cada 5 min. Clique numa manchete para abrir a matéria original.
 </footer>
 
@@ -145,9 +145,9 @@
 const FONTES = {
   br: [
     { nome:"G1",          url:"https://g1.globo.com/rss/g1/" },
-    { nome:"CNN Brasil",  url:"https://www.cnnbrasil.com.br/feed/" },
+    { nome:"Agência Brasil",url:"https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml" },
     { nome:"BBC Brasil",  url:"https://feeds.bbci.co.uk/portuguese/rss.xml" },
-    { nome:"Carta Capital",url:"https://www.cartacapital.com.br/feed/" },
+    { nome:"R7",          url:"https://noticias.r7.com/feed.xml" },
     { nome:"Poder360",    url:"https://www.poder360.com.br/feed/" }
   ],
   la: [
@@ -166,8 +166,12 @@ const FONTES = {
   ]
 };
 
-/* Proxy que contorna o bloqueio CORS de páginas estáticas */
-const PROXY = u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u);
+/* Proxies que contornam o bloqueio CORS — tenta um, se falhar passa ao próximo */
+const PROXIES = [
+  u => "https://corsproxy.io/?url=" + encodeURIComponent(u),
+  u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
+  u => "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u)
+];
 
 let autoRefresh = true;
 let autoTimer = null;
@@ -191,51 +195,59 @@ function tempoRelativo(date){
   return Math.floor(diff/86400)+" d";
 }
 
-/* ---------- busca e parse de um feed ---------- */
+/* ---------- busca e parse de um feed (tenta cada proxy) ---------- */
 async function buscarFeed(fonte){
-  try{
-    const resp = await fetch(PROXY(fonte.url));
-    if(!resp.ok) throw new Error(resp.status);
-    const txt = await resp.text();
-    const xml = new DOMParser().parseFromString(txt,"text/xml");
-    const itens = [...xml.querySelectorAll("item, entry")];
-    return itens.map(it=>{
-      const titulo = (it.querySelector("title")?.textContent || "").trim();
-      let link = it.querySelector("link")?.textContent?.trim();
-      if(!link){ link = it.querySelector("link")?.getAttribute("href"); }
-      const dataTxt = it.querySelector("pubDate, published, updated")?.textContent;
-      const data = dataTxt ? new Date(dataTxt) : null;
-      return { titulo, link, data, fonte:fonte.nome };
-    }).filter(x=>x.titulo && x.link);
-  }catch(e){
-    return [];
+  for(const proxy of PROXIES){
+    try{
+      const ctrl = new AbortController();
+      const t = setTimeout(()=>ctrl.abort(), 8000); // 8s por tentativa
+      const resp = await fetch(proxy(fonte.url), {signal:ctrl.signal});
+      clearTimeout(t);
+      if(!resp.ok) throw new Error(resp.status);
+      const txt = await resp.text();
+      const xml = new DOMParser().parseFromString(txt,"text/xml");
+      const itens = [...xml.querySelectorAll("item, entry")];
+      if(itens.length === 0) throw new Error("vazio");
+      return itens.map(it=>{
+        const titulo = (it.querySelector("title")?.textContent || "").trim();
+        let link = it.querySelector("link")?.textContent?.trim();
+        if(!link){ link = it.querySelector("link")?.getAttribute("href"); }
+        const dataTxt = it.querySelector("pubDate, published, updated")?.textContent;
+        const data = dataTxt ? new Date(dataTxt) : null;
+        return { titulo, link, data, fonte:fonte.nome };
+      }).filter(x=>x.titulo && x.link);
+    }catch(e){
+      /* tenta o próximo proxy */
+    }
   }
+  return []; // todos os proxies falharam
 }
 
-/* ---------- carrega uma coluna ---------- */
+/* ---------- carrega uma coluna (incremental) ---------- */
 async function carregarColuna(chave){
   const feedEl  = document.getElementById("feed-"+chave);
   const countEl = document.getElementById("count-"+chave);
   feedEl.innerHTML = '<div class="loading"><div class="spinner"></div>Buscando manchetes…</div>';
 
-  const resultados = await Promise.all(FONTES[chave].map(buscarFeed));
-  let todas = resultados.flat();
+  let todas = [];
+  // dispara todas as fontes, mas renderiza a cada uma que chega
+  await Promise.all(FONTES[chave].map(async fonte=>{
+    const itens = await buscarFeed(fonte);
+    if(itens.length){
+      todas = todas.concat(itens);
+      todas.sort((a,b)=>{
+        if(!a.data) return 1; if(!b.data) return -1;
+        return b.data - a.data;
+      });
+      renderColuna(chave, todas.slice(0,60));
+      countEl.textContent = todas.length;
+    }
+  }));
 
   if(todas.length === 0){
     feedEl.innerHTML = '<div class="error">Não foi possível carregar as fontes agora.<br>Tente "Atualizar" em alguns instantes.</div>';
     countEl.textContent = "0";
-    return;
   }
-
-  // ordena por data (mais recentes primeiro)
-  todas.sort((a,b)=>{
-    if(!a.data) return 1; if(!b.data) return -1;
-    return b.data - a.data;
-  });
-  todas = todas.slice(0,60);
-
-  renderColuna(chave, todas);
-  countEl.textContent = todas.length;
 }
 
 /* ---------- render com filtro ---------- */
