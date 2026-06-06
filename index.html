@@ -57,8 +57,10 @@
   .btn.active{background:var(--col-int);color:#fff;border-color:var(--col-int);}
 
   /* ===== coluna YouTube ===== */
-  .yt-col{display:none;border-top:3px solid #ff0000;}
-  .yt-col.open{display:flex;}
+  .yt-col{display:none;height:calc(100vh - 150px);
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    overflow:hidden;flex-direction:column;}
+  .grid.with-yt .yt-col{display:flex;}
   .yt-col .col-head{border-top:3px solid #ff0000;}
   .yt-logo{color:#ff0000;font-size:18px;}
   .yt-close{margin-left:auto;background:transparent;border:none;color:var(--muted);
@@ -164,7 +166,7 @@
   </section>
 
   <!-- ===== Coluna YouTube (aparece ao clicar no botão) ===== -->
-  <section class="col yt-col" id="yt-col">
+  <section class="yt-col" id="yt-col">
     <div class="col-head">
       <span class="yt-logo">▶</span>
       <span class="label">YouTube</span>
@@ -368,17 +370,14 @@ document.getElementById("autobtn").addEventListener("click",function(){
 });
 
 /* botão YouTube — abre/fecha a coluna lateral */
-const ytCol = document.getElementById("yt-col");
-const grid  = document.getElementById("grid");
+const grid = document.getElementById("grid");
 document.getElementById("ytbtn").addEventListener("click",function(){
-  const aberto = ytCol.classList.toggle("open");
-  grid.classList.toggle("with-yt",aberto);
+  const aberto = grid.classList.toggle("with-yt");
   this.classList.toggle("active",aberto);
   if(aberto) document.getElementById("yt-input").focus();
   else document.getElementById("yt-player").innerHTML = "";
 });
 document.getElementById("yt-close").addEventListener("click",()=>{
-  ytCol.classList.remove("open");
   grid.classList.remove("with-yt");
   document.getElementById("ytbtn").classList.remove("active");
   document.getElementById("yt-player").innerHTML = "";
