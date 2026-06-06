@@ -52,6 +52,8 @@
   }
   .btn:hover{filter:brightness(1.1);}
   .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+  .btn.yt{background:#ff0000;color:#fff;}
+  .btn.active{background:var(--col-int);color:#fff;border-color:var(--col-int);}
   .grid{
     display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
     padding:16px 20px;max-width:1600px;margin:0 auto;
@@ -90,6 +92,8 @@
     display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .src{color:var(--accent-2);font-weight:600;}
   .sep{width:3px;height:3px;border-radius:50%;background:var(--muted);display:inline-block;}
+  .tag-pt{background:var(--col-int);color:#fff;font-size:9px;font-weight:700;
+    padding:1px 5px;border-radius:4px;letter-spacing:.5px;}
   .divider{height:1px;background:var(--border);margin:2px 10px;}
   .loading,.error{padding:24px 16px;text-align:center;color:var(--muted);
     font-family:Arial,sans-serif;font-size:13px;}
@@ -113,6 +117,8 @@
   <span class="clock" id="clock"></span>
   <div class="controls">
     <input id="search" type="text" placeholder="Filtrar manchetes…">
+    <button class="btn ghost" id="transbtn">Traduzir: OFF</button>
+    <button class="btn yt" id="ytbtn">▶ YouTube</button>
     <button class="btn" id="refresh">Atualizar</button>
     <button class="btn ghost" id="autobtn">Auto: ON</button>
   </div>
@@ -265,13 +271,40 @@ function renderColuna(chave, lista){
   feedEl.innerHTML = dados.map((x,i)=>`
     ${i>0?'<div class="divider"></div>':''}
     <a class="item" href="${x.link}" target="_blank" rel="noopener">
-      <h3>${x.titulo}</h3>
+      <h3>${(traduzir && x.titulo_pt) ? x.titulo_pt : x.titulo}</h3>
       <div class="meta">
         <span class="src">${x.fonte}</span>
         <span class="sep"></span>
         <span>${tempoRelativo(x.data)}</span>
+        ${(traduzir && x.titulo_pt) ? '<span class="sep"></span><span class="tag-pt">PT</span>' : ''}
       </div>
     </a>`).join("");
+}
+
+/* ---------- tradução para português ---------- */
+let traduzir = false;
+
+async function traduzirTexto(texto){
+  // API gratuita de tradução (detecta idioma automaticamente)
+  try{
+    const url = "https://api.mymemory.translated.net/get?q="
+      + encodeURIComponent(texto) + "&langpair=autodetect|pt-BR";
+    const r = await fetch(url);
+    const j = await r.json();
+    return j?.responseData?.translatedText || null;
+  }catch(e){ return null; }
+}
+
+async function traduzirColuna(chave){
+  const lista = cache[chave];
+  // traduz só as que ainda não têm tradução, em pequenos lotes
+  const pendentes = lista.filter(x=>!x.titulo_pt).slice(0,40);
+  for(const item of pendentes){
+    const pt = await traduzirTexto(item.titulo);
+    if(pt) item.titulo_pt = pt;
+    renderColuna(chave, cache[chave]); // atualiza conforme traduz
+    await new Promise(r=>setTimeout(r,150)); // evita sobrecarregar a API
+  }
 }
 
 /* ---------- atualizar tudo ---------- */
@@ -290,6 +323,23 @@ document.getElementById("autobtn").addEventListener("click",function(){
   this.classList.toggle("ghost",!autoRefresh);
   if(autoRefresh){ autoTimer = setInterval(atualizarTudo,300000); }
   else { clearInterval(autoTimer); }
+});
+
+/* botão YouTube — abre o YouTube de notícias em nova aba */
+document.getElementById("ytbtn").addEventListener("click",function(){
+  window.open("https://www.youtube.com/results?search_query=noticias+ao+vivo","_blank","noopener");
+});
+
+/* botão Traduzir — liga/desliga tradução das manchetes para PT */
+document.getElementById("transbtn").addEventListener("click",function(){
+  traduzir = !traduzir;
+  this.textContent = "Traduzir: " + (traduzir?"ON":"OFF");
+  this.classList.toggle("active",traduzir);
+  if(traduzir){
+    ["la","br","int"].forEach(traduzirColuna);
+  }else{
+    ["la","br","int"].forEach(k=>renderColuna(k,cache[k]));
+  }
 });
 
 /* ---------- init ---------- */
