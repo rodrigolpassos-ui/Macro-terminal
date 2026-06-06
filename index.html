@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Notícias</title>
+<style>
+  :root{
+    --bg:#0e1116;
+    --panel:#161b22;
+    --panel-2:#1c232d;
+    --border:#2a323d;
+    --txt:#e6edf3;
+    --muted:#8b98a5;
+    --accent:#e8503a;
+    --accent-2:#f0a830;
+    --col-la:#3fb950;
+    --col-br:#f0a830;
+    --col-int:#58a6ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:Georgia,'Times New Roman',serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    position:sticky;top:0;z-index:50;
+    background:linear-gradient(180deg,#11151b 0%,#0e1116 100%);
+    border-bottom:2px solid var(--accent);
+    padding:14px 20px;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand h1{
+    font-size:26px;letter-spacing:-0.5px;
+    font-family:'Helvetica Neue',Arial,sans-serif;font-weight:800;
+  }
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);
+    animation:pulse 1.6s infinite;display:inline-block;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .clock{font-family:'Courier New',monospace;color:var(--muted);font-size:13px;}
+  .controls{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .controls input{
+    background:var(--panel-2);border:1px solid var(--border);color:var(--txt);
+    padding:7px 11px;border-radius:6px;font-family:Arial,sans-serif;font-size:13px;width:220px;
+  }
+  .btn{
+    background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:6px;
+    cursor:pointer;font-family:Arial,sans-serif;font-weight:600;font-size:13px;
+  }
+  .btn:hover{filter:brightness(1.1);}
+  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+  .grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+    padding:16px 20px;max-width:1600px;margin:0 auto;
+    align-items:stretch;
+  }
+  .col{background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    overflow:hidden;display:flex;flex-direction:column;
+    height:calc(100vh - 150px);}
+  .col-head{
+    padding:14px 16px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:10px;
+    font-family:'Helvetica Neue',Arial,sans-serif;
+  }
+  .col-head .label{font-weight:800;font-size:15px;letter-spacing:.5px;text-transform:uppercase;}
+  .col-head .count{margin-left:auto;font-size:11px;color:var(--muted);
+    background:var(--panel-2);padding:3px 8px;border-radius:20px;font-family:monospace;}
+  .col.la .col-head{border-top:3px solid var(--col-la);}
+  .col.br .col-head{border-top:3px solid var(--col-br);}
+  .col.int .col-head{border-top:3px solid var(--col-int);}
+  .bar{width:6px;height:22px;border-radius:3px;}
+  .la .bar{background:var(--col-la);}
+  .br .bar{background:var(--col-br);}
+  .int .bar{background:var(--col-int);}
+  .feed{overflow-y:auto;flex:1;padding:6px;}
+  .feed::-webkit-scrollbar{width:8px;}
+  .feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;}
+  .item{
+    display:block;text-decoration:none;color:inherit;
+    padding:12px 12px;border-radius:8px;border:1px solid transparent;
+    transition:.15s;
+  }
+  .item:hover{background:var(--panel-2);border-color:var(--border);}
+  .item h3{font-size:16px;line-height:1.35;font-weight:500;margin-bottom:6px;}
+  .item:hover h3{color:#fff;}
+  .meta{font-family:Arial,sans-serif;font-size:11px;color:var(--muted);
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .src{color:var(--accent-2);font-weight:600;}
+  .sep{width:3px;height:3px;border-radius:50%;background:var(--muted);display:inline-block;}
+  .divider{height:1px;background:var(--border);margin:2px 10px;}
+  .loading,.error{padding:24px 16px;text-align:center;color:var(--muted);
+    font-family:Arial,sans-serif;font-size:13px;}
+  .error{color:var(--accent);}
+  .spinner{width:22px;height:22px;border:3px solid var(--border);
+    border-top-color:var(--accent);border-radius:50%;
+    animation:spin .8s linear infinite;margin:0 auto 10px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  footer{padding:10px 20px;text-align:center;color:var(--muted);
+    font-family:Arial,sans-serif;font-size:11px;border-top:1px solid var(--border);}
+  footer code{color:var(--accent-2);}
+  @media(max-width:980px){.grid{grid-template-columns:1fr;}.col{height:70vh;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="dot"></span>
+    <h1>Central de Notícias</h1>
+  </div>
+  <span class="clock" id="clock"></span>
+  <div class="controls">
+    <input id="search" type="text" placeholder="Filtrar manchetes…">
+    <button class="btn" id="refresh">Atualizar</button>
+    <button class="btn ghost" id="autobtn">Auto: ON</button>
+  </div>
+</header>
+
+<div class="grid">
+  <section class="col la">
+    <div class="col-head"><span class="bar"></span><span class="label">América Latina</span><span class="count" id="count-la">…</span></div>
+    <div class="feed" id="feed-la"></div>
+  </section>
+  <section class="col br">
+    <div class="col-head"><span class="bar"></span><span class="label">Brasil</span><span class="count" id="count-br">…</span></div>
+    <div class="feed" id="feed-br"></div>
+  </section>
+  <section class="col int">
+    <div class="col-head"><span class="bar"></span><span class="label">Internacional</span><span class="count" id="count-int">…</span></div>
+    <div class="feed" id="feed-int"></div>
+  </section>
+</div>
+
+<footer>
+  Fontes via RSS · proxy de leitura: <code id="proxyname">allorigins</code> ·
+  atualização automática a cada 5 min. Clique numa manchete para abrir a matéria original.
+</footer>
+
+<script>
+/* ============================================================
+   FONTES RSS  —  edite/adicione livremente abaixo
+   ============================================================ */
+const FONTES = {
+  br: [
+    { nome:"G1",          url:"https://g1.globo.com/rss/g1/" },
+    { nome:"CNN Brasil",  url:"https://www.cnnbrasil.com.br/feed/" },
+    { nome:"BBC Brasil",  url:"https://feeds.bbci.co.uk/portuguese/rss.xml" },
+    { nome:"Carta Capital",url:"https://www.cartacapital.com.br/feed/" },
+    { nome:"Poder360",    url:"https://www.poder360.com.br/feed/" }
+  ],
+  la: [
+    { nome:"BBC Mundo",       url:"https://feeds.bbci.co.uk/mundo/rss.xml" },
+    { nome:"El País América", url:"https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/america/portada" },
+    { nome:"DW Español",      url:"https://rss.dw.com/rdf/rss-sp-all" },
+    { nome:"France24 ES",     url:"https://www.france24.com/es/rss" },
+    { nome:"Infobae",         url:"https://www.infobae.com/feeds/rss/" }
+  ],
+  int: [
+    { nome:"BBC World",   url:"https://feeds.bbci.co.uk/news/world/rss.xml" },
+    { nome:"Reuters",     url:"https://www.reutersagency.com/feed/?best-topics=political-general&post_type=best" },
+    { nome:"Al Jazeera",  url:"https://www.aljazeera.com/xml/rss/all.xml" },
+    { nome:"DW English",  url:"https://rss.dw.com/rdf/rss-en-all" },
+    { nome:"France24 EN", url:"https://www.france24.com/en/rss" }
+  ]
+};
+
+/* Proxy que contorna o bloqueio CORS de páginas estáticas */
+const PROXY = u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u);
+
+let autoRefresh = true;
+let autoTimer = null;
+
+/* ---------- relógio ---------- */
+function tick(){
+  const d = new Date();
+  document.getElementById('clock').textContent =
+    d.toLocaleString('pt-BR',{weekday:'short',day:'2-digit',month:'short',
+    hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(tick,1000); tick();
+
+/* ---------- tempo relativo ---------- */
+function tempoRelativo(date){
+  if(!date) return "";
+  const diff = (Date.now() - date.getTime())/1000;
+  if(diff < 60) return "agora";
+  if(diff < 3600) return Math.floor(diff/60)+" min";
+  if(diff < 86400) return Math.floor(diff/3600)+" h";
+  return Math.floor(diff/86400)+" d";
+}
+
+/* ---------- busca e parse de um feed ---------- */
+async function buscarFeed(fonte){
+  try{
+    const resp = await fetch(PROXY(fonte.url));
+    if(!resp.ok) throw new Error(resp.status);
+    const txt = await resp.text();
+    const xml = new DOMParser().parseFromString(txt,"text/xml");
+    const itens = [...xml.querySelectorAll("item, entry")];
+    return itens.map(it=>{
+      const titulo = (it.querySelector("title")?.textContent || "").trim();
+      let link = it.querySelector("link")?.textContent?.trim();
+      if(!link){ link = it.querySelector("link")?.getAttribute("href"); }
+      const dataTxt = it.querySelector("pubDate, published, updated")?.textContent;
+      const data = dataTxt ? new Date(dataTxt) : null;
+      return { titulo, link, data, fonte:fonte.nome };
+    }).filter(x=>x.titulo && x.link);
+  }catch(e){
+    return [];
+  }
+}
+
+/* ---------- carrega uma coluna ---------- */
+async function carregarColuna(chave){
+  const feedEl  = document.getElementById("feed-"+chave);
+  const countEl = document.getElementById("count-"+chave);
+  feedEl.innerHTML = '<div class="loading"><div class="spinner"></div>Buscando manchetes…</div>';
+
+  const resultados = await Promise.all(FONTES[chave].map(buscarFeed));
+  let todas = resultados.flat();
+
+  if(todas.length === 0){
+    feedEl.innerHTML = '<div class="error">Não foi possível carregar as fontes agora.<br>Tente "Atualizar" em alguns instantes.</div>';
+    countEl.textContent = "0";
+    return;
+  }
+
+  // ordena por data (mais recentes primeiro)
+  todas.sort((a,b)=>{
+    if(!a.data) return 1; if(!b.data) return -1;
+    return b.data - a.data;
+  });
+  todas = todas.slice(0,60);
+
+  renderColuna(chave, todas);
+  countEl.textContent = todas.length;
+}
+
+/* ---------- render com filtro ---------- */
+const cache = { la:[], br:[], int:[] };
+function renderColuna(chave, lista){
+  cache[chave] = lista;
+  const filtro = document.getElementById("search").value.toLowerCase();
+  const feedEl = document.getElementById("feed-"+chave);
+  const dados = filtro ? lista.filter(x=>x.titulo.toLowerCase().includes(filtro)) : lista;
+
+  if(dados.length === 0){
+    feedEl.innerHTML = '<div class="loading">Nenhuma manchete corresponde ao filtro.</div>';
+    return;
+  }
+  feedEl.innerHTML = dados.map((x,i)=>`
+    ${i>0?'<div class="divider"></div>':''}
+    <a class="item" href="${x.link}" target="_blank" rel="noopener">
+      <h3>${x.titulo}</h3>
+      <div class="meta">
+        <span class="src">${x.fonte}</span>
+        <span class="sep"></span>
+        <span>${tempoRelativo(x.data)}</span>
+      </div>
+    </a>`).join("");
+}
+
+/* ---------- atualizar tudo ---------- */
+function atualizarTudo(){
+  ["la","br","int"].forEach(carregarColuna);
+}
+
+/* ---------- eventos ---------- */
+document.getElementById("refresh").addEventListener("click",atualizarTudo);
+document.getElementById("search").addEventListener("input",()=>{
+  ["la","br","int"].forEach(k=>renderColuna(k,cache[k]));
+});
+document.getElementById("autobtn").addEventListener("click",function(){
+  autoRefresh = !autoRefresh;
+  this.textContent = "Auto: " + (autoRefresh?"ON":"OFF");
+  this.classList.toggle("ghost",!autoRefresh);
+  if(autoRefresh){ autoTimer = setInterval(atualizarTudo,300000); }
+  else { clearInterval(autoTimer); }
+});
+
+/* ---------- init ---------- */
+atualizarTudo();
+autoTimer = setInterval(atualizarTudo,300000); // 5 min
+</script>
+</body>
+</html>
