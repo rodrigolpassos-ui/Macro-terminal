@@ -17,6 +17,7 @@
     --col-la:#e8503a;
     --col-br:#f0c040;
     --col-int:#ffffff;
+    --fscale:1;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
@@ -56,8 +57,28 @@
   .btn.yt{background:#ff0000;color:#fff;}
   .btn.active{background:var(--col-int);color:#fff;border-color:var(--col-int);}
 
+  /* ===== controle de tamanho de fonte ===== */
+  .fontctl{display:flex;align-items:center;gap:6px;}
+  .btn.fbtn{padding:7px 10px;font-weight:700;font-size:14px;line-height:1;}
+  .fsize{font-family:'Courier New',monospace;font-size:12px;color:var(--muted);min-width:42px;text-align:center;}
+
+  /* ===== handle para redimensionar colunas ===== */
+  .resizer{
+    width:8px;cursor:col-resize;flex-shrink:0;align-self:stretch;
+    background:transparent;position:relative;border-radius:4px;
+    transition:background .15s;
+  }
+  .resizer::before{
+    content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:2px;height:34px;background:var(--border);border-radius:2px;transition:background .15s;
+  }
+  .resizer:hover{background:var(--panel-2);}
+  .resizer:hover::before,.resizer.dragging::before{background:var(--accent);}
+  body.col-resizing{cursor:col-resize;user-select:none;}
+  body.col-resizing iframe{pointer-events:none;}
+
   /* ===== coluna YouTube ===== */
-  .yt-col{display:none;height:calc(100vh - 150px);
+  .yt-col{display:none;flex:1.2 1 0;height:calc(100vh - 150px);
     background:var(--panel);border:1px solid var(--border);border-radius:10px;
     overflow:hidden;flex-direction:column;}
   .grid.with-yt .yt-col{display:flex;}
@@ -81,11 +102,11 @@
     line-height:1.3;font-weight:600;margin-bottom:4px;}
   .yt-info .ch{font-family:Arial,sans-serif;font-size:11px;color:var(--muted);}
   .grid{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+    display:flex;gap:16px;
     padding:16px 20px;width:100%;margin:0;
     align-items:stretch;
   }
-  .grid.with-yt{grid-template-columns:repeat(3,1fr) 1.2fr;}
+  .grid > .col,.grid > .yt-col{flex:1 1 0;min-width:120px;}
   .col{background:var(--panel);border:1px solid var(--border);border-radius:10px;
     overflow:hidden;display:flex;flex-direction:column;
     height:calc(100vh - 150px);}
@@ -113,12 +134,12 @@
     transition:.15s;
   }
   .item:hover{background:var(--panel-2);border-color:var(--border);}
-  .item h3{font-size:16px;line-height:1.35;font-weight:500;margin-bottom:6px;color:var(--txt);}
+  .item h3{font-size:calc(16px * var(--fscale));line-height:1.35;font-weight:500;margin-bottom:6px;color:var(--txt);}
   .item.imp-alta h3{color:#e8503a;font-weight:700;}
   .item.imp-media h3{color:#f0c040;font-weight:600;}
   .item.imp-baixa h3{color:#ffffff;}
   .item:hover h3{filter:brightness(1.25);}
-  .meta{font-family:Arial,sans-serif;font-size:11px;color:var(--muted);
+  .meta{font-family:Arial,sans-serif;font-size:calc(11px * var(--fscale));color:var(--muted);
     display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .src{color:var(--accent-2);font-weight:600;}
   .sep{width:3px;height:3px;border-radius:50%;background:var(--muted);display:inline-block;}
@@ -133,7 +154,7 @@
   footer{padding:10px 20px;text-align:center;color:var(--muted);
     font-family:Arial,sans-serif;font-size:11px;border-top:1px solid var(--border);}
   footer code{color:var(--accent-2);}
-  @media(max-width:980px){.grid{grid-template-columns:1fr;}.col{height:70vh;}}
+  @media(max-width:980px){.grid{flex-direction:column;}.col,.yt-col{height:70vh;}.resizer{display:none;}}
 </style>
 </head>
 <body>
@@ -145,6 +166,11 @@
   <span class="clock" id="clock"></span>
   <div class="controls">
     <input id="search" type="text" placeholder="Filtrar manchetes…">
+    <div class="fontctl">
+      <button class="btn ghost fbtn" id="font-minus" title="Diminuir fonte">A−</button>
+      <span class="fsize" id="font-size">100%</span>
+      <button class="btn ghost fbtn" id="font-plus" title="Aumentar fonte">A+</button>
+    </div>
     <button class="btn yt" id="ytbtn">▶ YouTube</button>
     <button class="btn" id="refresh">Atualizar</button>
     <button class="btn ghost" id="autobtn">Auto: ON</button>
@@ -156,14 +182,17 @@
     <div class="col-head"><span class="bar"></span><span class="label">América Latina</span><span class="count" id="count-la">…</span></div>
     <div class="feed" id="feed-la"></div>
   </section>
+  <div class="resizer" data-resizer></div>
   <section class="col br">
     <div class="col-head"><span class="bar"></span><span class="label">Brasil</span><span class="count" id="count-br">…</span></div>
     <div class="feed" id="feed-br"></div>
   </section>
+  <div class="resizer" data-resizer></div>
   <section class="col int">
     <div class="col-head"><span class="bar"></span><span class="label">Internacional</span><span class="count" id="count-int">…</span></div>
     <div class="feed" id="feed-int"></div>
   </section>
+  <div class="resizer" data-resizer data-yt-resizer style="display:none;"></div>
 
   <!-- ===== Coluna YouTube (aparece ao clicar no botão) ===== -->
   <section class="yt-col" id="yt-col">
@@ -389,15 +418,18 @@ document.getElementById("autobtn").addEventListener("click",function(){
 
 /* botão YouTube — abre/fecha a coluna lateral */
 const grid = document.getElementById("grid");
+const ytResizer = document.querySelector('[data-yt-resizer]');
 document.getElementById("ytbtn").addEventListener("click",function(){
   const aberto = grid.classList.toggle("with-yt");
   this.classList.toggle("active",aberto);
+  if(ytResizer) ytResizer.style.display = aberto ? '' : 'none';
   if(aberto) document.getElementById("yt-input").focus();
   else document.getElementById("yt-player").innerHTML = "";
 });
 document.getElementById("yt-close").addEventListener("click",()=>{
   grid.classList.remove("with-yt");
   document.getElementById("ytbtn").classList.remove("active");
+  if(ytResizer) ytResizer.style.display = 'none';
   document.getElementById("yt-player").innerHTML = "";
 });
 
@@ -511,7 +543,62 @@ document.getElementById("yt-input").addEventListener("keydown",e=>{
   }
 });
 
-/* ---------- init ---------- */
+/* ---------- controle de tamanho de fonte ---------- */
+let fscale = parseFloat(localStorage.getItem('fscale')) || 1;
+const FS_MIN = 0.7, FS_MAX = 1.8, FS_STEP = 0.1;
+function aplicarFonte(){
+  fscale = Math.min(FS_MAX, Math.max(FS_MIN, Math.round(fscale*100)/100));
+  document.documentElement.style.setProperty('--fscale', fscale);
+  document.getElementById('font-size').textContent = Math.round(fscale*100) + '%';
+  localStorage.setItem('fscale', fscale);
+}
+document.getElementById('font-plus').addEventListener('click',()=>{ fscale += FS_STEP; aplicarFonte(); });
+document.getElementById('font-minus').addEventListener('click',()=>{ fscale -= FS_STEP; aplicarFonte(); });
+aplicarFonte();
+
+/* ---------- redimensionamento de colunas (arrastar divisórias) ---------- */
+(function(){
+  let arrastando = null, colEsq = null, colDir = null, startX = 0, larguraEsq = 0, larguraDir = 0;
+
+  function colAnterior(el){ let p=el.previousElementSibling; while(p && (p.classList.contains('resizer')||getComputedStyle(p).display==='none')) p=p.previousElementSibling; return p; }
+  function colSeguinte(el){ let n=el.nextElementSibling; while(n && (n.classList.contains('resizer')||getComputedStyle(n).display==='none')) n=n.nextElementSibling; return n; }
+
+  document.querySelectorAll('[data-resizer]').forEach(rz=>{
+    rz.addEventListener('mousedown',e=>{
+      colEsq = colAnterior(rz);
+      colDir = colSeguinte(rz);
+      if(!colEsq || !colDir) return;
+      arrastando = rz; rz.classList.add('dragging');
+      document.body.classList.add('col-resizing');
+      startX = e.clientX;
+      larguraEsq = colEsq.getBoundingClientRect().width;
+      larguraDir = colDir.getBoundingClientRect().width;
+      e.preventDefault();
+    });
+  });
+
+  window.addEventListener('mousemove',e=>{
+    if(!arrastando) return;
+    const dx = e.clientX - startX;
+    const min = 120;
+    let novaEsq = larguraEsq + dx;
+    let novaDir = larguraDir - dx;
+    if(novaEsq < min){ novaDir -= (min - novaEsq); novaEsq = min; }
+    if(novaDir < min){ novaEsq -= (min - novaDir); novaDir = min; }
+    // fixa as larguras em flex-basis e zera o crescimento para manter o que o usuário definiu
+    colEsq.style.flex = '0 0 ' + novaEsq + 'px';
+    colDir.style.flex = '0 0 ' + novaDir + 'px';
+  });
+
+  window.addEventListener('mouseup',()=>{
+    if(!arrastando) return;
+    arrastando.classList.remove('dragging');
+    arrastando = null;
+    document.body.classList.remove('col-resizing');
+  });
+})();
+
+
 atualizarTudo();
 autoTimer = setInterval(atualizarTudo,300000); // 5 min
 </script>
