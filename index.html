@@ -57,6 +57,84 @@
   .btn.yt{background:#ff0000;color:#fff;}
   .btn.active{background:var(--col-int);color:#fff;border-color:var(--col-int);}
 
+  /* ===== modal de bolsas mundiais ===== */
+  .mkt-overlay{
+    position:fixed;inset:0;z-index:200;display:none;
+    background:rgba(6,9,13,.82);backdrop-filter:blur(3px);
+  }
+  .mkt-overlay.open{display:block;}
+  .mkt-modal{
+    position:absolute;inset:24px;background:var(--bg);
+    border:1px solid var(--border);border-radius:14px;
+    display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:0 24px 80px rgba(0,0,0,.6);
+  }
+  .mkt-modal-head{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:16px 22px;border-bottom:2px solid var(--accent);
+    background:linear-gradient(180deg,#11151b 0%,#0e1116 100%);
+  }
+  .mkt-modal-head h2{
+    font-family:'Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:20px;
+    letter-spacing:-.3px;
+  }
+  .mkt-modal-head .sub{font-family:'Courier New',monospace;font-size:12px;color:var(--muted);}
+  .mkt-modal-head .legend{display:flex;gap:14px;margin-left:auto;align-items:center;flex-wrap:wrap;}
+  .mkt-modal-head .leg{display:flex;align-items:center;gap:6px;font-size:11px;
+    font-family:Arial,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+  .mkt-modal-head .leg i{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .mkt-close{background:transparent;border:1px solid var(--border);color:var(--muted);
+    width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:18px;line-height:1;}
+  .mkt-close:hover{background:var(--panel-2);color:#fff;}
+  .mkt-body{padding:18px 22px;overflow-y:auto;flex:1;}
+  .mkt-region{margin-bottom:8px;}
+  .mkt-region-lbl{
+    display:flex;align-items:center;gap:8px;margin:18px 0 12px;
+    font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:700;
+    letter-spacing:1px;text-transform:uppercase;color:var(--muted);
+  }
+  .mkt-region:first-child .mkt-region-lbl{margin-top:0;}
+  .mkt-region-lbl .glow{width:9px;height:9px;border-radius:50%;background:#3fb950;
+    box-shadow:0 0 8px #3fb950;}
+  .mkt-region-lbl .glow.off{background:#6b7681;box-shadow:none;}
+  .mkt-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;
+  }
+  .mkt-card{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:14px 16px;position:relative;overflow:hidden;
+    font-family:'Helvetica Neue',Arial,sans-serif;
+  }
+  .mkt-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;}
+  .mkt-card.open::before{background:#3fb950;box-shadow:0 0 14px #3fb95066;}
+  .mkt-card.pre::before{background:var(--accent-2);}
+  .mkt-card.after::before{background:#58a6ff;box-shadow:0 0 14px #58a6ff55;}
+  .mkt-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
+  .mkt-card-name{font-size:15px;font-weight:800;color:var(--txt);letter-spacing:-.2px;}
+  .mkt-card-meta{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.3px;}
+  .mkt-card-meta b{color:var(--accent-2);font-weight:700;}
+  .mkt-badge{
+    font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+    padding:4px 9px;border-radius:5px;white-space:nowrap;flex-shrink:0;
+    background:var(--panel-2);color:#6b7681;border:1px solid var(--border);
+  }
+  .mkt-card.open  .mkt-badge{background:#10331c;color:#3fb950;border-color:#1d5e33;}
+  .mkt-card.pre   .mkt-badge{background:#3a2c10;color:var(--accent-2);border-color:#5e4a1d;}
+  .mkt-card.after .mkt-badge{background:#10243f;color:#58a6ff;border-color:#1d3e66;}
+  .mkt-times{display:flex;gap:10px;}
+  .mkt-tbox{flex:1;background:var(--panel-2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;}
+  .mkt-tbox .lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  .mkt-tbox .val{font-family:'Courier New',monospace;font-size:19px;font-weight:700;color:var(--txt);margin-top:2px;}
+  .mkt-tbox .tz{font-size:9px;color:var(--muted);font-family:'Courier New',monospace;margin-top:1px;}
+  .mkt-session{
+    margin-top:11px;padding-top:9px;border-top:1px solid var(--border);
+    font-size:11px;color:var(--muted);letter-spacing:.3px;font-family:'Courier New',monospace;
+  }
+  .mkt-session b{color:var(--txt);font-weight:700;}
+  .mkt-session .pre-tag{color:var(--accent-2);}
+  .mkt-session .after-tag{color:#58a6ff;}
+  .btn.bolsas{background:var(--accent-2);color:#1a1407;}
+
   /* ===== controle de tamanho de fonte ===== */
   .fontctl{display:flex;align-items:center;gap:6px;}
   .btn.fbtn{padding:7px 10px;font-weight:700;font-size:14px;line-height:1;}
@@ -171,11 +249,31 @@
       <span class="fsize" id="font-size">100%</span>
       <button class="btn ghost fbtn" id="font-plus" title="Aumentar fonte">A+</button>
     </div>
+    <button class="btn bolsas" id="bolsasbtn">🌐 Bolsas</button>
     <button class="btn yt" id="ytbtn">▶ YouTube</button>
     <button class="btn" id="refresh">Atualizar</button>
     <button class="btn ghost" id="autobtn">Auto: ON</button>
   </div>
 </header>
+
+<div class="mkt-overlay" id="mkt-overlay">
+  <div class="mkt-modal">
+    <div class="mkt-modal-head">
+      <div>
+        <h2>Bolsas Mundiais</h2>
+        <span class="sub" id="mkt-modal-clock"></span>
+      </div>
+      <div class="legend">
+        <span class="leg"><i style="background:#3fb950"></i> Aberta</span>
+        <span class="leg"><i style="background:#f0a830"></i> Pré / Almoço</span>
+        <span class="leg"><i style="background:#58a6ff"></i> After-Market</span>
+        <span class="leg"><i style="background:#6b7681"></i> Fechada</span>
+      </div>
+      <button class="mkt-close" id="mkt-close" title="Fechar">✕</button>
+    </div>
+    <div class="mkt-body" id="mkt-body"></div>
+  </div>
+</div>
 
 <div class="grid" id="grid">
   <section class="col la">
@@ -270,6 +368,151 @@ function tick(){
     hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 setInterval(tick,1000); tick();
+
+/* ---------- bolsas mundiais (modal) ---------- */
+/* abre/fecha em minutos desde 00:00 no fuso LOCAL de cada bolsa.
+   lunch = pausa para almoço. As regiões agrupam os cards no modal. */
+const REGIOES = [
+  { nome:"Américas", bolsas:[
+    {nome:"B3 — Brasil",        tz:"America/Sao_Paulo", moeda:"BRL", indice:"IBOVESPA",   abre:600, fecha:1050, after:[1050,1080]}, // 10:00–17:30 + after 17:30–18:00
+    {nome:"NYSE",               tz:"America/New_York",  moeda:"USD", indice:"DOW JONES",  abre:570, fecha:960},                // 09:30–16:00
+    {nome:"NASDAQ",             tz:"America/New_York",  moeda:"USD", indice:"NASDAQ Comp",abre:570, fecha:960},
+    {nome:"TSX — Toronto",      tz:"America/Toronto",   moeda:"CAD", indice:"S&P/TSX",    abre:570, fecha:960},
+    {nome:"BMV — México",       tz:"America/Mexico_City",moeda:"MXN",indice:"IPC",        abre:510, fecha:900},                // 08:30–15:00
+    {nome:"MERVAL — Argentina", tz:"America/Argentina/Buenos_Aires", moeda:"ARS", indice:"MERVAL", abre:660, fecha:1020},     // 11:00–17:00
+  ]},
+  { nome:"Europa", bolsas:[
+    {nome:"LSE — Londres",       tz:"Europe/London",   moeda:"GBP", indice:"FTSE 100", abre:480, fecha:990},                  // 08:00–16:30
+    {nome:"Euronext Paris",      tz:"Europe/Paris",    moeda:"EUR", indice:"CAC 40",   abre:540, fecha:1050},                 // 09:00–17:30
+    {nome:"XETRA — Frankfurt",   tz:"Europe/Berlin",   moeda:"EUR", indice:"DAX 40",   abre:540, fecha:1050},
+    {nome:"Borsa Milano",        tz:"Europe/Rome",     moeda:"EUR", indice:"FTSE MIB", abre:540, fecha:1050},
+    {nome:"BME — Madri",         tz:"Europe/Madrid",   moeda:"EUR", indice:"IBEX 35",  abre:540, fecha:1050},
+    {nome:"SIX — Zurique",       tz:"Europe/Zurich",   moeda:"CHF", indice:"SMI",      abre:540, fecha:1050},
+    {nome:"Euronext Amsterdam",  tz:"Europe/Amsterdam",moeda:"EUR", indice:"AEX",      abre:540, fecha:1050},
+    {nome:"MOEX — Moscou",       tz:"Europe/Moscow",   moeda:"RUB", indice:"IMOEX",    abre:590, fecha:1130},                 // 09:50–18:50
+  ]},
+  { nome:"Ásia-Pacífico", bolsas:[
+    {nome:"TSE — Tóquio",     tz:"Asia/Tokyo",     moeda:"JPY", indice:"Nikkei 225", abre:540, fecha:900, lunch:[690,750]},  // 09:00–15:00
+    {nome:"SSE — Xangai",     tz:"Asia/Shanghai",  moeda:"CNY", indice:"SSE Comp.",  abre:570, fecha:900, lunch:[690,780]},  // 09:30–15:00
+    {nome:"HKEX — Hong Kong", tz:"Asia/Hong_Kong", moeda:"HKD", indice:"Hang Seng",  abre:570, fecha:960, lunch:[720,780]},  // 09:30–16:00
+    {nome:"SGX — Singapura",  tz:"Asia/Singapore", moeda:"SGD", indice:"STI",        abre:540, fecha:1020},                  // 09:00–17:00
+    {nome:"KRX — Seul",       tz:"Asia/Seoul",     moeda:"KRW", indice:"KOSPI",      abre:540, fecha:930},                   // 09:00–15:30
+    {nome:"ASX — Sydney",     tz:"Australia/Sydney",moeda:"AUD",indice:"ASX 200",    abre:600, fecha:960},                   // 10:00–16:00
+    {nome:"NSE — Mumbai",     tz:"Asia/Kolkata",   moeda:"INR", indice:"NIFTY 50",   abre:555, fecha:930},                   // 09:15–15:30
+    {nome:"TASE — Tel Aviv",  tz:"Asia/Jerusalem", moeda:"ILS", indice:"TA-125",     abre:599, fecha:1035, semana:[0,1,2,3,4]}, // dom–qui
+  ]},
+];
+const PRE_MIN = 15; // minutos antes da abertura mostram "pré"
+
+/* {hh, mm, seg, dia, minutos} no fuso da bolsa */
+function horaNoFuso(tz){
+  const fmt = new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour12:false,
+    weekday:'short',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const p = {};
+  for(const part of fmt.formatToParts(new Date())) p[part.type]=part.value;
+  const hh = parseInt(p.hour,10)%24, mm = parseInt(p.minute,10), ss = parseInt(p.second,10);
+  const dias = {Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+  return {hh,mm,ss,dia:dias[p.weekday],minutos:hh*60+mm};
+}
+/* desvio do fuso em relação a UTC, em horas (ex.: -3, +1, +5.5) */
+function offsetUTC(tz){
+  const d = new Date();
+  const local = new Date(d.toLocaleString('en-US',{timeZone:tz}));
+  const utc   = new Date(d.toLocaleString('en-US',{timeZone:'UTC'}));
+  const diff = (local - utc)/3600000;
+  const r = Math.round(diff*2)/2;
+  const sinal = r<0?'-':'+';
+  const abs = Math.abs(r);
+  const ih = Math.floor(abs);
+  const meia = abs-ih>=0.5 ? ':30' : '';
+  return 'UTC'+sinal+ih+meia;
+}
+function hhmmss(t){
+  return String(t.hh).padStart(2,'0')+":"+String(t.mm).padStart(2,'0')+":"+String(t.ss).padStart(2,'0');
+}
+function minToHHMM(m){
+  return String(Math.floor(m/60)).padStart(2,'0')+":"+String(m%60).padStart(2,'0');
+}
+
+function statusBolsa(b){
+  const t = horaNoFuso(b.tz);
+  const diasUteis = b.semana || [1,2,3,4,5];
+  const ehUtil = diasUteis.includes(t.dia);
+  if(!ehUtil) return {classe:"closed", txt:"Fechado"};
+  const m = t.minutos;
+  const noAlmoco = b.lunch && m>=b.lunch[0] && m<b.lunch[1];
+  if(m>=b.abre && m<b.fecha && !noAlmoco) return {classe:"open", txt:"Aberto"};
+  if(noAlmoco) return {classe:"pre", txt:"Almoço"};
+  if(m>=b.abre-PRE_MIN && m<b.abre) return {classe:"pre", txt:"Pré "+minToHHMM(b.abre)};
+  if(b.after && m>=b.after[0] && m<b.after[1]) return {classe:"after", txt:"After-Market"};
+  return {classe:"closed", txt:"Fechado"};
+}
+
+function renderBolsas(){
+  const body = document.getElementById('mkt-body');
+  if(!body) return;
+  const bsb = horaNoFuso('America/Sao_Paulo');
+  let html = '';
+  for(const reg of REGIOES){
+    const algumAberto = reg.bolsas.some(b=>statusBolsa(b).classe==='open');
+    html += `<div class="mkt-region">
+      <div class="mkt-region-lbl">${reg.nome}<span class="glow${algumAberto?'':' off'}"></span></div>
+      <div class="mkt-grid">`;
+    for(const b of reg.bolsas){
+      const s = statusBolsa(b);
+      const t = horaNoFuso(b.tz);
+      let statusTag = '';
+      if(s.classe==='pre')   statusTag = ` · <span class="pre-tag">${s.txt}</span>`;
+      if(s.classe==='after') statusTag = ` · <span class="after-tag">${s.txt}</span>`;
+      const afterInfo = b.after
+        ? ` · After: <b>${minToHHMM(b.after[0])} – ${minToHHMM(b.after[1])}</b>` : '';
+      html += `<div class="mkt-card ${s.classe}">
+        <div class="mkt-card-top">
+          <div>
+            <div class="mkt-card-name">${b.nome}</div>
+            <div class="mkt-card-meta">${b.moeda} · <b>${b.indice}</b></div>
+          </div>
+          <span class="mkt-badge">${s.txt}</span>
+        </div>
+        <div class="mkt-times">
+          <div class="mkt-tbox">
+            <div class="lbl">Horário local</div>
+            <div class="val">${hhmmss(t)}</div>
+            <div class="tz">${offsetUTC(b.tz)}</div>
+          </div>
+          <div class="mkt-tbox">
+            <div class="lbl">Brasília</div>
+            <div class="val">${hhmmss(bsb)}</div>
+            <div class="tz">BRT (UTC-3)</div>
+          </div>
+        </div>
+        <div class="mkt-session">Sessão: <b>${minToHHMM(b.abre)} – ${minToHHMM(b.fecha)}</b>${afterInfo}${statusTag}</div>
+      </div>`;
+    }
+    html += `</div></div>`;
+  }
+  body.innerHTML = html;
+  const ck = document.getElementById('mkt-modal-clock');
+  if(ck) ck.textContent = 'Brasília · '+hhmmss(bsb)+' · '+new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+}
+
+/* abre/fecha o modal — só atualiza enquanto está aberto */
+const mktOverlay = document.getElementById('mkt-overlay');
+let mktTimer = null;
+function abrirBolsas(){
+  mktOverlay.classList.add('open');
+  renderBolsas();
+  mktTimer = setInterval(renderBolsas, 1000);
+}
+function fecharBolsas(){
+  mktOverlay.classList.remove('open');
+  if(mktTimer){ clearInterval(mktTimer); mktTimer=null; }
+}
+document.getElementById('bolsasbtn').addEventListener('click', abrirBolsas);
+document.getElementById('mkt-close').addEventListener('click', fecharBolsas);
+mktOverlay.addEventListener('click', e=>{ if(e.target===mktOverlay) fecharBolsas(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && mktOverlay.classList.contains('open')) fecharBolsas(); });
+
 
 /* ---------- tempo relativo ---------- */
 function tempoRelativo(date){
