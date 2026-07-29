@@ -17,7 +17,8 @@
     --col-la:#e8503a;
     --col-br:#f0c040;
     --col-int:#ffffff;
-    --fscale:1;
+    --item-fs:16px;
+    --meta-fs:11px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
@@ -57,106 +58,8 @@
   .btn.yt{background:#ff0000;color:#fff;}
   .btn.active{background:var(--col-int);color:#fff;border-color:var(--col-int);}
 
-  /* ===== modal de bolsas mundiais ===== */
-  .mkt-overlay{
-    position:fixed;inset:0;z-index:200;display:none;
-    background:rgba(6,9,13,.82);backdrop-filter:blur(3px);
-  }
-  .mkt-overlay.open{display:block;}
-  .mkt-modal{
-    position:absolute;inset:24px;background:var(--bg);
-    border:1px solid var(--border);border-radius:14px;
-    display:flex;flex-direction:column;overflow:hidden;
-    box-shadow:0 24px 80px rgba(0,0,0,.6);
-  }
-  .mkt-modal-head{
-    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-    padding:16px 22px;border-bottom:2px solid var(--accent);
-    background:linear-gradient(180deg,#11151b 0%,#0e1116 100%);
-  }
-  .mkt-modal-head h2{
-    font-family:'Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:20px;
-    letter-spacing:-.3px;
-  }
-  .mkt-modal-head .sub{font-family:'Courier New',monospace;font-size:12px;color:var(--muted);}
-  .mkt-modal-head .legend{display:flex;gap:14px;margin-left:auto;align-items:center;flex-wrap:wrap;}
-  .mkt-modal-head .leg{display:flex;align-items:center;gap:6px;font-size:11px;
-    font-family:Arial,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-  .mkt-modal-head .leg i{width:10px;height:10px;border-radius:50%;display:inline-block;}
-  .mkt-close{background:transparent;border:1px solid var(--border);color:var(--muted);
-    width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:18px;line-height:1;}
-  .mkt-close:hover{background:var(--panel-2);color:#fff;}
-  .mkt-body{padding:18px 22px;overflow-y:auto;flex:1;}
-  .mkt-region{margin-bottom:8px;}
-  .mkt-region-lbl{
-    display:flex;align-items:center;gap:8px;margin:18px 0 12px;
-    font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:700;
-    letter-spacing:1px;text-transform:uppercase;color:var(--muted);
-  }
-  .mkt-region:first-child .mkt-region-lbl{margin-top:0;}
-  .mkt-region-lbl .glow{width:9px;height:9px;border-radius:50%;background:#3fb950;
-    box-shadow:0 0 8px #3fb950;}
-  .mkt-region-lbl .glow.off{background:#6b7681;box-shadow:none;}
-  .mkt-grid{
-    display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;
-  }
-  .mkt-card{
-    background:var(--panel);border:1px solid var(--border);border-radius:10px;
-    padding:14px 16px;position:relative;overflow:hidden;
-    font-family:'Helvetica Neue',Arial,sans-serif;
-  }
-  .mkt-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;}
-  .mkt-card.open::before{background:#3fb950;box-shadow:0 0 14px #3fb95066;}
-  .mkt-card.pre::before{background:var(--accent-2);}
-  .mkt-card.after::before{background:#58a6ff;box-shadow:0 0 14px #58a6ff55;}
-  .mkt-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
-  .mkt-card-name{font-size:15px;font-weight:800;color:var(--txt);letter-spacing:-.2px;}
-  .mkt-card-meta{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.3px;}
-  .mkt-card-meta b{color:var(--accent-2);font-weight:700;}
-  .mkt-badge{
-    font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
-    padding:4px 9px;border-radius:5px;white-space:nowrap;flex-shrink:0;
-    background:var(--panel-2);color:#6b7681;border:1px solid var(--border);
-  }
-  .mkt-card.open  .mkt-badge{background:#10331c;color:#3fb950;border-color:#1d5e33;}
-  .mkt-card.pre   .mkt-badge{background:#3a2c10;color:var(--accent-2);border-color:#5e4a1d;}
-  .mkt-card.after .mkt-badge{background:#10243f;color:#58a6ff;border-color:#1d3e66;}
-  .mkt-times{display:flex;gap:10px;}
-  .mkt-tbox{flex:1;background:var(--panel-2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;}
-  .mkt-tbox .lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
-  .mkt-tbox .val{font-family:'Courier New',monospace;font-size:19px;font-weight:700;color:var(--txt);margin-top:2px;}
-  .mkt-tbox .tz{font-size:9px;color:var(--muted);font-family:'Courier New',monospace;margin-top:1px;}
-  .mkt-session{
-    margin-top:11px;padding-top:9px;border-top:1px solid var(--border);
-    font-size:11px;color:var(--muted);letter-spacing:.3px;font-family:'Courier New',monospace;
-  }
-  .mkt-session b{color:var(--txt);font-weight:700;}
-  .mkt-session .pre-tag{color:var(--accent-2);}
-  .mkt-session .after-tag{color:#58a6ff;}
-  .btn.bolsas{background:var(--accent-2);color:#1a1407;}
-
-  /* ===== controle de tamanho de fonte ===== */
-  .fontctl{display:flex;align-items:center;gap:6px;}
-  .btn.fbtn{padding:7px 10px;font-weight:700;font-size:14px;line-height:1;}
-  .fsize{font-family:'Courier New',monospace;font-size:12px;color:var(--muted);min-width:42px;text-align:center;}
-
-  /* ===== handle para redimensionar colunas ===== */
-  .resizer{
-    width:8px;cursor:col-resize;flex-shrink:0;align-self:stretch;
-    background:transparent;position:relative;border-radius:4px;
-    transition:background .15s;
-  }
-  .resizer::before{
-    content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-    width:2px;height:34px;background:var(--border);border-radius:2px;transition:background .15s;
-  }
-  .resizer:hover{background:var(--panel-2);}
-  .resizer:hover::before,.resizer.dragging::before{background:var(--accent);}
-  body.col-resizing{cursor:col-resize;user-select:none;}
-  body.col-resizing iframe{pointer-events:none;}
-
   /* ===== coluna YouTube ===== */
-  .yt-col{display:none;flex:1.2 1 0;height:calc(100vh - 150px);
+  .yt-col{display:none;height:calc(100vh - 150px);min-width:0;
     background:var(--panel);border:1px solid var(--border);border-radius:10px;
     overflow:hidden;flex-direction:column;}
   .grid.with-yt .yt-col{display:flex;}
@@ -180,14 +83,37 @@
     line-height:1.3;font-weight:600;margin-bottom:4px;}
   .yt-info .ch{font-family:Arial,sans-serif;font-size:11px;color:var(--muted);}
   .grid{
-    display:flex;gap:16px;
+    display:grid;grid-template-columns:1fr 10px 1fr 10px 1fr;gap:0;
     padding:16px 20px;width:100%;margin:0;
     align-items:stretch;
   }
-  .grid > .col,.grid > .yt-col{flex:1 1 0;min-width:120px;}
   .col{background:var(--panel);border:1px solid var(--border);border-radius:10px;
-    overflow:hidden;display:flex;flex-direction:column;
+    overflow:hidden;display:flex;flex-direction:column;min-width:0;
     height:calc(100vh - 150px);}
+  .col.hidden{display:none;}
+
+  /* ===== divisor arrastável entre colunas ===== */
+  .resizer{width:10px;cursor:col-resize;position:relative;align-self:stretch;touch-action:none;}
+  .resizer::after{content:"";position:absolute;top:10px;bottom:10px;left:4px;width:2px;
+    background:var(--border);border-radius:2px;transition:background .15s;}
+  .resizer:hover::after,.resizer.dragging::after{background:var(--accent-2);}
+  .resizer.rz-hidden{display:none;}
+  body.resizing{cursor:col-resize;}
+  body.resizing,body.resizing *{user-select:none;}
+
+  /* ===== controles de fonte e visibilidade de coluna ===== */
+  .fsgroup{display:flex;align-items:center;background:var(--panel-2);
+    border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+  .fsgroup button{background:transparent;border:none;color:var(--muted);
+    padding:7px 12px;cursor:pointer;font-family:Arial,sans-serif;font-weight:700;font-size:13px;}
+  .fsgroup button:hover{background:var(--panel);color:#fff;}
+  .fsgroup button+button{border-left:1px solid var(--border);}
+  .colToggles{display:flex;gap:4px;}
+  .coltoggle{background:transparent;border:1px solid var(--border);color:var(--muted);
+    padding:6px 10px;border-radius:6px;cursor:pointer;font-family:Arial,sans-serif;
+    font-weight:700;font-size:11px;letter-spacing:.3px;}
+  .coltoggle.active{color:#fff;border-color:var(--muted);}
+  .coltoggle:hover{background:var(--panel-2);}
   .col-head{
     padding:14px 16px;border-bottom:1px solid var(--border);
     display:flex;align-items:center;gap:10px;
@@ -212,12 +138,12 @@
     transition:.15s;
   }
   .item:hover{background:var(--panel-2);border-color:var(--border);}
-  .item h3{font-size:calc(16px * var(--fscale));line-height:1.35;font-weight:500;margin-bottom:6px;color:var(--txt);}
+  .item h3{font-size:var(--item-fs);line-height:1.35;font-weight:500;margin-bottom:6px;color:var(--txt);}
   .item.imp-alta h3{color:#e8503a;font-weight:700;}
   .item.imp-media h3{color:#f0c040;font-weight:600;}
   .item.imp-baixa h3{color:#ffffff;}
   .item:hover h3{filter:brightness(1.25);}
-  .meta{font-family:Arial,sans-serif;font-size:calc(11px * var(--fscale));color:var(--muted);
+  .meta{font-family:Arial,sans-serif;font-size:var(--meta-fs);color:var(--muted);
     display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .src{color:var(--accent-2);font-weight:600;}
   .sep{width:3px;height:3px;border-radius:50%;background:var(--muted);display:inline-block;}
@@ -232,7 +158,7 @@
   footer{padding:10px 20px;text-align:center;color:var(--muted);
     font-family:Arial,sans-serif;font-size:11px;border-top:1px solid var(--border);}
   footer code{color:var(--accent-2);}
-  @media(max-width:980px){.grid{flex-direction:column;}.col,.yt-col{height:70vh;}.resizer{display:none;}}
+  @media(max-width:980px){.grid{grid-template-columns:1fr !important;}.col{height:70vh;}.resizer{display:none;}}
 </style>
 </head>
 <body>
@@ -244,53 +170,37 @@
   <span class="clock" id="clock"></span>
   <div class="controls">
     <input id="search" type="text" placeholder="Filtrar manchetes…">
-    <div class="fontctl">
-      <button class="btn ghost fbtn" id="font-minus" title="Diminuir fonte">A−</button>
-      <span class="fsize" id="font-size">100%</span>
-      <button class="btn ghost fbtn" id="font-plus" title="Aumentar fonte">A+</button>
+    <div class="colToggles" id="colToggles" title="Mostrar/ocultar coluna">
+      <button class="coltoggle active" data-col="la">AL</button>
+      <button class="coltoggle active" data-col="br">BR</button>
+      <button class="coltoggle active" data-col="int">INT</button>
     </div>
-    <button class="btn bolsas" id="bolsasbtn">🌐 Bolsas</button>
+    <div class="fsgroup" title="Tamanho da fonte">
+      <button id="fsminus">A−</button>
+      <button id="fsplus">A+</button>
+    </div>
     <button class="btn yt" id="ytbtn">▶ YouTube</button>
     <button class="btn" id="refresh">Atualizar</button>
     <button class="btn ghost" id="autobtn">Auto: ON</button>
   </div>
 </header>
 
-<div class="mkt-overlay" id="mkt-overlay">
-  <div class="mkt-modal">
-    <div class="mkt-modal-head">
-      <div>
-        <h2>Bolsas Mundiais</h2>
-        <span class="sub" id="mkt-modal-clock"></span>
-      </div>
-      <div class="legend">
-        <span class="leg"><i style="background:#3fb950"></i> Aberta</span>
-        <span class="leg"><i style="background:#f0a830"></i> Pré / Almoço</span>
-        <span class="leg"><i style="background:#58a6ff"></i> After-Market</span>
-        <span class="leg"><i style="background:#6b7681"></i> Fechada</span>
-      </div>
-      <button class="mkt-close" id="mkt-close" title="Fechar">✕</button>
-    </div>
-    <div class="mkt-body" id="mkt-body"></div>
-  </div>
-</div>
-
 <div class="grid" id="grid">
-  <section class="col la">
+  <section class="col la" id="col-la">
     <div class="col-head"><span class="bar"></span><span class="label">América Latina</span><span class="count" id="count-la">…</span></div>
     <div class="feed" id="feed-la"></div>
   </section>
-  <div class="resizer" data-resizer></div>
-  <section class="col br">
+  <div class="resizer" id="rz-la-br"></div>
+  <section class="col br" id="col-br">
     <div class="col-head"><span class="bar"></span><span class="label">Brasil</span><span class="count" id="count-br">…</span></div>
     <div class="feed" id="feed-br"></div>
   </section>
-  <div class="resizer" data-resizer></div>
-  <section class="col int">
+  <div class="resizer" id="rz-br-int"></div>
+  <section class="col int" id="col-int">
     <div class="col-head"><span class="bar"></span><span class="label">Internacional</span><span class="count" id="count-int">…</span></div>
     <div class="feed" id="feed-int"></div>
   </section>
-  <div class="resizer" data-resizer data-yt-resizer style="display:none;"></div>
+  <div class="resizer" id="rz-int-yt"></div>
 
   <!-- ===== Coluna YouTube (aparece ao clicar no botão) ===== -->
   <section class="yt-col" id="yt-col">
@@ -316,6 +226,7 @@
   <span style="color:#fff;">● Comum</span>
   &nbsp;·&nbsp; cor definida por quantos portais noticiam o mesmo assunto
   &nbsp;·&nbsp; atualização automática a cada 5 min.
+  &nbsp;·&nbsp; arraste a linha entre colunas para redimensionar &nbsp;·&nbsp; AL/BR/INT oculta coluna
 </footer>
 
 <script>
@@ -326,15 +237,16 @@ const FONTES = {
   br: [
     { nome:"E-Investidor",  url:"https://einvestidor.estadao.com.br/feed" },
     { nome:"InfoMoney",     url:"https://www.infomoney.com.br/feed/" },
-    { nome:"Agência Brasil",url:"https://agenciabrasil.ebc.com.br/economia/feed" },
+    { nome:"G1 Economia",   url:"https://g1.globo.com/rss/g1/economia/" },
     { nome:"BBC Brasil",    url:"https://feeds.bbci.co.uk/portuguese/rss.xml" },
-    { nome:"Poder360",      url:"https://www.poder360.com.br/feed/" }
+    { nome:"Poder360",      url:"https://www.poder360.com.br/feed/" },
+    { nome:"Brazil Journal",url:"https://braziljournal.com/feed" }
   ],
   la: [
     { nome:"BBC Mundo",       url:"https://feeds.bbci.co.uk/mundo/rss.xml" },
     { nome:"DW Economía",     url:"https://rss.dw.com/rdf/rss-sp-eco" },
     { nome:"France24 ES",     url:"https://www.france24.com/es/economia/rss" },
-    { nome:"Infobae",         url:"https://www.infobae.com/feeds/rss/" },
+    { nome:"Buenos Aires Times",url:"https://www.batimes.com.ar/feed" },
     { nome:"El País Economía",url:"https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/economia/portada" }
   ],
   int: [
@@ -357,6 +269,125 @@ const PROXIES = [
   u => "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u)
 ];
 
+/* ============================================================
+   COLUNAS — largura ajustável (arraste o divisor) + ocultar/exibir
+   ============================================================ */
+const LARGURA_MIN_PX = 160;
+const CHAVE_LARGURAS = "noticias_larguras_v1";
+const CHAVE_OCULTAS  = "noticias_ocultas_v1";
+
+let larguras = Object.assign({ la:"1fr", br:"1fr", int:"1fr", yt:"1.2fr" },
+  JSON.parse(localStorage.getItem(CHAVE_LARGURAS) || "{}"));
+let ocultas = Object.assign({ la:false, br:false, int:false },
+  JSON.parse(localStorage.getItem(CHAVE_OCULTAS) || "{}"));
+
+const elGrid = document.getElementById("grid");
+const painelCols = {
+  la:  document.getElementById("col-la"),
+  br:  document.getElementById("col-br"),
+  int: document.getElementById("col-int"),
+  yt:  document.getElementById("yt-col")
+};
+const painelResizers = {
+  "la-br":  document.getElementById("rz-la-br"),
+  "br-int": document.getElementById("rz-br-int"),
+  "int-yt": document.getElementById("rz-int-yt")
+};
+
+function ytAberto(){ return elGrid.classList.contains("with-yt"); }
+
+function montarGrid(){
+  // tela pequena: mantém empilhado (regra do @media cuida do layout); não mexe nos divisores
+  if(window.innerWidth <= 980){
+    elGrid.style.gridTemplateColumns = "";
+    return;
+  }
+  const visivel = { la:!ocultas.la, br:!ocultas.br, int:!ocultas.int, yt:ytAberto() };
+  ["la","br","int"].forEach(k=> painelCols[k].classList.toggle("hidden", !visivel[k]));
+
+  const tracks = [];
+  if(visivel.la) tracks.push(larguras.la);
+  painelResizers["la-br"].classList.toggle("rz-hidden", !(visivel.la && visivel.br));
+  if(visivel.la && visivel.br) tracks.push("10px");
+  if(visivel.br) tracks.push(larguras.br);
+  painelResizers["br-int"].classList.toggle("rz-hidden", !(visivel.br && visivel.int));
+  if(visivel.br && visivel.int) tracks.push("10px");
+  if(visivel.int) tracks.push(larguras.int);
+  painelResizers["int-yt"].classList.toggle("rz-hidden", !(visivel.int && visivel.yt));
+  if(visivel.int && visivel.yt) tracks.push("10px");
+  if(visivel.yt) tracks.push(larguras.yt);
+
+  elGrid.style.gridTemplateColumns = tracks.join(" ");
+}
+
+function salvarLarguras(){ localStorage.setItem(CHAVE_LARGURAS, JSON.stringify(larguras)); }
+function salvarOcultas(){ localStorage.setItem(CHAVE_OCULTAS, JSON.stringify(ocultas)); }
+
+/* arrastar o divisor entre duas colunas vizinhas */
+function iniciarArraste(resizer, chaveEsq, chaveDir){
+  resizer.addEventListener("pointerdown",(e)=>{
+    e.preventDefault();
+    const elEsq = painelCols[chaveEsq], elDir = painelCols[chaveDir];
+    const larguraEsqIni = elEsq.getBoundingClientRect().width;
+    const larguraDirIni = elDir.getBoundingClientRect().width;
+    const xIni = e.clientX;
+    resizer.classList.add("dragging");
+    document.body.classList.add("resizing");
+
+    function mover(ev){
+      let dx = ev.clientX - xIni;
+      dx = Math.max(LARGURA_MIN_PX - larguraEsqIni, Math.min(larguraDirIni - LARGURA_MIN_PX, dx));
+      larguras[chaveEsq] = Math.round(larguraEsqIni + dx) + "px";
+      larguras[chaveDir] = Math.round(larguraDirIni - dx) + "px";
+      montarGrid();
+    }
+    function soltar(){
+      document.removeEventListener("pointermove", mover);
+      document.removeEventListener("pointerup", soltar);
+      resizer.classList.remove("dragging");
+      document.body.classList.remove("resizing");
+      salvarLarguras();
+    }
+    document.addEventListener("pointermove", mover);
+    document.addEventListener("pointerup", soltar);
+  });
+}
+iniciarArraste(painelResizers["la-br"], "la", "br");
+iniciarArraste(painelResizers["br-int"], "br", "int");
+iniciarArraste(painelResizers["int-yt"], "int", "yt");
+
+/* chips AL / BR / INT no cabeçalho — mostrar/ocultar coluna */
+document.querySelectorAll(".coltoggle").forEach(btn=>{
+  const chave = btn.dataset.col;
+  btn.classList.toggle("active", !ocultas[chave]);
+  btn.addEventListener("click", ()=>{
+    ocultas[chave] = !ocultas[chave];
+    btn.classList.toggle("active", !ocultas[chave]);
+    salvarOcultas();
+    montarGrid();
+  });
+});
+
+window.addEventListener("resize", montarGrid);
+montarGrid();
+
+/* ============================================================
+   TAMANHO DA FONTE das manchetes
+   ============================================================ */
+const CHAVE_FONTE = "noticias_fontpx_v1";
+const FONTE_MIN = 13, FONTE_MAX = 22;
+let fontePx = parseInt(localStorage.getItem(CHAVE_FONTE)) || 16;
+
+function aplicarFonte(px){
+  fontePx = Math.max(FONTE_MIN, Math.min(FONTE_MAX, px));
+  document.documentElement.style.setProperty("--item-fs", fontePx + "px");
+  document.documentElement.style.setProperty("--meta-fs", Math.round(fontePx*0.69) + "px");
+  localStorage.setItem(CHAVE_FONTE, fontePx);
+}
+aplicarFonte(fontePx);
+document.getElementById("fsplus").addEventListener("click", ()=> aplicarFonte(fontePx+1));
+document.getElementById("fsminus").addEventListener("click", ()=> aplicarFonte(fontePx-1));
+
 let autoRefresh = true;
 let autoTimer = null;
 
@@ -368,153 +399,6 @@ function tick(){
     hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 setInterval(tick,1000); tick();
-
-/* ---------- bolsas mundiais (modal) ---------- */
-/* abre/fecha em minutos desde 00:00 no fuso LOCAL de cada bolsa.
-   lunch = pausa para almoço. As regiões agrupam os cards no modal. */
-const REGIOES = [
-  { nome:"Américas", bolsas:[
-    {nome:"B3 — Brasil",        tz:"America/Sao_Paulo", moeda:"BRL", indice:"IBOVESPA",   abre:600, fecha:1050, after:[1050,1080]}, // 10:00–17:30 + after 17:30–18:00
-    {nome:"NYSE",               tz:"America/New_York",  moeda:"USD", indice:"DOW JONES",  abre:570, fecha:960},                // 09:30–16:00
-    {nome:"NASDAQ",             tz:"America/New_York",  moeda:"USD", indice:"NASDAQ Comp",abre:570, fecha:960},
-    {nome:"S&P 500 — EUA",      tz:"America/New_York",  moeda:"USD", indice:"S&P 500",    abre:570, fecha:960},
-    {nome:"Russell 2000 — EUA", tz:"America/New_York",  moeda:"USD", indice:"RUSSELL 2000",abre:570, fecha:960},
-    {nome:"TSX — Toronto",      tz:"America/Toronto",   moeda:"CAD", indice:"S&P/TSX",    abre:570, fecha:960},
-    {nome:"BMV — México",       tz:"America/Mexico_City",moeda:"MXN",indice:"IPC",        abre:510, fecha:900},                // 08:30–15:00
-    {nome:"MERVAL — Argentina", tz:"America/Argentina/Buenos_Aires", moeda:"ARS", indice:"MERVAL", abre:660, fecha:1020},     // 11:00–17:00
-  ]},
-  { nome:"Europa", bolsas:[
-    {nome:"LSE — Londres",       tz:"Europe/London",   moeda:"GBP", indice:"FTSE 100", abre:480, fecha:990},                  // 08:00–16:30
-    {nome:"Euronext Paris",      tz:"Europe/Paris",    moeda:"EUR", indice:"CAC 40",   abre:540, fecha:1050},                 // 09:00–17:30
-    {nome:"XETRA — Frankfurt",   tz:"Europe/Berlin",   moeda:"EUR", indice:"DAX 40",   abre:540, fecha:1050},
-    {nome:"Borsa Milano",        tz:"Europe/Rome",     moeda:"EUR", indice:"FTSE MIB", abre:540, fecha:1050},
-    {nome:"BME — Madri",         tz:"Europe/Madrid",   moeda:"EUR", indice:"IBEX 35",  abre:540, fecha:1050},
-    {nome:"SIX — Zurique",       tz:"Europe/Zurich",   moeda:"CHF", indice:"SMI",      abre:540, fecha:1050},
-    {nome:"Euronext Amsterdam",  tz:"Europe/Amsterdam",moeda:"EUR", indice:"AEX",      abre:540, fecha:1050},
-    {nome:"MOEX — Moscou",       tz:"Europe/Moscow",   moeda:"RUB", indice:"IMOEX",    abre:590, fecha:1130},                 // 09:50–18:50
-  ]},
-  { nome:"Ásia-Pacífico", bolsas:[
-    {nome:"TSE — Tóquio",     tz:"Asia/Tokyo",     moeda:"JPY", indice:"Nikkei 225", abre:540, fecha:900, lunch:[690,750]},  // 09:00–15:00
-    {nome:"SSE — Xangai",     tz:"Asia/Shanghai",  moeda:"CNY", indice:"SSE Comp.",  abre:570, fecha:900, lunch:[690,780]},  // 09:30–15:00
-    {nome:"HKEX — Hong Kong", tz:"Asia/Hong_Kong", moeda:"HKD", indice:"Hang Seng",  abre:570, fecha:960, lunch:[720,780]},  // 09:30–16:00
-    {nome:"SGX — Singapura",  tz:"Asia/Singapore", moeda:"SGD", indice:"STI",        abre:540, fecha:1020},                  // 09:00–17:00
-    {nome:"KRX — Seul",       tz:"Asia/Seoul",     moeda:"KRW", indice:"KOSPI",      abre:540, fecha:930},                   // 09:00–15:30
-    {nome:"ASX — Sydney",     tz:"Australia/Sydney",moeda:"AUD",indice:"ASX 200",    abre:600, fecha:960},                   // 10:00–16:00
-    {nome:"NSE — Mumbai",     tz:"Asia/Kolkata",   moeda:"INR", indice:"NIFTY 50",   abre:555, fecha:930},                   // 09:15–15:30
-    {nome:"TASE — Tel Aviv",  tz:"Asia/Jerusalem", moeda:"ILS", indice:"TA-125",     abre:599, fecha:1035, semana:[0,1,2,3,4]}, // dom–qui
-  ]},
-];
-const PRE_MIN = 15; // minutos antes da abertura mostram "pré"
-
-/* {hh, mm, seg, dia, minutos} no fuso da bolsa */
-function horaNoFuso(tz){
-  const fmt = new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour12:false,
-    weekday:'short',hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  const p = {};
-  for(const part of fmt.formatToParts(new Date())) p[part.type]=part.value;
-  const hh = parseInt(p.hour,10)%24, mm = parseInt(p.minute,10), ss = parseInt(p.second,10);
-  const dias = {Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
-  return {hh,mm,ss,dia:dias[p.weekday],minutos:hh*60+mm};
-}
-/* desvio do fuso em relação a UTC, em horas (ex.: -3, +1, +5.5) */
-function offsetUTC(tz){
-  const d = new Date();
-  const local = new Date(d.toLocaleString('en-US',{timeZone:tz}));
-  const utc   = new Date(d.toLocaleString('en-US',{timeZone:'UTC'}));
-  const diff = (local - utc)/3600000;
-  const r = Math.round(diff*2)/2;
-  const sinal = r<0?'-':'+';
-  const abs = Math.abs(r);
-  const ih = Math.floor(abs);
-  const meia = abs-ih>=0.5 ? ':30' : '';
-  return 'UTC'+sinal+ih+meia;
-}
-function hhmmss(t){
-  return String(t.hh).padStart(2,'0')+":"+String(t.mm).padStart(2,'0')+":"+String(t.ss).padStart(2,'0');
-}
-function minToHHMM(m){
-  return String(Math.floor(m/60)).padStart(2,'0')+":"+String(m%60).padStart(2,'0');
-}
-
-function statusBolsa(b){
-  const t = horaNoFuso(b.tz);
-  const diasUteis = b.semana || [1,2,3,4,5];
-  const ehUtil = diasUteis.includes(t.dia);
-  if(!ehUtil) return {classe:"closed", txt:"Fechado"};
-  const m = t.minutos;
-  const noAlmoco = b.lunch && m>=b.lunch[0] && m<b.lunch[1];
-  if(m>=b.abre && m<b.fecha && !noAlmoco) return {classe:"open", txt:"Aberto"};
-  if(noAlmoco) return {classe:"pre", txt:"Almoço"};
-  if(m>=b.abre-PRE_MIN && m<b.abre) return {classe:"pre", txt:"Pré "+minToHHMM(b.abre)};
-  if(b.after && m>=b.after[0] && m<b.after[1]) return {classe:"after", txt:"After-Market"};
-  return {classe:"closed", txt:"Fechado"};
-}
-
-function renderBolsas(){
-  const body = document.getElementById('mkt-body');
-  if(!body) return;
-  const bsb = horaNoFuso('America/Sao_Paulo');
-  let html = '';
-  for(const reg of REGIOES){
-    const algumAberto = reg.bolsas.some(b=>statusBolsa(b).classe==='open');
-    html += `<div class="mkt-region">
-      <div class="mkt-region-lbl">${reg.nome}<span class="glow${algumAberto?'':' off'}"></span></div>
-      <div class="mkt-grid">`;
-    for(const b of reg.bolsas){
-      const s = statusBolsa(b);
-      const t = horaNoFuso(b.tz);
-      let statusTag = '';
-      if(s.classe==='pre')   statusTag = ` · <span class="pre-tag">${s.txt}</span>`;
-      if(s.classe==='after') statusTag = ` · <span class="after-tag">${s.txt}</span>`;
-      const afterInfo = b.after
-        ? ` · After: <b>${minToHHMM(b.after[0])} – ${minToHHMM(b.after[1])}</b>` : '';
-      html += `<div class="mkt-card ${s.classe}">
-        <div class="mkt-card-top">
-          <div>
-            <div class="mkt-card-name">${b.nome}</div>
-            <div class="mkt-card-meta">${b.moeda} · <b>${b.indice}</b></div>
-          </div>
-          <span class="mkt-badge">${s.txt}</span>
-        </div>
-        <div class="mkt-times">
-          <div class="mkt-tbox">
-            <div class="lbl">Horário local</div>
-            <div class="val">${hhmmss(t)}</div>
-            <div class="tz">${offsetUTC(b.tz)}</div>
-          </div>
-          <div class="mkt-tbox">
-            <div class="lbl">Brasília</div>
-            <div class="val">${hhmmss(bsb)}</div>
-            <div class="tz">BRT (UTC-3)</div>
-          </div>
-        </div>
-        <div class="mkt-session">Sessão: <b>${minToHHMM(b.abre)} – ${minToHHMM(b.fecha)}</b>${afterInfo}${statusTag}</div>
-      </div>`;
-    }
-    html += `</div></div>`;
-  }
-  body.innerHTML = html;
-  const ck = document.getElementById('mkt-modal-clock');
-  if(ck) ck.textContent = 'Brasília · '+hhmmss(bsb)+' · '+new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
-}
-
-/* abre/fecha o modal — só atualiza enquanto está aberto */
-const mktOverlay = document.getElementById('mkt-overlay');
-let mktTimer = null;
-function abrirBolsas(){
-  mktOverlay.classList.add('open');
-  renderBolsas();
-  mktTimer = setInterval(renderBolsas, 1000);
-}
-function fecharBolsas(){
-  mktOverlay.classList.remove('open');
-  if(mktTimer){ clearInterval(mktTimer); mktTimer=null; }
-}
-document.getElementById('bolsasbtn').addEventListener('click', abrirBolsas);
-document.getElementById('mkt-close').addEventListener('click', fecharBolsas);
-mktOverlay.addEventListener('click', e=>{ if(e.target===mktOverlay) fecharBolsas(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && mktOverlay.classList.contains('open')) fecharBolsas(); });
-
 
 /* ---------- tempo relativo ---------- */
 function tempoRelativo(date){
@@ -663,19 +547,18 @@ document.getElementById("autobtn").addEventListener("click",function(){
 
 /* botão YouTube — abre/fecha a coluna lateral */
 const grid = document.getElementById("grid");
-const ytResizer = document.querySelector('[data-yt-resizer]');
 document.getElementById("ytbtn").addEventListener("click",function(){
   const aberto = grid.classList.toggle("with-yt");
   this.classList.toggle("active",aberto);
-  if(ytResizer) ytResizer.style.display = aberto ? '' : 'none';
+  montarGrid();
   if(aberto) document.getElementById("yt-input").focus();
   else document.getElementById("yt-player").innerHTML = "";
 });
 document.getElementById("yt-close").addEventListener("click",()=>{
   grid.classList.remove("with-yt");
   document.getElementById("ytbtn").classList.remove("active");
-  if(ytResizer) ytResizer.style.display = 'none';
   document.getElementById("yt-player").innerHTML = "";
+  montarGrid();
 });
 
 /* extrai o ID de um vídeo a partir de uma URL do YouTube (ou aceita o ID puro) */
@@ -788,62 +671,7 @@ document.getElementById("yt-input").addEventListener("keydown",e=>{
   }
 });
 
-/* ---------- controle de tamanho de fonte ---------- */
-let fscale = parseFloat(localStorage.getItem('fscale')) || 1;
-const FS_MIN = 0.7, FS_MAX = 1.8, FS_STEP = 0.1;
-function aplicarFonte(){
-  fscale = Math.min(FS_MAX, Math.max(FS_MIN, Math.round(fscale*100)/100));
-  document.documentElement.style.setProperty('--fscale', fscale);
-  document.getElementById('font-size').textContent = Math.round(fscale*100) + '%';
-  localStorage.setItem('fscale', fscale);
-}
-document.getElementById('font-plus').addEventListener('click',()=>{ fscale += FS_STEP; aplicarFonte(); });
-document.getElementById('font-minus').addEventListener('click',()=>{ fscale -= FS_STEP; aplicarFonte(); });
-aplicarFonte();
-
-/* ---------- redimensionamento de colunas (arrastar divisórias) ---------- */
-(function(){
-  let arrastando = null, colEsq = null, colDir = null, startX = 0, larguraEsq = 0, larguraDir = 0;
-
-  function colAnterior(el){ let p=el.previousElementSibling; while(p && (p.classList.contains('resizer')||getComputedStyle(p).display==='none')) p=p.previousElementSibling; return p; }
-  function colSeguinte(el){ let n=el.nextElementSibling; while(n && (n.classList.contains('resizer')||getComputedStyle(n).display==='none')) n=n.nextElementSibling; return n; }
-
-  document.querySelectorAll('[data-resizer]').forEach(rz=>{
-    rz.addEventListener('mousedown',e=>{
-      colEsq = colAnterior(rz);
-      colDir = colSeguinte(rz);
-      if(!colEsq || !colDir) return;
-      arrastando = rz; rz.classList.add('dragging');
-      document.body.classList.add('col-resizing');
-      startX = e.clientX;
-      larguraEsq = colEsq.getBoundingClientRect().width;
-      larguraDir = colDir.getBoundingClientRect().width;
-      e.preventDefault();
-    });
-  });
-
-  window.addEventListener('mousemove',e=>{
-    if(!arrastando) return;
-    const dx = e.clientX - startX;
-    const min = 120;
-    let novaEsq = larguraEsq + dx;
-    let novaDir = larguraDir - dx;
-    if(novaEsq < min){ novaDir -= (min - novaEsq); novaEsq = min; }
-    if(novaDir < min){ novaEsq -= (min - novaDir); novaDir = min; }
-    // fixa as larguras em flex-basis e zera o crescimento para manter o que o usuário definiu
-    colEsq.style.flex = '0 0 ' + novaEsq + 'px';
-    colDir.style.flex = '0 0 ' + novaDir + 'px';
-  });
-
-  window.addEventListener('mouseup',()=>{
-    if(!arrastando) return;
-    arrastando.classList.remove('dragging');
-    arrastando = null;
-    document.body.classList.remove('col-resizing');
-  });
-})();
-
-
+/* ---------- init ---------- */
 atualizarTudo();
 autoTimer = setInterval(atualizarTudo,300000); // 5 min
 </script>
