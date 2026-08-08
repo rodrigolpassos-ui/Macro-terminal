@@ -180,6 +180,7 @@
       <button id="fsplus">A+</button>
     </div>
     <button class="btn yt" id="ytbtn">▶ YouTube</button>
+    <button class="btn ghost" id="autofitbtn" title="Redistribuir largura das colunas">⤢ Ajustar colunas</button>
     <button class="btn" id="refresh">Atualizar</button>
     <button class="btn ghost" id="autobtn">Auto: ON</button>
   </div>
@@ -322,6 +323,16 @@ function montarGrid(){
 
 function salvarLarguras(){ localStorage.setItem(CHAVE_LARGURAS, JSON.stringify(larguras)); }
 function salvarOcultas(){ localStorage.setItem(CHAVE_OCULTAS, JSON.stringify(ocultas)); }
+
+/* redistribui as colunas visíveis em partes iguais (reseta larguras arrastadas manualmente) */
+function ajustarColunas(){
+  larguras.la = "1fr";
+  larguras.br = "1fr";
+  larguras.int = "1fr";
+  larguras.yt = "1.2fr";
+  salvarLarguras();
+  montarGrid();
+}
 
 /* arrastar o divisor entre duas colunas vizinhas */
 function iniciarArraste(resizer, chaveEsq, chaveDir){
@@ -550,6 +561,10 @@ const grid = document.getElementById("grid");
 document.getElementById("ytbtn").addEventListener("click",function(){
   const aberto = grid.classList.toggle("with-yt");
   this.classList.toggle("active",aberto);
+  if(!aberto){
+    larguras.la = "1fr"; larguras.br = "1fr"; larguras.int = "1fr";
+    salvarLarguras();
+  }
   montarGrid();
   if(aberto) document.getElementById("yt-input").focus();
   else document.getElementById("yt-player").innerHTML = "";
@@ -558,8 +573,12 @@ document.getElementById("yt-close").addEventListener("click",()=>{
   grid.classList.remove("with-yt");
   document.getElementById("ytbtn").classList.remove("active");
   document.getElementById("yt-player").innerHTML = "";
+  larguras.la = "1fr"; larguras.br = "1fr"; larguras.int = "1fr";
+  salvarLarguras();
   montarGrid();
 });
+
+document.getElementById("autofitbtn").addEventListener("click", ajustarColunas);
 
 /* extrai o ID de um vídeo a partir de uma URL do YouTube (ou aceita o ID puro) */
 function extrairIdYouTube(texto){
